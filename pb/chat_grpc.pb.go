@@ -29,7 +29,7 @@ type ChatGroupServiceClient interface {
 	Delete(ctx context.Context, in *ChatIdRequest, opts ...grpc.CallOption) (*ChatBoolResponse, error)
 	// Get
 	GetById(ctx context.Context, in *ChatIdRequest, opts ...grpc.CallOption) (*ChatGroup, error)
-	GetListByUser(ctx context.Context, in *ChatIdRequest, opts ...grpc.CallOption) (*ChatGroupList, error)
+	GetListByUser(ctx context.Context, in *ChatUserIdRequest, opts ...grpc.CallOption) (*ChatGroupList, error)
 	GetAll(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ChatGroupList, error)
 }
 
@@ -77,7 +77,7 @@ func (c *chatGroupServiceClient) GetById(ctx context.Context, in *ChatIdRequest,
 	return out, nil
 }
 
-func (c *chatGroupServiceClient) GetListByUser(ctx context.Context, in *ChatIdRequest, opts ...grpc.CallOption) (*ChatGroupList, error) {
+func (c *chatGroupServiceClient) GetListByUser(ctx context.Context, in *ChatUserIdRequest, opts ...grpc.CallOption) (*ChatGroupList, error) {
 	out := new(ChatGroupList)
 	err := c.cc.Invoke(ctx, "/chat.ChatGroupService/GetListByUser", in, out, opts...)
 	if err != nil {
@@ -105,7 +105,7 @@ type ChatGroupServiceServer interface {
 	Delete(context.Context, *ChatIdRequest) (*ChatBoolResponse, error)
 	// Get
 	GetById(context.Context, *ChatIdRequest) (*ChatGroup, error)
-	GetListByUser(context.Context, *ChatIdRequest) (*ChatGroupList, error)
+	GetListByUser(context.Context, *ChatUserIdRequest) (*ChatGroupList, error)
 	GetAll(context.Context, *emptypb.Empty) (*ChatGroupList, error)
 }
 
@@ -125,7 +125,7 @@ func (UnimplementedChatGroupServiceServer) Delete(context.Context, *ChatIdReques
 func (UnimplementedChatGroupServiceServer) GetById(context.Context, *ChatIdRequest) (*ChatGroup, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetById not implemented")
 }
-func (UnimplementedChatGroupServiceServer) GetListByUser(context.Context, *ChatIdRequest) (*ChatGroupList, error) {
+func (UnimplementedChatGroupServiceServer) GetListByUser(context.Context, *ChatUserIdRequest) (*ChatGroupList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetListByUser not implemented")
 }
 func (UnimplementedChatGroupServiceServer) GetAll(context.Context, *emptypb.Empty) (*ChatGroupList, error) {
@@ -216,7 +216,7 @@ func _ChatGroupService_GetById_Handler(srv interface{}, ctx context.Context, dec
 }
 
 func _ChatGroupService_GetListByUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ChatIdRequest)
+	in := new(ChatUserIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -228,7 +228,7 @@ func _ChatGroupService_GetListByUser_Handler(srv interface{}, ctx context.Contex
 		FullMethod: "/chat.ChatGroupService/GetListByUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ChatGroupServiceServer).GetListByUser(ctx, req.(*ChatIdRequest))
+		return srv.(ChatGroupServiceServer).GetListByUser(ctx, req.(*ChatUserIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -296,10 +296,10 @@ type ChatServiceClient interface {
 	Delete(ctx context.Context, in *ChatIdRequest, opts ...grpc.CallOption) (*ChatBoolResponse, error)
 	// Get
 	GetById(ctx context.Context, in *ChatIdRequest, opts ...grpc.CallOption) (*Chat, error)
-	GetListByGroup(ctx context.Context, in *ChatIdRequest, opts ...grpc.CallOption) (*ChatList, error)
-	GetStreamByGroup(ctx context.Context, in *ChatIdRequest, opts ...grpc.CallOption) (ChatService_GetStreamByGroupClient, error)
+	GetListByGroup(ctx context.Context, in *ChatGroupIdRequest, opts ...grpc.CallOption) (*ChatList, error)
+	GetStreamByGroup(ctx context.Context, in *ChatGroupIdRequest, opts ...grpc.CallOption) (ChatService_GetStreamByGroupClient, error)
 	// get latest chat for notification
-	GetLatestChatByUser(ctx context.Context, in *ChatIdRequest, opts ...grpc.CallOption) (ChatService_GetLatestChatByUserClient, error)
+	GetLatestChatByUser(ctx context.Context, in *ChatUserIdRequest, opts ...grpc.CallOption) (ChatService_GetLatestChatByUserClient, error)
 }
 
 type chatServiceClient struct {
@@ -346,7 +346,7 @@ func (c *chatServiceClient) GetById(ctx context.Context, in *ChatIdRequest, opts
 	return out, nil
 }
 
-func (c *chatServiceClient) GetListByGroup(ctx context.Context, in *ChatIdRequest, opts ...grpc.CallOption) (*ChatList, error) {
+func (c *chatServiceClient) GetListByGroup(ctx context.Context, in *ChatGroupIdRequest, opts ...grpc.CallOption) (*ChatList, error) {
 	out := new(ChatList)
 	err := c.cc.Invoke(ctx, "/chat.ChatService/GetListByGroup", in, out, opts...)
 	if err != nil {
@@ -355,7 +355,7 @@ func (c *chatServiceClient) GetListByGroup(ctx context.Context, in *ChatIdReques
 	return out, nil
 }
 
-func (c *chatServiceClient) GetStreamByGroup(ctx context.Context, in *ChatIdRequest, opts ...grpc.CallOption) (ChatService_GetStreamByGroupClient, error) {
+func (c *chatServiceClient) GetStreamByGroup(ctx context.Context, in *ChatGroupIdRequest, opts ...grpc.CallOption) (ChatService_GetStreamByGroupClient, error) {
 	stream, err := c.cc.NewStream(ctx, &ChatService_ServiceDesc.Streams[0], "/chat.ChatService/GetStreamByGroup", opts...)
 	if err != nil {
 		return nil, err
@@ -387,7 +387,7 @@ func (x *chatServiceGetStreamByGroupClient) Recv() (*Chat, error) {
 	return m, nil
 }
 
-func (c *chatServiceClient) GetLatestChatByUser(ctx context.Context, in *ChatIdRequest, opts ...grpc.CallOption) (ChatService_GetLatestChatByUserClient, error) {
+func (c *chatServiceClient) GetLatestChatByUser(ctx context.Context, in *ChatUserIdRequest, opts ...grpc.CallOption) (ChatService_GetLatestChatByUserClient, error) {
 	stream, err := c.cc.NewStream(ctx, &ChatService_ServiceDesc.Streams[1], "/chat.ChatService/GetLatestChatByUser", opts...)
 	if err != nil {
 		return nil, err
@@ -428,10 +428,10 @@ type ChatServiceServer interface {
 	Delete(context.Context, *ChatIdRequest) (*ChatBoolResponse, error)
 	// Get
 	GetById(context.Context, *ChatIdRequest) (*Chat, error)
-	GetListByGroup(context.Context, *ChatIdRequest) (*ChatList, error)
-	GetStreamByGroup(*ChatIdRequest, ChatService_GetStreamByGroupServer) error
+	GetListByGroup(context.Context, *ChatGroupIdRequest) (*ChatList, error)
+	GetStreamByGroup(*ChatGroupIdRequest, ChatService_GetStreamByGroupServer) error
 	// get latest chat for notification
-	GetLatestChatByUser(*ChatIdRequest, ChatService_GetLatestChatByUserServer) error
+	GetLatestChatByUser(*ChatUserIdRequest, ChatService_GetLatestChatByUserServer) error
 }
 
 // UnimplementedChatServiceServer should be embedded to have forward compatible implementations.
@@ -450,13 +450,13 @@ func (UnimplementedChatServiceServer) Delete(context.Context, *ChatIdRequest) (*
 func (UnimplementedChatServiceServer) GetById(context.Context, *ChatIdRequest) (*Chat, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetById not implemented")
 }
-func (UnimplementedChatServiceServer) GetListByGroup(context.Context, *ChatIdRequest) (*ChatList, error) {
+func (UnimplementedChatServiceServer) GetListByGroup(context.Context, *ChatGroupIdRequest) (*ChatList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetListByGroup not implemented")
 }
-func (UnimplementedChatServiceServer) GetStreamByGroup(*ChatIdRequest, ChatService_GetStreamByGroupServer) error {
+func (UnimplementedChatServiceServer) GetStreamByGroup(*ChatGroupIdRequest, ChatService_GetStreamByGroupServer) error {
 	return status.Errorf(codes.Unimplemented, "method GetStreamByGroup not implemented")
 }
-func (UnimplementedChatServiceServer) GetLatestChatByUser(*ChatIdRequest, ChatService_GetLatestChatByUserServer) error {
+func (UnimplementedChatServiceServer) GetLatestChatByUser(*ChatUserIdRequest, ChatService_GetLatestChatByUserServer) error {
 	return status.Errorf(codes.Unimplemented, "method GetLatestChatByUser not implemented")
 }
 
@@ -544,7 +544,7 @@ func _ChatService_GetById_Handler(srv interface{}, ctx context.Context, dec func
 }
 
 func _ChatService_GetListByGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ChatIdRequest)
+	in := new(ChatGroupIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -556,13 +556,13 @@ func _ChatService_GetListByGroup_Handler(srv interface{}, ctx context.Context, d
 		FullMethod: "/chat.ChatService/GetListByGroup",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ChatServiceServer).GetListByGroup(ctx, req.(*ChatIdRequest))
+		return srv.(ChatServiceServer).GetListByGroup(ctx, req.(*ChatGroupIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _ChatService_GetStreamByGroup_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(ChatIdRequest)
+	m := new(ChatGroupIdRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
@@ -583,7 +583,7 @@ func (x *chatServiceGetStreamByGroupServer) Send(m *Chat) error {
 }
 
 func _ChatService_GetLatestChatByUser_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(ChatIdRequest)
+	m := new(ChatUserIdRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}

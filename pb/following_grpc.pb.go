@@ -32,9 +32,9 @@ type FollowingServiceClient interface {
 	// get by id
 	GetById(ctx context.Context, in *FollowingIdRequest, opts ...grpc.CallOption) (*Following, error)
 	// get by user
-	GetFollowedListByUser(ctx context.Context, in *FollowingIdRequest, opts ...grpc.CallOption) (*FollowingList, error)
+	GetFollowedListByUser(ctx context.Context, in *FollowingUserIdRequest, opts ...grpc.CallOption) (*FollowingList, error)
 	// get by user
-	GetFollowingListByUser(ctx context.Context, in *FollowingIdRequest, opts ...grpc.CallOption) (*FollowingList, error)
+	GetFollowingListByUser(ctx context.Context, in *FollowingUserIdRequest, opts ...grpc.CallOption) (*FollowingList, error)
 	// get list by id list
 	GetListByIdList(ctx context.Context, in *FollowingIdListRequest, opts ...grpc.CallOption) (*FollowingList, error)
 	// get all
@@ -85,7 +85,7 @@ func (c *followingServiceClient) GetById(ctx context.Context, in *FollowingIdReq
 	return out, nil
 }
 
-func (c *followingServiceClient) GetFollowedListByUser(ctx context.Context, in *FollowingIdRequest, opts ...grpc.CallOption) (*FollowingList, error) {
+func (c *followingServiceClient) GetFollowedListByUser(ctx context.Context, in *FollowingUserIdRequest, opts ...grpc.CallOption) (*FollowingList, error) {
 	out := new(FollowingList)
 	err := c.cc.Invoke(ctx, "/following.FollowingService/GetFollowedListByUser", in, out, opts...)
 	if err != nil {
@@ -94,7 +94,7 @@ func (c *followingServiceClient) GetFollowedListByUser(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *followingServiceClient) GetFollowingListByUser(ctx context.Context, in *FollowingIdRequest, opts ...grpc.CallOption) (*FollowingList, error) {
+func (c *followingServiceClient) GetFollowingListByUser(ctx context.Context, in *FollowingUserIdRequest, opts ...grpc.CallOption) (*FollowingList, error) {
 	out := new(FollowingList)
 	err := c.cc.Invoke(ctx, "/following.FollowingService/GetFollowingListByUser", in, out, opts...)
 	if err != nil {
@@ -134,9 +134,9 @@ type FollowingServiceServer interface {
 	// get by id
 	GetById(context.Context, *FollowingIdRequest) (*Following, error)
 	// get by user
-	GetFollowedListByUser(context.Context, *FollowingIdRequest) (*FollowingList, error)
+	GetFollowedListByUser(context.Context, *FollowingUserIdRequest) (*FollowingList, error)
 	// get by user
-	GetFollowingListByUser(context.Context, *FollowingIdRequest) (*FollowingList, error)
+	GetFollowingListByUser(context.Context, *FollowingUserIdRequest) (*FollowingList, error)
 	// get list by id list
 	GetListByIdList(context.Context, *FollowingIdListRequest) (*FollowingList, error)
 	// get all
@@ -159,10 +159,10 @@ func (UnimplementedFollowingServiceServer) Delete(context.Context, *FollowingIdR
 func (UnimplementedFollowingServiceServer) GetById(context.Context, *FollowingIdRequest) (*Following, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetById not implemented")
 }
-func (UnimplementedFollowingServiceServer) GetFollowedListByUser(context.Context, *FollowingIdRequest) (*FollowingList, error) {
+func (UnimplementedFollowingServiceServer) GetFollowedListByUser(context.Context, *FollowingUserIdRequest) (*FollowingList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetFollowedListByUser not implemented")
 }
-func (UnimplementedFollowingServiceServer) GetFollowingListByUser(context.Context, *FollowingIdRequest) (*FollowingList, error) {
+func (UnimplementedFollowingServiceServer) GetFollowingListByUser(context.Context, *FollowingUserIdRequest) (*FollowingList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetFollowingListByUser not implemented")
 }
 func (UnimplementedFollowingServiceServer) GetListByIdList(context.Context, *FollowingIdListRequest) (*FollowingList, error) {
@@ -256,7 +256,7 @@ func _FollowingService_GetById_Handler(srv interface{}, ctx context.Context, dec
 }
 
 func _FollowingService_GetFollowedListByUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FollowingIdRequest)
+	in := new(FollowingUserIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -268,13 +268,13 @@ func _FollowingService_GetFollowedListByUser_Handler(srv interface{}, ctx contex
 		FullMethod: "/following.FollowingService/GetFollowedListByUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FollowingServiceServer).GetFollowedListByUser(ctx, req.(*FollowingIdRequest))
+		return srv.(FollowingServiceServer).GetFollowedListByUser(ctx, req.(*FollowingUserIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _FollowingService_GetFollowingListByUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FollowingIdRequest)
+	in := new(FollowingUserIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -286,7 +286,7 @@ func _FollowingService_GetFollowingListByUser_Handler(srv interface{}, ctx conte
 		FullMethod: "/following.FollowingService/GetFollowingListByUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FollowingServiceServer).GetFollowingListByUser(ctx, req.(*FollowingIdRequest))
+		return srv.(FollowingServiceServer).GetFollowingListByUser(ctx, req.(*FollowingUserIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

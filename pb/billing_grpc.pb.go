@@ -29,7 +29,7 @@ type BillingServiceClient interface {
 	// get by id
 	GetById(ctx context.Context, in *BillingIdRequest, opts ...grpc.CallOption) (*Billing, error)
 	// get by user id
-	GetByUserId(ctx context.Context, in *BillingIdRequest, opts ...grpc.CallOption) (*BillingList, error)
+	GetByUserId(ctx context.Context, in *BillingUserIdRequest, opts ...grpc.CallOption) (*BillingList, error)
 }
 
 type billingServiceClient struct {
@@ -67,7 +67,7 @@ func (c *billingServiceClient) GetById(ctx context.Context, in *BillingIdRequest
 	return out, nil
 }
 
-func (c *billingServiceClient) GetByUserId(ctx context.Context, in *BillingIdRequest, opts ...grpc.CallOption) (*BillingList, error) {
+func (c *billingServiceClient) GetByUserId(ctx context.Context, in *BillingUserIdRequest, opts ...grpc.CallOption) (*BillingList, error) {
 	out := new(BillingList)
 	err := c.cc.Invoke(ctx, "/billing.BillingService/GetByUserId", in, out, opts...)
 	if err != nil {
@@ -87,7 +87,7 @@ type BillingServiceServer interface {
 	// get by id
 	GetById(context.Context, *BillingIdRequest) (*Billing, error)
 	// get by user id
-	GetByUserId(context.Context, *BillingIdRequest) (*BillingList, error)
+	GetByUserId(context.Context, *BillingUserIdRequest) (*BillingList, error)
 }
 
 // UnimplementedBillingServiceServer should be embedded to have forward compatible implementations.
@@ -103,7 +103,7 @@ func (UnimplementedBillingServiceServer) Update(context.Context, *Billing) (*Bil
 func (UnimplementedBillingServiceServer) GetById(context.Context, *BillingIdRequest) (*Billing, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetById not implemented")
 }
-func (UnimplementedBillingServiceServer) GetByUserId(context.Context, *BillingIdRequest) (*BillingList, error) {
+func (UnimplementedBillingServiceServer) GetByUserId(context.Context, *BillingUserIdRequest) (*BillingList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetByUserId not implemented")
 }
 
@@ -173,7 +173,7 @@ func _BillingService_GetById_Handler(srv interface{}, ctx context.Context, dec f
 }
 
 func _BillingService_GetByUserId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(BillingIdRequest)
+	in := new(BillingUserIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -185,7 +185,7 @@ func _BillingService_GetByUserId_Handler(srv interface{}, ctx context.Context, d
 		FullMethod: "/billing.BillingService/GetByUserId",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BillingServiceServer).GetByUserId(ctx, req.(*BillingIdRequest))
+		return srv.(BillingServiceServer).GetByUserId(ctx, req.(*BillingUserIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

@@ -33,9 +33,9 @@ type OrderServiceClient interface {
 	// get by id
 	GetById(ctx context.Context, in *OrderIdRequest, opts ...grpc.CallOption) (*Order, error)
 	// get onsale list by user
-	GetSoldListByUser(ctx context.Context, in *OrderIdRequest, opts ...grpc.CallOption) (*OrderList, error)
+	GetSoldListByUser(ctx context.Context, in *OrderUserIdRequest, opts ...grpc.CallOption) (*OrderList, error)
 	// get purchaed list by user
-	GetPurchasedListByUser(ctx context.Context, in *OrderIdRequest, opts ...grpc.CallOption) (*OrderList, error)
+	GetPurchasedListByUser(ctx context.Context, in *OrderUserIdRequest, opts ...grpc.CallOption) (*OrderList, error)
 	// get list by id list
 	GetListByIdList(ctx context.Context, opts ...grpc.CallOption) (OrderService_GetListByIdListClient, error)
 	// get all
@@ -86,7 +86,7 @@ func (c *orderServiceClient) GetById(ctx context.Context, in *OrderIdRequest, op
 	return out, nil
 }
 
-func (c *orderServiceClient) GetSoldListByUser(ctx context.Context, in *OrderIdRequest, opts ...grpc.CallOption) (*OrderList, error) {
+func (c *orderServiceClient) GetSoldListByUser(ctx context.Context, in *OrderUserIdRequest, opts ...grpc.CallOption) (*OrderList, error) {
 	out := new(OrderList)
 	err := c.cc.Invoke(ctx, "/order.OrderService/GetSoldListByUser", in, out, opts...)
 	if err != nil {
@@ -95,7 +95,7 @@ func (c *orderServiceClient) GetSoldListByUser(ctx context.Context, in *OrderIdR
 	return out, nil
 }
 
-func (c *orderServiceClient) GetPurchasedListByUser(ctx context.Context, in *OrderIdRequest, opts ...grpc.CallOption) (*OrderList, error) {
+func (c *orderServiceClient) GetPurchasedListByUser(ctx context.Context, in *OrderUserIdRequest, opts ...grpc.CallOption) (*OrderList, error) {
 	out := new(OrderList)
 	err := c.cc.Invoke(ctx, "/order.OrderService/GetPurchasedListByUser", in, out, opts...)
 	if err != nil {
@@ -161,9 +161,9 @@ type OrderServiceServer interface {
 	// get by id
 	GetById(context.Context, *OrderIdRequest) (*Order, error)
 	// get onsale list by user
-	GetSoldListByUser(context.Context, *OrderIdRequest) (*OrderList, error)
+	GetSoldListByUser(context.Context, *OrderUserIdRequest) (*OrderList, error)
 	// get purchaed list by user
-	GetPurchasedListByUser(context.Context, *OrderIdRequest) (*OrderList, error)
+	GetPurchasedListByUser(context.Context, *OrderUserIdRequest) (*OrderList, error)
 	// get list by id list
 	GetListByIdList(OrderService_GetListByIdListServer) error
 	// get all
@@ -186,10 +186,10 @@ func (UnimplementedOrderServiceServer) Delete(context.Context, *OrderIdRequest) 
 func (UnimplementedOrderServiceServer) GetById(context.Context, *OrderIdRequest) (*Order, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetById not implemented")
 }
-func (UnimplementedOrderServiceServer) GetSoldListByUser(context.Context, *OrderIdRequest) (*OrderList, error) {
+func (UnimplementedOrderServiceServer) GetSoldListByUser(context.Context, *OrderUserIdRequest) (*OrderList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSoldListByUser not implemented")
 }
-func (UnimplementedOrderServiceServer) GetPurchasedListByUser(context.Context, *OrderIdRequest) (*OrderList, error) {
+func (UnimplementedOrderServiceServer) GetPurchasedListByUser(context.Context, *OrderUserIdRequest) (*OrderList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPurchasedListByUser not implemented")
 }
 func (UnimplementedOrderServiceServer) GetListByIdList(OrderService_GetListByIdListServer) error {
@@ -283,7 +283,7 @@ func _OrderService_GetById_Handler(srv interface{}, ctx context.Context, dec fun
 }
 
 func _OrderService_GetSoldListByUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(OrderIdRequest)
+	in := new(OrderUserIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -295,13 +295,13 @@ func _OrderService_GetSoldListByUser_Handler(srv interface{}, ctx context.Contex
 		FullMethod: "/order.OrderService/GetSoldListByUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(OrderServiceServer).GetSoldListByUser(ctx, req.(*OrderIdRequest))
+		return srv.(OrderServiceServer).GetSoldListByUser(ctx, req.(*OrderUserIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _OrderService_GetPurchasedListByUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(OrderIdRequest)
+	in := new(OrderUserIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -313,7 +313,7 @@ func _OrderService_GetPurchasedListByUser_Handler(srv interface{}, ctx context.C
 		FullMethod: "/order.OrderService/GetPurchasedListByUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(OrderServiceServer).GetPurchasedListByUser(ctx, req.(*OrderIdRequest))
+		return srv.(OrderServiceServer).GetPurchasedListByUser(ctx, req.(*OrderUserIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

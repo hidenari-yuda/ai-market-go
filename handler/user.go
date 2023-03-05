@@ -78,7 +78,7 @@ func (s *UserServiceServer) Delete(ctx context.Context, req *pb.UserIdRequest) (
 		return nil, handleError(err)
 	}
 
-	res, err := s.UserInteractor.Delete(uint(req.Id))
+	res, err := s.UserInteractor.Delete(req)
 	if err != nil {
 		tx.Rollback()
 		return nil, handleError(err)
@@ -92,19 +92,7 @@ func (s *UserServiceServer) Delete(ctx context.Context, req *pb.UserIdRequest) (
 // get user by id
 func (s *UserServiceServer) GetById(ctx context.Context, req *pb.UserIdRequest) (*pb.User, error) {
 
-	res, err := s.UserInteractor.GetById(uint(req.Id))
-	if err != nil {
-		return nil, handleError(err)
-	}
-
-	return res, nil
-}
-
-// auth
-// sign in
-func (s *UserServiceServer) SignIn(ctx context.Context, req *pb.SignInRequest) (*pb.User, error) {
-
-	res, err := s.UserInteractor.SignIn(req)
+	res, err := s.UserInteractor.GetById(req)
 	if err != nil {
 		return nil, handleError(err)
 	}
@@ -121,5 +109,17 @@ func (s *UserServiceServer) GetAll(ctx context.Context, req *emptypb.Empty) (*pb
 		return nil, handleError(err)
 	}
 
-	return &pb.UserList{UserList: res}, nil
+	return &pb.UserList{User: res}, nil
+}
+
+// auth
+// sign in
+func (s *UserServiceServer) SignIn(ctx context.Context, req *pb.SignInRequest) (*pb.User, error) {
+
+	res, err := s.UserInteractor.SignIn(req)
+	if err != nil {
+		return nil, handleError(err)
+	}
+
+	return res, nil
 }

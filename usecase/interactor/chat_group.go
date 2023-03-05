@@ -16,13 +16,13 @@ type ChatGroupInteractor interface {
 	Update(ChatGroup *pb.ChatGroup) (bool, error)
 
 	// Delete
-	Delete(id uint) (bool, error)
+	Delete(param *pb.ChatIdRequest) (bool, error)
 
 	// Get
-	GetById(id uint) (*pb.ChatGroup, error)
+	GetById(param *pb.ChatIdRequest) (*pb.ChatGroup, error)
 
 	// get list by user id
-	GetListByUser(userId uint) ([]*pb.ChatGroup, error)
+	GetListByUser(param *pb.ChatUserIdRequest) ([]*pb.ChatGroup, error)
 }
 
 type ChatGroupInteractorImpl struct {
@@ -65,10 +65,10 @@ func (i *ChatGroupInteractorImpl) Update(chatGroup *pb.ChatGroup) (bool, error) 
 	return true, nil
 }
 
-func (i *ChatGroupInteractorImpl) Delete(id uint) (bool, error) {
+func (i *ChatGroupInteractorImpl) Delete(param *pb.ChatIdRequest) (bool, error) {
 
 	// ユーザー登録
-	err := i.chatGroupRepository.Delete(id)
+	err := i.chatGroupRepository.Delete(param.Id)
 	if err != nil {
 		return false, err
 	}
@@ -76,14 +76,14 @@ func (i *ChatGroupInteractorImpl) Delete(id uint) (bool, error) {
 	return true, nil
 }
 
-func (i *ChatGroupInteractorImpl) GetById(id uint) (*pb.ChatGroup, error) {
+func (i *ChatGroupInteractorImpl) GetById(param *pb.ChatIdRequest) (*pb.ChatGroup, error) {
 	var (
 		chatGroup *pb.ChatGroup
 		err       error
 	)
 
 	// ユーザー登録
-	chatGroup, err = i.chatGroupRepository.GetById(id)
+	chatGroup, err = i.chatGroupRepository.GetById(param.Id)
 	if err != nil {
 		log.Println("error is:", err)
 		return chatGroup, err
@@ -92,14 +92,14 @@ func (i *ChatGroupInteractorImpl) GetById(id uint) (*pb.ChatGroup, error) {
 	return chatGroup, nil
 }
 
-func (i *ChatGroupInteractorImpl) GetListByUser(userId uint) ([]*pb.ChatGroup, error) {
+func (i *ChatGroupInteractorImpl) GetListByUser(param *pb.ChatUserIdRequest) ([]*pb.ChatGroup, error) {
 	var (
 		chatGroups []*pb.ChatGroup
 		err        error
 	)
 
 	// ユーザー登録
-	chatGroups, err = i.chatGroupRepository.GetListByUser(userId)
+	chatGroups, err = i.chatGroupRepository.GetListByUser(param.UserId)
 	if err != nil {
 		log.Println("error is:", err)
 		return chatGroups, err

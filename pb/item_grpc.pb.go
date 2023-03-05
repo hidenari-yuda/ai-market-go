@@ -33,20 +33,20 @@ type ItemServiceClient interface {
 	// get by id
 	GetById(ctx context.Context, in *ItemIdRequest, opts ...grpc.CallOption) (*Item, error)
 	// get by user
-	GetListByUser(ctx context.Context, in *ItemIdRequest, opts ...grpc.CallOption) (*ItemList, error)
+	GetListByUser(ctx context.Context, in *ItemUserIdRequest, opts ...grpc.CallOption) (*ItemList, error)
 	// get by type
-	GetListByCategory(ctx context.Context, in *ItemCategoryRequest, opts ...grpc.CallOption) (*ItemList, error)
+	GetListBySearch(ctx context.Context, in *ItemSearchRequest, opts ...grpc.CallOption) (*ItemList, error)
 	// get by latest id=user_id
-	GetLatestList(ctx context.Context, in *ItemIdRequest, opts ...grpc.CallOption) (*ItemList, error)
+	GetLatestList(ctx context.Context, in *ItemUserIdRequest, opts ...grpc.CallOption) (*ItemList, error)
 	// get by trend id=user_id
-	GetTrendList(ctx context.Context, in *ItemIdRequest, opts ...grpc.CallOption) (*ItemList, error)
+	GetTrendList(ctx context.Context, in *ItemUserIdRequest, opts ...grpc.CallOption) (*ItemList, error)
 	// get by recommend id=user_id
-	GetRecommendedListByUser(ctx context.Context, in *ItemIdRequest, opts ...grpc.CallOption) (*ItemList, error)
+	GetRecommendedListByUser(ctx context.Context, in *ItemUserIdRequest, opts ...grpc.CallOption) (*ItemList, error)
 	// get by sold id=user_id
-	GetSoldListByUser(ctx context.Context, in *ItemIdRequest, opts ...grpc.CallOption) (*ItemList, error)
-	GetPurchasedListByUser(ctx context.Context, in *ItemIdRequest, opts ...grpc.CallOption) (*ItemList, error)
+	GetSoldListByUser(ctx context.Context, in *ItemUserIdRequest, opts ...grpc.CallOption) (*ItemList, error)
+	GetPurchasedListByUser(ctx context.Context, in *ItemUserIdRequest, opts ...grpc.CallOption) (*ItemList, error)
 	// get by liked id=user_id
-	GetLikedListByUser(ctx context.Context, in *ItemIdRequest, opts ...grpc.CallOption) (*ItemList, error)
+	GetLikedListByUser(ctx context.Context, in *ItemUserIdRequest, opts ...grpc.CallOption) (*ItemList, error)
 	// get list by id list
 	GetListByIdList(ctx context.Context, in *ItemIdListRequest, opts ...grpc.CallOption) (*ItemList, error)
 	// admin
@@ -98,7 +98,7 @@ func (c *itemServiceClient) GetById(ctx context.Context, in *ItemIdRequest, opts
 	return out, nil
 }
 
-func (c *itemServiceClient) GetListByUser(ctx context.Context, in *ItemIdRequest, opts ...grpc.CallOption) (*ItemList, error) {
+func (c *itemServiceClient) GetListByUser(ctx context.Context, in *ItemUserIdRequest, opts ...grpc.CallOption) (*ItemList, error) {
 	out := new(ItemList)
 	err := c.cc.Invoke(ctx, "/item.ItemService/GetListByUser", in, out, opts...)
 	if err != nil {
@@ -107,16 +107,16 @@ func (c *itemServiceClient) GetListByUser(ctx context.Context, in *ItemIdRequest
 	return out, nil
 }
 
-func (c *itemServiceClient) GetListByCategory(ctx context.Context, in *ItemCategoryRequest, opts ...grpc.CallOption) (*ItemList, error) {
+func (c *itemServiceClient) GetListBySearch(ctx context.Context, in *ItemSearchRequest, opts ...grpc.CallOption) (*ItemList, error) {
 	out := new(ItemList)
-	err := c.cc.Invoke(ctx, "/item.ItemService/GetListByCategory", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/item.ItemService/GetListBySearch", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *itemServiceClient) GetLatestList(ctx context.Context, in *ItemIdRequest, opts ...grpc.CallOption) (*ItemList, error) {
+func (c *itemServiceClient) GetLatestList(ctx context.Context, in *ItemUserIdRequest, opts ...grpc.CallOption) (*ItemList, error) {
 	out := new(ItemList)
 	err := c.cc.Invoke(ctx, "/item.ItemService/GetLatestList", in, out, opts...)
 	if err != nil {
@@ -125,7 +125,7 @@ func (c *itemServiceClient) GetLatestList(ctx context.Context, in *ItemIdRequest
 	return out, nil
 }
 
-func (c *itemServiceClient) GetTrendList(ctx context.Context, in *ItemIdRequest, opts ...grpc.CallOption) (*ItemList, error) {
+func (c *itemServiceClient) GetTrendList(ctx context.Context, in *ItemUserIdRequest, opts ...grpc.CallOption) (*ItemList, error) {
 	out := new(ItemList)
 	err := c.cc.Invoke(ctx, "/item.ItemService/GetTrendList", in, out, opts...)
 	if err != nil {
@@ -134,7 +134,7 @@ func (c *itemServiceClient) GetTrendList(ctx context.Context, in *ItemIdRequest,
 	return out, nil
 }
 
-func (c *itemServiceClient) GetRecommendedListByUser(ctx context.Context, in *ItemIdRequest, opts ...grpc.CallOption) (*ItemList, error) {
+func (c *itemServiceClient) GetRecommendedListByUser(ctx context.Context, in *ItemUserIdRequest, opts ...grpc.CallOption) (*ItemList, error) {
 	out := new(ItemList)
 	err := c.cc.Invoke(ctx, "/item.ItemService/GetRecommendedListByUser", in, out, opts...)
 	if err != nil {
@@ -143,7 +143,7 @@ func (c *itemServiceClient) GetRecommendedListByUser(ctx context.Context, in *It
 	return out, nil
 }
 
-func (c *itemServiceClient) GetSoldListByUser(ctx context.Context, in *ItemIdRequest, opts ...grpc.CallOption) (*ItemList, error) {
+func (c *itemServiceClient) GetSoldListByUser(ctx context.Context, in *ItemUserIdRequest, opts ...grpc.CallOption) (*ItemList, error) {
 	out := new(ItemList)
 	err := c.cc.Invoke(ctx, "/item.ItemService/GetSoldListByUser", in, out, opts...)
 	if err != nil {
@@ -152,7 +152,7 @@ func (c *itemServiceClient) GetSoldListByUser(ctx context.Context, in *ItemIdReq
 	return out, nil
 }
 
-func (c *itemServiceClient) GetPurchasedListByUser(ctx context.Context, in *ItemIdRequest, opts ...grpc.CallOption) (*ItemList, error) {
+func (c *itemServiceClient) GetPurchasedListByUser(ctx context.Context, in *ItemUserIdRequest, opts ...grpc.CallOption) (*ItemList, error) {
 	out := new(ItemList)
 	err := c.cc.Invoke(ctx, "/item.ItemService/GetPurchasedListByUser", in, out, opts...)
 	if err != nil {
@@ -161,7 +161,7 @@ func (c *itemServiceClient) GetPurchasedListByUser(ctx context.Context, in *Item
 	return out, nil
 }
 
-func (c *itemServiceClient) GetLikedListByUser(ctx context.Context, in *ItemIdRequest, opts ...grpc.CallOption) (*ItemList, error) {
+func (c *itemServiceClient) GetLikedListByUser(ctx context.Context, in *ItemUserIdRequest, opts ...grpc.CallOption) (*ItemList, error) {
 	out := new(ItemList)
 	err := c.cc.Invoke(ctx, "/item.ItemService/GetLikedListByUser", in, out, opts...)
 	if err != nil {
@@ -202,20 +202,20 @@ type ItemServiceServer interface {
 	// get by id
 	GetById(context.Context, *ItemIdRequest) (*Item, error)
 	// get by user
-	GetListByUser(context.Context, *ItemIdRequest) (*ItemList, error)
+	GetListByUser(context.Context, *ItemUserIdRequest) (*ItemList, error)
 	// get by type
-	GetListByCategory(context.Context, *ItemCategoryRequest) (*ItemList, error)
+	GetListBySearch(context.Context, *ItemSearchRequest) (*ItemList, error)
 	// get by latest id=user_id
-	GetLatestList(context.Context, *ItemIdRequest) (*ItemList, error)
+	GetLatestList(context.Context, *ItemUserIdRequest) (*ItemList, error)
 	// get by trend id=user_id
-	GetTrendList(context.Context, *ItemIdRequest) (*ItemList, error)
+	GetTrendList(context.Context, *ItemUserIdRequest) (*ItemList, error)
 	// get by recommend id=user_id
-	GetRecommendedListByUser(context.Context, *ItemIdRequest) (*ItemList, error)
+	GetRecommendedListByUser(context.Context, *ItemUserIdRequest) (*ItemList, error)
 	// get by sold id=user_id
-	GetSoldListByUser(context.Context, *ItemIdRequest) (*ItemList, error)
-	GetPurchasedListByUser(context.Context, *ItemIdRequest) (*ItemList, error)
+	GetSoldListByUser(context.Context, *ItemUserIdRequest) (*ItemList, error)
+	GetPurchasedListByUser(context.Context, *ItemUserIdRequest) (*ItemList, error)
 	// get by liked id=user_id
-	GetLikedListByUser(context.Context, *ItemIdRequest) (*ItemList, error)
+	GetLikedListByUser(context.Context, *ItemUserIdRequest) (*ItemList, error)
 	// get list by id list
 	GetListByIdList(context.Context, *ItemIdListRequest) (*ItemList, error)
 	// admin
@@ -239,28 +239,28 @@ func (UnimplementedItemServiceServer) Delete(context.Context, *ItemIdRequest) (*
 func (UnimplementedItemServiceServer) GetById(context.Context, *ItemIdRequest) (*Item, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetById not implemented")
 }
-func (UnimplementedItemServiceServer) GetListByUser(context.Context, *ItemIdRequest) (*ItemList, error) {
+func (UnimplementedItemServiceServer) GetListByUser(context.Context, *ItemUserIdRequest) (*ItemList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetListByUser not implemented")
 }
-func (UnimplementedItemServiceServer) GetListByCategory(context.Context, *ItemCategoryRequest) (*ItemList, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetListByCategory not implemented")
+func (UnimplementedItemServiceServer) GetListBySearch(context.Context, *ItemSearchRequest) (*ItemList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetListBySearch not implemented")
 }
-func (UnimplementedItemServiceServer) GetLatestList(context.Context, *ItemIdRequest) (*ItemList, error) {
+func (UnimplementedItemServiceServer) GetLatestList(context.Context, *ItemUserIdRequest) (*ItemList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetLatestList not implemented")
 }
-func (UnimplementedItemServiceServer) GetTrendList(context.Context, *ItemIdRequest) (*ItemList, error) {
+func (UnimplementedItemServiceServer) GetTrendList(context.Context, *ItemUserIdRequest) (*ItemList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTrendList not implemented")
 }
-func (UnimplementedItemServiceServer) GetRecommendedListByUser(context.Context, *ItemIdRequest) (*ItemList, error) {
+func (UnimplementedItemServiceServer) GetRecommendedListByUser(context.Context, *ItemUserIdRequest) (*ItemList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRecommendedListByUser not implemented")
 }
-func (UnimplementedItemServiceServer) GetSoldListByUser(context.Context, *ItemIdRequest) (*ItemList, error) {
+func (UnimplementedItemServiceServer) GetSoldListByUser(context.Context, *ItemUserIdRequest) (*ItemList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSoldListByUser not implemented")
 }
-func (UnimplementedItemServiceServer) GetPurchasedListByUser(context.Context, *ItemIdRequest) (*ItemList, error) {
+func (UnimplementedItemServiceServer) GetPurchasedListByUser(context.Context, *ItemUserIdRequest) (*ItemList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPurchasedListByUser not implemented")
 }
-func (UnimplementedItemServiceServer) GetLikedListByUser(context.Context, *ItemIdRequest) (*ItemList, error) {
+func (UnimplementedItemServiceServer) GetLikedListByUser(context.Context, *ItemUserIdRequest) (*ItemList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetLikedListByUser not implemented")
 }
 func (UnimplementedItemServiceServer) GetListByIdList(context.Context, *ItemIdListRequest) (*ItemList, error) {
@@ -354,7 +354,7 @@ func _ItemService_GetById_Handler(srv interface{}, ctx context.Context, dec func
 }
 
 func _ItemService_GetListByUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ItemIdRequest)
+	in := new(ItemUserIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -366,31 +366,31 @@ func _ItemService_GetListByUser_Handler(srv interface{}, ctx context.Context, de
 		FullMethod: "/item.ItemService/GetListByUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ItemServiceServer).GetListByUser(ctx, req.(*ItemIdRequest))
+		return srv.(ItemServiceServer).GetListByUser(ctx, req.(*ItemUserIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ItemService_GetListByCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ItemCategoryRequest)
+func _ItemService_GetListBySearch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ItemSearchRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ItemServiceServer).GetListByCategory(ctx, in)
+		return srv.(ItemServiceServer).GetListBySearch(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/item.ItemService/GetListByCategory",
+		FullMethod: "/item.ItemService/GetListBySearch",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ItemServiceServer).GetListByCategory(ctx, req.(*ItemCategoryRequest))
+		return srv.(ItemServiceServer).GetListBySearch(ctx, req.(*ItemSearchRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _ItemService_GetLatestList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ItemIdRequest)
+	in := new(ItemUserIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -402,13 +402,13 @@ func _ItemService_GetLatestList_Handler(srv interface{}, ctx context.Context, de
 		FullMethod: "/item.ItemService/GetLatestList",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ItemServiceServer).GetLatestList(ctx, req.(*ItemIdRequest))
+		return srv.(ItemServiceServer).GetLatestList(ctx, req.(*ItemUserIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _ItemService_GetTrendList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ItemIdRequest)
+	in := new(ItemUserIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -420,13 +420,13 @@ func _ItemService_GetTrendList_Handler(srv interface{}, ctx context.Context, dec
 		FullMethod: "/item.ItemService/GetTrendList",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ItemServiceServer).GetTrendList(ctx, req.(*ItemIdRequest))
+		return srv.(ItemServiceServer).GetTrendList(ctx, req.(*ItemUserIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _ItemService_GetRecommendedListByUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ItemIdRequest)
+	in := new(ItemUserIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -438,13 +438,13 @@ func _ItemService_GetRecommendedListByUser_Handler(srv interface{}, ctx context.
 		FullMethod: "/item.ItemService/GetRecommendedListByUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ItemServiceServer).GetRecommendedListByUser(ctx, req.(*ItemIdRequest))
+		return srv.(ItemServiceServer).GetRecommendedListByUser(ctx, req.(*ItemUserIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _ItemService_GetSoldListByUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ItemIdRequest)
+	in := new(ItemUserIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -456,13 +456,13 @@ func _ItemService_GetSoldListByUser_Handler(srv interface{}, ctx context.Context
 		FullMethod: "/item.ItemService/GetSoldListByUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ItemServiceServer).GetSoldListByUser(ctx, req.(*ItemIdRequest))
+		return srv.(ItemServiceServer).GetSoldListByUser(ctx, req.(*ItemUserIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _ItemService_GetPurchasedListByUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ItemIdRequest)
+	in := new(ItemUserIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -474,13 +474,13 @@ func _ItemService_GetPurchasedListByUser_Handler(srv interface{}, ctx context.Co
 		FullMethod: "/item.ItemService/GetPurchasedListByUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ItemServiceServer).GetPurchasedListByUser(ctx, req.(*ItemIdRequest))
+		return srv.(ItemServiceServer).GetPurchasedListByUser(ctx, req.(*ItemUserIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _ItemService_GetLikedListByUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ItemIdRequest)
+	in := new(ItemUserIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -492,7 +492,7 @@ func _ItemService_GetLikedListByUser_Handler(srv interface{}, ctx context.Contex
 		FullMethod: "/item.ItemService/GetLikedListByUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ItemServiceServer).GetLikedListByUser(ctx, req.(*ItemIdRequest))
+		return srv.(ItemServiceServer).GetLikedListByUser(ctx, req.(*ItemUserIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -561,8 +561,8 @@ var ItemService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ItemService_GetListByUser_Handler,
 		},
 		{
-			MethodName: "GetListByCategory",
-			Handler:    _ItemService_GetListByCategory_Handler,
+			MethodName: "GetListBySearch",
+			Handler:    _ItemService_GetListBySearch_Handler,
 		},
 		{
 			MethodName: "GetLatestList",

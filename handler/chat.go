@@ -70,7 +70,7 @@ func (s *ChatServiceServer) Delete(ctx context.Context, req *pb.ChatIdRequest) (
 		return nil, err
 	}
 
-	res, err := s.ChatInteractor.Delete(uint(req.Id))
+	res, err := s.ChatInteractor.Delete(req)
 	if err != nil {
 		tx.Rollback()
 		return nil, err
@@ -83,7 +83,7 @@ func (s *ChatServiceServer) Delete(ctx context.Context, req *pb.ChatIdRequest) (
 // get chat  by id
 func (s *ChatServiceServer) GetById(ctx context.Context, req *pb.ChatIdRequest) (*pb.Chat, error) {
 
-	res, err := s.ChatInteractor.GetById(uint(req.Id))
+	res, err := s.ChatInteractor.GetById(req)
 	if err != nil {
 		return nil, err
 	}
@@ -92,17 +92,17 @@ func (s *ChatServiceServer) GetById(ctx context.Context, req *pb.ChatIdRequest) 
 }
 
 // get chat  by user id
-func (s *ChatServiceServer) GetListByGroup(ctx context.Context, req *pb.ChatIdRequest) (*pb.ChatList, error) {
+func (s *ChatServiceServer) GetListByGroup(ctx context.Context, req *pb.ChatGroupIdRequest) (*pb.ChatList, error) {
 
-	res, err := s.ChatInteractor.GetListByGroup(uint(req.Id))
+	res, err := s.ChatInteractor.GetListByGroup(req)
 	if err != nil {
 		return nil, err
 	}
 
-	return &pb.ChatList{ChatList: res}, nil
+	return &pb.ChatList{Chat: res}, nil
 }
 
-func (s *ChatServiceServer) GetStream(req *pb.GetChatStreamRequest, server pb.ChatService_GetStreamServer) error {
+func (s *ChatServiceServer) GetStreamByGroup(req *pb.ChatGroupIdRequest, server pb.ChatService_GetStreamByGroupServer) error {
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()

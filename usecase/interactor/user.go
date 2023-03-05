@@ -16,10 +16,10 @@ type UserInteractor interface {
 	Update(user *pb.User) (bool, error)
 
 	// Delete
-	Delete(id uint) (bool, error)
+	Delete(param *pb.UserIdRequest) (bool, error)
 
 	// Get
-	GetById(id uint) (*pb.User, error)
+	GetById(param *pb.UserIdRequest) (*pb.User, error)
 
 	// admin API
 	GetAll() ([]*pb.User, error)
@@ -68,9 +68,9 @@ func (i *UserInteractorImpl) Update(user *pb.User) (bool, error) {
 }
 
 // delete
-func (i *UserInteractorImpl) Delete(id uint) (bool, error) {
+func (i *UserInteractorImpl) Delete(param *pb.UserIdRequest) (bool, error) {
 
-	err := i.userRepository.Delete(id)
+	err := i.userRepository.Delete(param.Id)
 	if err != nil {
 		return false, err
 	}
@@ -79,14 +79,14 @@ func (i *UserInteractorImpl) Delete(id uint) (bool, error) {
 }
 
 // GetById
-func (i *UserInteractorImpl) GetById(id uint) (*pb.User, error) {
+func (i *UserInteractorImpl) GetById(param *pb.UserIdRequest) (*pb.User, error) {
 	var (
 		user *pb.User
 		err  error
 	)
 
 	// ユーザー登録
-	user, err = i.userRepository.GetById(id)
+	user, err = i.userRepository.GetById(param.Id)
 	if err != nil {
 		log.Println("error is:", err)
 		return user, err

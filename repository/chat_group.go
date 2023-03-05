@@ -80,7 +80,7 @@ func (r *ChatGroupRepositoryImpl) Update(param *pb.ChatGroup) error {
 }
 
 /***** Delete *****/
-func (r *ChatGroupRepositoryImpl) Delete(id uint) error {
+func (r *ChatGroupRepositoryImpl) Delete(id int64) error {
 	_, err := r.executer.Exec(
 		r.Name+"Delete",
 		"UPDATE chat_groups SET is_deleted = ? WHERE id = ?",
@@ -96,7 +96,7 @@ func (r *ChatGroupRepositoryImpl) Delete(id uint) error {
 }
 
 /***** Get *****/
-func (r *ChatGroupRepositoryImpl) GetById(id uint) (ChatGroup *pb.ChatGroup, err error) {
+func (r *ChatGroupRepositoryImpl) GetById(id int64) (ChatGroup *pb.ChatGroup, err error) {
 	err = r.executer.Get(
 		r.Name+"SignIn",
 		ChatGroup,
@@ -112,7 +112,7 @@ func (r *ChatGroupRepositoryImpl) GetById(id uint) (ChatGroup *pb.ChatGroup, err
 }
 
 // get list by user id
-func (r *ChatGroupRepositoryImpl) GetListByUser(userId uint) (ChatGroups []*pb.ChatGroup, err error) {
+func (r *ChatGroupRepositoryImpl) GetListByUser(userId int64) (ChatGroups []*pb.ChatGroup, err error) {
 	err = r.executer.Select(
 		r.Name+"GetListByUser",
 		&ChatGroups,

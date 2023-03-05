@@ -32,7 +32,7 @@ type UserServiceClient interface {
 	// get by id
 	GetById(ctx context.Context, in *UserIdRequest, opts ...grpc.CallOption) (*User, error)
 	// get by user_type
-	GetListByType(ctx context.Context, in *TypeRequest, opts ...grpc.CallOption) (*UserList, error)
+	GetListByType(ctx context.Context, in *UserTypeRequest, opts ...grpc.CallOption) (*UserList, error)
 	// get list by trend
 	GetTopList(ctx context.Context, in *UserTopRequest, opts ...grpc.CallOption) (*UserList, error)
 	// get list by search
@@ -86,7 +86,7 @@ func (c *userServiceClient) GetById(ctx context.Context, in *UserIdRequest, opts
 	return out, nil
 }
 
-func (c *userServiceClient) GetListByType(ctx context.Context, in *TypeRequest, opts ...grpc.CallOption) (*UserList, error) {
+func (c *userServiceClient) GetListByType(ctx context.Context, in *UserTypeRequest, opts ...grpc.CallOption) (*UserList, error) {
 	out := new(UserList)
 	err := c.cc.Invoke(ctx, "/user.UserService/GetListByType", in, out, opts...)
 	if err != nil {
@@ -136,7 +136,7 @@ type UserServiceServer interface {
 	// get by id
 	GetById(context.Context, *UserIdRequest) (*User, error)
 	// get by user_type
-	GetListByType(context.Context, *TypeRequest) (*UserList, error)
+	GetListByType(context.Context, *UserTypeRequest) (*UserList, error)
 	// get list by trend
 	GetTopList(context.Context, *UserTopRequest) (*UserList, error)
 	// get list by search
@@ -162,7 +162,7 @@ func (UnimplementedUserServiceServer) Delete(context.Context, *UserIdRequest) (*
 func (UnimplementedUserServiceServer) GetById(context.Context, *UserIdRequest) (*User, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetById not implemented")
 }
-func (UnimplementedUserServiceServer) GetListByType(context.Context, *TypeRequest) (*UserList, error) {
+func (UnimplementedUserServiceServer) GetListByType(context.Context, *UserTypeRequest) (*UserList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetListByType not implemented")
 }
 func (UnimplementedUserServiceServer) GetTopList(context.Context, *UserTopRequest) (*UserList, error) {
@@ -259,7 +259,7 @@ func _UserService_GetById_Handler(srv interface{}, ctx context.Context, dec func
 }
 
 func _UserService_GetListByType_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(TypeRequest)
+	in := new(UserTypeRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -271,7 +271,7 @@ func _UserService_GetListByType_Handler(srv interface{}, ctx context.Context, de
 		FullMethod: "/user.UserService/GetListByType",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).GetListByType(ctx, req.(*TypeRequest))
+		return srv.(UserServiceServer).GetListByType(ctx, req.(*UserTypeRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

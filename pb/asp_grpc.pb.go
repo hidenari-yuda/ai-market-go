@@ -33,9 +33,9 @@ type AspServiceClient interface {
 	// get by id
 	GetById(ctx context.Context, in *AspIdRequest, opts ...grpc.CallOption) (*Asp, error)
 	// get by user
-	GetListByUser(ctx context.Context, in *AspIdRequest, opts ...grpc.CallOption) (*AspList, error)
+	GetListByUser(ctx context.Context, in *AspUserIdRequest, opts ...grpc.CallOption) (*AspList, error)
 	// get by item
-	GetListByItem(ctx context.Context, in *AspIdRequest, opts ...grpc.CallOption) (*AspList, error)
+	GetListByItem(ctx context.Context, in *AspItemIdRequest, opts ...grpc.CallOption) (*AspList, error)
 	// get by service
 	GetListByService(ctx context.Context, in *AspServiceRequest, opts ...grpc.CallOption) (*AspList, error)
 	// get list by id list
@@ -89,7 +89,7 @@ func (c *aspServiceClient) GetById(ctx context.Context, in *AspIdRequest, opts .
 	return out, nil
 }
 
-func (c *aspServiceClient) GetListByUser(ctx context.Context, in *AspIdRequest, opts ...grpc.CallOption) (*AspList, error) {
+func (c *aspServiceClient) GetListByUser(ctx context.Context, in *AspUserIdRequest, opts ...grpc.CallOption) (*AspList, error) {
 	out := new(AspList)
 	err := c.cc.Invoke(ctx, "/asp.AspService/GetListByUser", in, out, opts...)
 	if err != nil {
@@ -98,7 +98,7 @@ func (c *aspServiceClient) GetListByUser(ctx context.Context, in *AspIdRequest, 
 	return out, nil
 }
 
-func (c *aspServiceClient) GetListByItem(ctx context.Context, in *AspIdRequest, opts ...grpc.CallOption) (*AspList, error) {
+func (c *aspServiceClient) GetListByItem(ctx context.Context, in *AspItemIdRequest, opts ...grpc.CallOption) (*AspList, error) {
 	out := new(AspList)
 	err := c.cc.Invoke(ctx, "/asp.AspService/GetListByItem", in, out, opts...)
 	if err != nil {
@@ -173,9 +173,9 @@ type AspServiceServer interface {
 	// get by id
 	GetById(context.Context, *AspIdRequest) (*Asp, error)
 	// get by user
-	GetListByUser(context.Context, *AspIdRequest) (*AspList, error)
+	GetListByUser(context.Context, *AspUserIdRequest) (*AspList, error)
 	// get by item
-	GetListByItem(context.Context, *AspIdRequest) (*AspList, error)
+	GetListByItem(context.Context, *AspItemIdRequest) (*AspList, error)
 	// get by service
 	GetListByService(context.Context, *AspServiceRequest) (*AspList, error)
 	// get list by id list
@@ -201,10 +201,10 @@ func (UnimplementedAspServiceServer) Delete(context.Context, *AspIdRequest) (*As
 func (UnimplementedAspServiceServer) GetById(context.Context, *AspIdRequest) (*Asp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetById not implemented")
 }
-func (UnimplementedAspServiceServer) GetListByUser(context.Context, *AspIdRequest) (*AspList, error) {
+func (UnimplementedAspServiceServer) GetListByUser(context.Context, *AspUserIdRequest) (*AspList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetListByUser not implemented")
 }
-func (UnimplementedAspServiceServer) GetListByItem(context.Context, *AspIdRequest) (*AspList, error) {
+func (UnimplementedAspServiceServer) GetListByItem(context.Context, *AspItemIdRequest) (*AspList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetListByItem not implemented")
 }
 func (UnimplementedAspServiceServer) GetListByService(context.Context, *AspServiceRequest) (*AspList, error) {
@@ -301,7 +301,7 @@ func _AspService_GetById_Handler(srv interface{}, ctx context.Context, dec func(
 }
 
 func _AspService_GetListByUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AspIdRequest)
+	in := new(AspUserIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -313,13 +313,13 @@ func _AspService_GetListByUser_Handler(srv interface{}, ctx context.Context, dec
 		FullMethod: "/asp.AspService/GetListByUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AspServiceServer).GetListByUser(ctx, req.(*AspIdRequest))
+		return srv.(AspServiceServer).GetListByUser(ctx, req.(*AspUserIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _AspService_GetListByItem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AspIdRequest)
+	in := new(AspItemIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -331,7 +331,7 @@ func _AspService_GetListByItem_Handler(srv interface{}, ctx context.Context, dec
 		FullMethod: "/asp.AspService/GetListByItem",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AspServiceServer).GetListByItem(ctx, req.(*AspIdRequest))
+		return srv.(AspServiceServer).GetListByItem(ctx, req.(*AspItemIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

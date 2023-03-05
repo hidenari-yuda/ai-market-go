@@ -32,11 +32,11 @@ type CashbackServiceClient interface {
 	// get by id
 	GetById(ctx context.Context, in *CashbackIdRequest, opts ...grpc.CallOption) (*Cashback, error)
 	// get onsale list by user
-	GetSoldListByUser(ctx context.Context, in *CashbackIdRequest, opts ...grpc.CallOption) (*CashbackList, error)
+	GetSoldListByUser(ctx context.Context, in *CashbackUserIdRequest, opts ...grpc.CallOption) (*CashbackList, error)
 	// get purchaed list by user
-	GetPurchasedListByUser(ctx context.Context, in *CashbackIdRequest, opts ...grpc.CallOption) (*CashbackList, error)
+	GetPurchasedListByUser(ctx context.Context, in *CashbackUserIdRequest, opts ...grpc.CallOption) (*CashbackList, error)
 	// get list by id list
-	GetListByIdList(ctx context.Context, opts ...grpc.CallOption) (CashbackService_GetListByIdListClient, error)
+	GetListByIdList(ctx context.Context, in *CashbackIdListRequest, opts ...grpc.CallOption) (*CashbackList, error)
 }
 
 type cashbackServiceClient struct {
@@ -83,7 +83,7 @@ func (c *cashbackServiceClient) GetById(ctx context.Context, in *CashbackIdReque
 	return out, nil
 }
 
-func (c *cashbackServiceClient) GetSoldListByUser(ctx context.Context, in *CashbackIdRequest, opts ...grpc.CallOption) (*CashbackList, error) {
+func (c *cashbackServiceClient) GetSoldListByUser(ctx context.Context, in *CashbackUserIdRequest, opts ...grpc.CallOption) (*CashbackList, error) {
 	out := new(CashbackList)
 	err := c.cc.Invoke(ctx, "/cashback.CashbackService/GetSoldListByUser", in, out, opts...)
 	if err != nil {
@@ -92,7 +92,7 @@ func (c *cashbackServiceClient) GetSoldListByUser(ctx context.Context, in *Cashb
 	return out, nil
 }
 
-func (c *cashbackServiceClient) GetPurchasedListByUser(ctx context.Context, in *CashbackIdRequest, opts ...grpc.CallOption) (*CashbackList, error) {
+func (c *cashbackServiceClient) GetPurchasedListByUser(ctx context.Context, in *CashbackUserIdRequest, opts ...grpc.CallOption) (*CashbackList, error) {
 	out := new(CashbackList)
 	err := c.cc.Invoke(ctx, "/cashback.CashbackService/GetPurchasedListByUser", in, out, opts...)
 	if err != nil {
@@ -101,38 +101,13 @@ func (c *cashbackServiceClient) GetPurchasedListByUser(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *cashbackServiceClient) GetListByIdList(ctx context.Context, opts ...grpc.CallOption) (CashbackService_GetListByIdListClient, error) {
-	stream, err := c.cc.NewStream(ctx, &CashbackService_ServiceDesc.Streams[0], "/cashback.CashbackService/GetListByIdList", opts...)
+func (c *cashbackServiceClient) GetListByIdList(ctx context.Context, in *CashbackIdListRequest, opts ...grpc.CallOption) (*CashbackList, error) {
+	out := new(CashbackList)
+	err := c.cc.Invoke(ctx, "/cashback.CashbackService/GetListByIdList", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &cashbackServiceGetListByIdListClient{stream}
-	return x, nil
-}
-
-type CashbackService_GetListByIdListClient interface {
-	Send(*CashbackIdListRequest) error
-	CloseAndRecv() (*CashbackList, error)
-	grpc.ClientStream
-}
-
-type cashbackServiceGetListByIdListClient struct {
-	grpc.ClientStream
-}
-
-func (x *cashbackServiceGetListByIdListClient) Send(m *CashbackIdListRequest) error {
-	return x.ClientStream.SendMsg(m)
-}
-
-func (x *cashbackServiceGetListByIdListClient) CloseAndRecv() (*CashbackList, error) {
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	m := new(CashbackList)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
+	return out, nil
 }
 
 // CashbackServiceServer is the server API for CashbackService service.
@@ -149,11 +124,11 @@ type CashbackServiceServer interface {
 	// get by id
 	GetById(context.Context, *CashbackIdRequest) (*Cashback, error)
 	// get onsale list by user
-	GetSoldListByUser(context.Context, *CashbackIdRequest) (*CashbackList, error)
+	GetSoldListByUser(context.Context, *CashbackUserIdRequest) (*CashbackList, error)
 	// get purchaed list by user
-	GetPurchasedListByUser(context.Context, *CashbackIdRequest) (*CashbackList, error)
+	GetPurchasedListByUser(context.Context, *CashbackUserIdRequest) (*CashbackList, error)
 	// get list by id list
-	GetListByIdList(CashbackService_GetListByIdListServer) error
+	GetListByIdList(context.Context, *CashbackIdListRequest) (*CashbackList, error)
 }
 
 // UnimplementedCashbackServiceServer should be embedded to have forward compatible implementations.
@@ -172,14 +147,14 @@ func (UnimplementedCashbackServiceServer) Delete(context.Context, *CashbackIdReq
 func (UnimplementedCashbackServiceServer) GetById(context.Context, *CashbackIdRequest) (*Cashback, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetById not implemented")
 }
-func (UnimplementedCashbackServiceServer) GetSoldListByUser(context.Context, *CashbackIdRequest) (*CashbackList, error) {
+func (UnimplementedCashbackServiceServer) GetSoldListByUser(context.Context, *CashbackUserIdRequest) (*CashbackList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSoldListByUser not implemented")
 }
-func (UnimplementedCashbackServiceServer) GetPurchasedListByUser(context.Context, *CashbackIdRequest) (*CashbackList, error) {
+func (UnimplementedCashbackServiceServer) GetPurchasedListByUser(context.Context, *CashbackUserIdRequest) (*CashbackList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPurchasedListByUser not implemented")
 }
-func (UnimplementedCashbackServiceServer) GetListByIdList(CashbackService_GetListByIdListServer) error {
-	return status.Errorf(codes.Unimplemented, "method GetListByIdList not implemented")
+func (UnimplementedCashbackServiceServer) GetListByIdList(context.Context, *CashbackIdListRequest) (*CashbackList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetListByIdList not implemented")
 }
 
 // UnsafeCashbackServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -266,7 +241,7 @@ func _CashbackService_GetById_Handler(srv interface{}, ctx context.Context, dec 
 }
 
 func _CashbackService_GetSoldListByUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CashbackIdRequest)
+	in := new(CashbackUserIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -278,13 +253,13 @@ func _CashbackService_GetSoldListByUser_Handler(srv interface{}, ctx context.Con
 		FullMethod: "/cashback.CashbackService/GetSoldListByUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CashbackServiceServer).GetSoldListByUser(ctx, req.(*CashbackIdRequest))
+		return srv.(CashbackServiceServer).GetSoldListByUser(ctx, req.(*CashbackUserIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _CashbackService_GetPurchasedListByUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CashbackIdRequest)
+	in := new(CashbackUserIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -296,35 +271,27 @@ func _CashbackService_GetPurchasedListByUser_Handler(srv interface{}, ctx contex
 		FullMethod: "/cashback.CashbackService/GetPurchasedListByUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CashbackServiceServer).GetPurchasedListByUser(ctx, req.(*CashbackIdRequest))
+		return srv.(CashbackServiceServer).GetPurchasedListByUser(ctx, req.(*CashbackUserIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _CashbackService_GetListByIdList_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(CashbackServiceServer).GetListByIdList(&cashbackServiceGetListByIdListServer{stream})
-}
-
-type CashbackService_GetListByIdListServer interface {
-	SendAndClose(*CashbackList) error
-	Recv() (*CashbackIdListRequest, error)
-	grpc.ServerStream
-}
-
-type cashbackServiceGetListByIdListServer struct {
-	grpc.ServerStream
-}
-
-func (x *cashbackServiceGetListByIdListServer) SendAndClose(m *CashbackList) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-func (x *cashbackServiceGetListByIdListServer) Recv() (*CashbackIdListRequest, error) {
-	m := new(CashbackIdListRequest)
-	if err := x.ServerStream.RecvMsg(m); err != nil {
+func _CashbackService_GetListByIdList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CashbackIdListRequest)
+	if err := dec(in); err != nil {
 		return nil, err
 	}
-	return m, nil
+	if interceptor == nil {
+		return srv.(CashbackServiceServer).GetListByIdList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/cashback.CashbackService/GetListByIdList",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CashbackServiceServer).GetListByIdList(ctx, req.(*CashbackIdListRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 // CashbackService_ServiceDesc is the grpc.ServiceDesc for CashbackService service.
@@ -358,13 +325,11 @@ var CashbackService_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "GetPurchasedListByUser",
 			Handler:    _CashbackService_GetPurchasedListByUser_Handler,
 		},
-	},
-	Streams: []grpc.StreamDesc{
 		{
-			StreamName:    "GetListByIdList",
-			Handler:       _CashbackService_GetListByIdList_Handler,
-			ClientStreams: true,
+			MethodName: "GetListByIdList",
+			Handler:    _CashbackService_GetListByIdList_Handler,
 		},
 	},
+	Streams:  []grpc.StreamDesc{},
 	Metadata: "cashback.proto",
 }

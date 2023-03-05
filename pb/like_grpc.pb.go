@@ -32,9 +32,9 @@ type LikeServiceClient interface {
 	// get by id
 	GetById(ctx context.Context, in *LikeIdRequest, opts ...grpc.CallOption) (*Like, error)
 	// get by user
-	GetListByUser(ctx context.Context, in *LikeIdRequest, opts ...grpc.CallOption) (*LikeList, error)
+	GetListByUser(ctx context.Context, in *LikeUserIdRequest, opts ...grpc.CallOption) (*LikeList, error)
 	// get by item
-	GetListByItem(ctx context.Context, in *LikeIdRequest, opts ...grpc.CallOption) (*LikeList, error)
+	GetListByItem(ctx context.Context, in *LikeItemIdRequest, opts ...grpc.CallOption) (*LikeList, error)
 	// get list by id list
 	GetListByIdList(ctx context.Context, in *LikeIdListRequest, opts ...grpc.CallOption) (*LikeList, error)
 	// get all
@@ -85,7 +85,7 @@ func (c *likeServiceClient) GetById(ctx context.Context, in *LikeIdRequest, opts
 	return out, nil
 }
 
-func (c *likeServiceClient) GetListByUser(ctx context.Context, in *LikeIdRequest, opts ...grpc.CallOption) (*LikeList, error) {
+func (c *likeServiceClient) GetListByUser(ctx context.Context, in *LikeUserIdRequest, opts ...grpc.CallOption) (*LikeList, error) {
 	out := new(LikeList)
 	err := c.cc.Invoke(ctx, "/like.LikeService/GetListByUser", in, out, opts...)
 	if err != nil {
@@ -94,7 +94,7 @@ func (c *likeServiceClient) GetListByUser(ctx context.Context, in *LikeIdRequest
 	return out, nil
 }
 
-func (c *likeServiceClient) GetListByItem(ctx context.Context, in *LikeIdRequest, opts ...grpc.CallOption) (*LikeList, error) {
+func (c *likeServiceClient) GetListByItem(ctx context.Context, in *LikeItemIdRequest, opts ...grpc.CallOption) (*LikeList, error) {
 	out := new(LikeList)
 	err := c.cc.Invoke(ctx, "/like.LikeService/GetListByItem", in, out, opts...)
 	if err != nil {
@@ -134,9 +134,9 @@ type LikeServiceServer interface {
 	// get by id
 	GetById(context.Context, *LikeIdRequest) (*Like, error)
 	// get by user
-	GetListByUser(context.Context, *LikeIdRequest) (*LikeList, error)
+	GetListByUser(context.Context, *LikeUserIdRequest) (*LikeList, error)
 	// get by item
-	GetListByItem(context.Context, *LikeIdRequest) (*LikeList, error)
+	GetListByItem(context.Context, *LikeItemIdRequest) (*LikeList, error)
 	// get list by id list
 	GetListByIdList(context.Context, *LikeIdListRequest) (*LikeList, error)
 	// get all
@@ -159,10 +159,10 @@ func (UnimplementedLikeServiceServer) Delete(context.Context, *LikeIdRequest) (*
 func (UnimplementedLikeServiceServer) GetById(context.Context, *LikeIdRequest) (*Like, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetById not implemented")
 }
-func (UnimplementedLikeServiceServer) GetListByUser(context.Context, *LikeIdRequest) (*LikeList, error) {
+func (UnimplementedLikeServiceServer) GetListByUser(context.Context, *LikeUserIdRequest) (*LikeList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetListByUser not implemented")
 }
-func (UnimplementedLikeServiceServer) GetListByItem(context.Context, *LikeIdRequest) (*LikeList, error) {
+func (UnimplementedLikeServiceServer) GetListByItem(context.Context, *LikeItemIdRequest) (*LikeList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetListByItem not implemented")
 }
 func (UnimplementedLikeServiceServer) GetListByIdList(context.Context, *LikeIdListRequest) (*LikeList, error) {
@@ -256,7 +256,7 @@ func _LikeService_GetById_Handler(srv interface{}, ctx context.Context, dec func
 }
 
 func _LikeService_GetListByUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LikeIdRequest)
+	in := new(LikeUserIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -268,13 +268,13 @@ func _LikeService_GetListByUser_Handler(srv interface{}, ctx context.Context, de
 		FullMethod: "/like.LikeService/GetListByUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LikeServiceServer).GetListByUser(ctx, req.(*LikeIdRequest))
+		return srv.(LikeServiceServer).GetListByUser(ctx, req.(*LikeUserIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _LikeService_GetListByItem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LikeIdRequest)
+	in := new(LikeItemIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -286,7 +286,7 @@ func _LikeService_GetListByItem_Handler(srv interface{}, ctx context.Context, de
 		FullMethod: "/like.LikeService/GetListByItem",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LikeServiceServer).GetListByItem(ctx, req.(*LikeIdRequest))
+		return srv.(LikeServiceServer).GetListByItem(ctx, req.(*LikeItemIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

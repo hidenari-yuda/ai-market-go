@@ -33,9 +33,9 @@ type ReviewServiceClient interface {
 	// get by id
 	GetById(ctx context.Context, in *ReviewIdRequest, opts ...grpc.CallOption) (*Review, error)
 	// get by user
-	GetListByUser(ctx context.Context, in *ReviewIdRequest, opts ...grpc.CallOption) (*ReviewList, error)
+	GetListByUser(ctx context.Context, in *ReviewUserIdRequest, opts ...grpc.CallOption) (*ReviewList, error)
 	// get by item
-	GetListByItem(ctx context.Context, in *ReviewIdRequest, opts ...grpc.CallOption) (*ReviewList, error)
+	GetListByItem(ctx context.Context, in *ReviewItemIdRequest, opts ...grpc.CallOption) (*ReviewList, error)
 	// get list by id list
 	GetListByIdList(ctx context.Context, in *ReviewIdListRequest, opts ...grpc.CallOption) (*ReviewList, error)
 	// admin
@@ -87,7 +87,7 @@ func (c *reviewServiceClient) GetById(ctx context.Context, in *ReviewIdRequest, 
 	return out, nil
 }
 
-func (c *reviewServiceClient) GetListByUser(ctx context.Context, in *ReviewIdRequest, opts ...grpc.CallOption) (*ReviewList, error) {
+func (c *reviewServiceClient) GetListByUser(ctx context.Context, in *ReviewUserIdRequest, opts ...grpc.CallOption) (*ReviewList, error) {
 	out := new(ReviewList)
 	err := c.cc.Invoke(ctx, "/review.ReviewService/GetListByUser", in, out, opts...)
 	if err != nil {
@@ -96,7 +96,7 @@ func (c *reviewServiceClient) GetListByUser(ctx context.Context, in *ReviewIdReq
 	return out, nil
 }
 
-func (c *reviewServiceClient) GetListByItem(ctx context.Context, in *ReviewIdRequest, opts ...grpc.CallOption) (*ReviewList, error) {
+func (c *reviewServiceClient) GetListByItem(ctx context.Context, in *ReviewItemIdRequest, opts ...grpc.CallOption) (*ReviewList, error) {
 	out := new(ReviewList)
 	err := c.cc.Invoke(ctx, "/review.ReviewService/GetListByItem", in, out, opts...)
 	if err != nil {
@@ -137,9 +137,9 @@ type ReviewServiceServer interface {
 	// get by id
 	GetById(context.Context, *ReviewIdRequest) (*Review, error)
 	// get by user
-	GetListByUser(context.Context, *ReviewIdRequest) (*ReviewList, error)
+	GetListByUser(context.Context, *ReviewUserIdRequest) (*ReviewList, error)
 	// get by item
-	GetListByItem(context.Context, *ReviewIdRequest) (*ReviewList, error)
+	GetListByItem(context.Context, *ReviewItemIdRequest) (*ReviewList, error)
 	// get list by id list
 	GetListByIdList(context.Context, *ReviewIdListRequest) (*ReviewList, error)
 	// admin
@@ -163,10 +163,10 @@ func (UnimplementedReviewServiceServer) Delete(context.Context, *ReviewIdRequest
 func (UnimplementedReviewServiceServer) GetById(context.Context, *ReviewIdRequest) (*Review, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetById not implemented")
 }
-func (UnimplementedReviewServiceServer) GetListByUser(context.Context, *ReviewIdRequest) (*ReviewList, error) {
+func (UnimplementedReviewServiceServer) GetListByUser(context.Context, *ReviewUserIdRequest) (*ReviewList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetListByUser not implemented")
 }
-func (UnimplementedReviewServiceServer) GetListByItem(context.Context, *ReviewIdRequest) (*ReviewList, error) {
+func (UnimplementedReviewServiceServer) GetListByItem(context.Context, *ReviewItemIdRequest) (*ReviewList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetListByItem not implemented")
 }
 func (UnimplementedReviewServiceServer) GetListByIdList(context.Context, *ReviewIdListRequest) (*ReviewList, error) {
@@ -260,7 +260,7 @@ func _ReviewService_GetById_Handler(srv interface{}, ctx context.Context, dec fu
 }
 
 func _ReviewService_GetListByUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ReviewIdRequest)
+	in := new(ReviewUserIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -272,13 +272,13 @@ func _ReviewService_GetListByUser_Handler(srv interface{}, ctx context.Context, 
 		FullMethod: "/review.ReviewService/GetListByUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ReviewServiceServer).GetListByUser(ctx, req.(*ReviewIdRequest))
+		return srv.(ReviewServiceServer).GetListByUser(ctx, req.(*ReviewUserIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _ReviewService_GetListByItem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ReviewIdRequest)
+	in := new(ReviewItemIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -290,7 +290,7 @@ func _ReviewService_GetListByItem_Handler(srv interface{}, ctx context.Context, 
 		FullMethod: "/review.ReviewService/GetListByItem",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ReviewServiceServer).GetListByItem(ctx, req.(*ReviewIdRequest))
+		return srv.(ReviewServiceServer).GetListByItem(ctx, req.(*ReviewItemIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

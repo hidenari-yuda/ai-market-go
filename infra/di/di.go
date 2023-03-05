@@ -14,6 +14,7 @@ import (
 // RegisterServiceServer is a function to register service server
 func RegisterServiceServer(ctx context.Context, s *grpc.Server, db *database.Db, firebase usecase.Firebase) {
 	regsiterUserServiceServer(ctx, s, db, firebase)
+	registerItemServiceServer(ctx, s, db, firebase)
 	registerChatServiceServer(ctx, s, db, firebase)
 	registerChatGroupServiceServer(ctx, s, db, firebase)
 }
@@ -22,6 +23,12 @@ func RegisterServiceServer(ctx context.Context, s *grpc.Server, db *database.Db,
 func regsiterUserServiceServer(ctx context.Context, s *grpc.Server, db *database.Db, firebase usecase.Firebase) {
 	userRepository := repository.NewUserRepositoryImpl(db)
 	pb.RegisterUserServiceServer(s, handler.NewUserSercviceServer(interactor.NewUserInteractorImpl(firebase, userRepository)))
+}
+
+// item
+func registerItemServiceServer(ctx context.Context, s *grpc.Server, db *database.Db, firebase usecase.Firebase) {
+	itemRepository := repository.NewItemRepositoryImpl(db)
+	pb.RegisterItemServiceServer(s, handler.NewItemSercviceServer(interactor.NewItemInteractorImpl(firebase, itemRepository)))
 }
 
 // chatGroup

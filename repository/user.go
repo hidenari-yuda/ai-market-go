@@ -93,7 +93,7 @@ func (r *UserRepositoryImpl) Update(user *pb.User) error {
 }
 
 // delete
-func (r *UserRepositoryImpl) Delete(id uint) error {
+func (r *UserRepositoryImpl) Delete(id int64) error {
 	_, err := r.executer.Exec(
 		r.Name+"Delete",
 		"UPDATE users SET is_deleted = ? WHERE id = ?",
@@ -109,7 +109,7 @@ func (r *UserRepositoryImpl) Delete(id uint) error {
 }
 
 // get
-func (r *UserRepositoryImpl) GetById(id uint) (*pb.User, error) {
+func (r *UserRepositoryImpl) GetById(id int64) (*pb.User, error) {
 	var (
 		user pb.User
 	)

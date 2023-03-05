@@ -19,13 +19,13 @@ type ChatInteractor interface {
 	Update(Chat *pb.Chat) (bool, error)
 
 	// Delete
-	Delete(id uint) (bool, error)
+	Delete(param *pb.ChatIdRequest) (bool, error)
 
 	// Get
-	GetById(id uint) (*pb.Chat, error)
+	GetById(param *pb.ChatIdRequest) (*pb.Chat, error)
 
 	// get list by user id
-	GetListByGroup(groupId uint) ([]*pb.Chat, error)
+	GetListByGroup(param *pb.ChatGroupIdRequest) ([]*pb.Chat, error)
 
 	// stream
 	GetStream(ctx context.Context, stream chan<- pb.Chat) error
@@ -74,10 +74,10 @@ func (i *ChatInteractorImpl) Update(chat *pb.Chat) (bool, error) {
 	return true, nil
 }
 
-func (i *ChatInteractorImpl) Delete(id uint) (bool, error) {
+func (i *ChatInteractorImpl) Delete(param *pb.ChatIdRequest) (bool, error) {
 
 	// ユーザー登録
-	err := i.chatRepository.Delete(id)
+	err := i.chatRepository.Delete(param.Id)
 	if err != nil {
 		return false, err
 	}
@@ -85,14 +85,14 @@ func (i *ChatInteractorImpl) Delete(id uint) (bool, error) {
 	return true, nil
 }
 
-func (i *ChatInteractorImpl) GetById(id uint) (*pb.Chat, error) {
+func (i *ChatInteractorImpl) GetById(param *pb.ChatIdRequest) (*pb.Chat, error) {
 	var (
 		chat *pb.Chat
 		err  error
 	)
 
 	// ユーザー登録
-	chat, err = i.chatRepository.GetById(id)
+	chat, err = i.chatRepository.GetById(param.Id)
 	if err != nil {
 		log.Println("error is:", err)
 		return chat, err
@@ -101,14 +101,14 @@ func (i *ChatInteractorImpl) GetById(id uint) (*pb.Chat, error) {
 	return chat, nil
 }
 
-func (i *ChatInteractorImpl) GetListByGroup(groupId uint) ([]*pb.Chat, error) {
+func (i *ChatInteractorImpl) GetListByGroup(param *pb.ChatGroupIdRequest) ([]*pb.Chat, error) {
 	var (
 		chats []*pb.Chat
 		err   error
 	)
 
 	// ユーザー登録
-	chats, err = i.chatRepository.GetListByGroup(groupId)
+	chats, err = i.chatRepository.GetListByGroup(param.GroupId)
 	if err != nil {
 		log.Println("error is:", err)
 		return chats, err

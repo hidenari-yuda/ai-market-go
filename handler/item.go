@@ -13,19 +13,19 @@ import (
 type ItemServiceServer struct {
 	pb.UnimplementedItemServiceServer
 	ItemInteractor interactor.ItemInteractor
-	Db                *database.Db
-	Firebase          usecase.Firebase
+	Db             *database.Db
+	Firebase       usecase.Firebase
 }
 
 func NewItemSercviceServer(ItemInteractor interactor.ItemInteractor) *ItemServiceServer {
 	return &ItemServiceServer{
 		ItemInteractor: ItemInteractor,
-		Db:                database.NewDb(),
-		Firebase:          driver.NewFirebaseImpl(),
+		Db:             database.NewDb(),
+		Firebase:       driver.NewFirebaseImpl(),
 	}
 }
 
-// create chat group
+// create Item group
 func (s *ItemServiceServer) Create(ctx context.Context, req *pb.Item) (*pb.Item, error) {
 
 	tx, err := s.Db.Begin()
@@ -43,8 +43,8 @@ func (s *ItemServiceServer) Create(ctx context.Context, req *pb.Item) (*pb.Item,
 	return res, nil
 }
 
-// update chat group
-func (s *ItemServiceServer) Update(ctx context.Context, req *pb.Item) (*pb.ChatBoolResponse, error) {
+// update Item group
+func (s *ItemServiceServer) Update(ctx context.Context, req *pb.Item) (*pb.ItemBoolResponse, error) {
 
 	tx, err := s.Db.Begin()
 	if err != nil {
@@ -58,31 +58,31 @@ func (s *ItemServiceServer) Update(ctx context.Context, req *pb.Item) (*pb.ChatB
 	}
 	tx.Commit()
 
-	return &pb.ChatBoolResponse{Error: res}, nil
+	return &pb.ItemBoolResponse{Error: res}, nil
 }
 
-// delete chat group
-func (s *ItemServiceServer) Delete(ctx context.Context, req *pb.ChatIdRequest) (*pb.ChatBoolResponse, error) {
+// delete Item group
+func (s *ItemServiceServer) Delete(ctx context.Context, req *pb.ItemIdRequest) (*pb.ItemBoolResponse, error) {
 
 	tx, err := s.Db.Begin()
 	if err != nil {
 		return nil, err
 	}
 
-	res, err := s.ItemInteractor.Delete(req.Id)
+	res, err := s.ItemInteractor.Delete(req)
 	if err != nil {
 		tx.Rollback()
 		return nil, err
 	}
 	tx.Commit()
 
-	return &pb.ChatBoolResponse{Error: res}, nil
+	return &pb.ItemBoolResponse{Error: res}, nil
 }
 
-// get chat group by id
-func (s *ItemServiceServer) GetById(ctx context.Context, req *pb.ChatIdRequest) (*pb.Item, error) {
+// get Item group by id
+func (s *ItemServiceServer) GetById(ctx context.Context, req *pb.ItemIdRequest) (*pb.Item, error) {
 
-	res, err := s.ItemInteractor.GetById(req.Id)
+	res, err := s.ItemInteractor.GetById(req)
 	if err != nil {
 		return nil, err
 	}
@@ -90,13 +90,101 @@ func (s *ItemServiceServer) GetById(ctx context.Context, req *pb.ChatIdRequest) 
 	return res, nil
 }
 
-// get chat group by user id
-func (s *ItemServiceServer) GetListByUser(ctx context.Context, req *pb.ChatIdRequest) (*pb.ItemList, error) {
+// get Item group by user id
+func (s *ItemServiceServer) GetListByUser(ctx context.Context, req *pb.ItemUserIdRequest) (*pb.ItemList, error) {
 
-	res, err := s.ItemInteractor.GetListByUser(req.Id)
+	res, err := s.ItemInteractor.GetListByUser(req)
 	if err != nil {
 		return nil, err
 	}
 
-	return &pb.ItemList{ItemList: res}, nil
+	return &pb.ItemList{Item: res}, nil
+}
+
+// get list by search
+func (s *ItemServiceServer) GetListBySearch(ctx context.Context, req *pb.ItemSearchRequest) (*pb.ItemList, error) {
+
+	res, err := s.ItemInteractor.GetListBySearch(req)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.ItemList{Item: res}, nil
+}
+
+// get latest id=user_id
+func (s *ItemServiceServer) GetLatestList(ctx context.Context, req *pb.ItemUserIdRequest) (*pb.ItemList, error) {
+
+	res, err := s.ItemInteractor.GetLatestList(req)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.ItemList{Item: res}, nil
+}
+
+// get trend list by user id
+func (s *ItemServiceServer) GetTrendList(ctx context.Context, req *pb.ItemUserIdRequest) (*pb.ItemList, error) {
+
+	res, err := s.ItemInteractor.GetTrendList(req)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.ItemList{Item: res}, nil
+}
+
+// get recommended list by user id
+func (s *ItemServiceServer) GetRecommendedListByUser(ctx context.Context, req *pb.ItemUserIdRequest) (*pb.ItemList, error) {
+
+	res, err := s.ItemInteractor.GetRecommendedListByUser(req)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.ItemList{Item: res}, nil
+}
+
+// get sold list by user id
+func (s *ItemServiceServer) GetSoldListByUser(ctx context.Context, req *pb.ItemUserIdRequest) (*pb.ItemList, error) {
+
+	res, err := s.ItemInteractor.GetSoldListByUser(req)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.ItemList{Item: res}, nil
+}
+
+// get purchased list by user id
+func (s *ItemServiceServer) GetPurchasedListByUser(ctx context.Context, req *pb.ItemUserIdRequest) (*pb.ItemList, error) {
+
+	res, err := s.ItemInteractor.GetPurchasedListByUser(req)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.ItemList{Item: res}, nil
+}
+
+// get liked list by user id
+func (s *ItemServiceServer) GetLikedListByUser(ctx context.Context, req *pb.ItemUserIdRequest) (*pb.ItemList, error) {
+
+	res, err := s.ItemInteractor.GetLikedListByUser(req)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.ItemList{Item: res}, nil
+}
+
+// get list by id list
+func (s *ItemServiceServer) GetListByIdList(ctx context.Context, req *pb.ItemIdListRequest) (*pb.ItemList, error) {
+
+	res, err := s.ItemInteractor.GetListByIdList(req)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.ItemList{Item: res}, nil
 }

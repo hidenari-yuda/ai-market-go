@@ -69,7 +69,7 @@ func (s *ChatGroupServiceServer) Delete(ctx context.Context, req *pb.ChatIdReque
 		return nil, err
 	}
 
-	res, err := s.ChatGroupInteractor.Delete(uint(req.Id))
+	res, err := s.ChatGroupInteractor.Delete(req)
 	if err != nil {
 		tx.Rollback()
 		return nil, err
@@ -82,7 +82,7 @@ func (s *ChatGroupServiceServer) Delete(ctx context.Context, req *pb.ChatIdReque
 // get chat group by id
 func (s *ChatGroupServiceServer) GetById(ctx context.Context, req *pb.ChatIdRequest) (*pb.ChatGroup, error) {
 
-	res, err := s.ChatGroupInteractor.GetById(uint(req.Id))
+	res, err := s.ChatGroupInteractor.GetById(req)
 	if err != nil {
 		return nil, err
 	}
@@ -91,12 +91,12 @@ func (s *ChatGroupServiceServer) GetById(ctx context.Context, req *pb.ChatIdRequ
 }
 
 // get chat group by user id
-func (s *ChatGroupServiceServer) GetListByUser(ctx context.Context, req *pb.ChatIdRequest) (*pb.ChatGroupList, error) {
+func (s *ChatGroupServiceServer) GetListByUser(ctx context.Context, req *pb.ChatUserIdRequest) (*pb.ChatGroupList, error) {
 
-	res, err := s.ChatGroupInteractor.GetListByUser(uint(req.Id))
+	res, err := s.ChatGroupInteractor.GetListByUser(req)
 	if err != nil {
 		return nil, err
 	}
 
-	return &pb.ChatGroupList{ChatGroupList: res}, nil
+	return &pb.ChatGroupList{ChatGroup: res}, nil
 }

@@ -32,9 +32,9 @@ type ViewServiceClient interface {
 	// get by id
 	GetById(ctx context.Context, in *ViewIdRequest, opts ...grpc.CallOption) (*View, error)
 	// get by user
-	GetListByUser(ctx context.Context, in *ViewIdRequest, opts ...grpc.CallOption) (*ViewList, error)
+	GetListByUser(ctx context.Context, in *ViewUserIdRequest, opts ...grpc.CallOption) (*ViewList, error)
 	// get by item
-	GetListByItem(ctx context.Context, in *ViewIdRequest, opts ...grpc.CallOption) (*ViewList, error)
+	GetListByItem(ctx context.Context, in *ViewItemIdRequest, opts ...grpc.CallOption) (*ViewList, error)
 	// get list by id list
 	GetListByIdList(ctx context.Context, in *ViewIdListRequest, opts ...grpc.CallOption) (*ViewList, error)
 	// get all
@@ -85,7 +85,7 @@ func (c *viewServiceClient) GetById(ctx context.Context, in *ViewIdRequest, opts
 	return out, nil
 }
 
-func (c *viewServiceClient) GetListByUser(ctx context.Context, in *ViewIdRequest, opts ...grpc.CallOption) (*ViewList, error) {
+func (c *viewServiceClient) GetListByUser(ctx context.Context, in *ViewUserIdRequest, opts ...grpc.CallOption) (*ViewList, error) {
 	out := new(ViewList)
 	err := c.cc.Invoke(ctx, "/view.ViewService/GetListByUser", in, out, opts...)
 	if err != nil {
@@ -94,7 +94,7 @@ func (c *viewServiceClient) GetListByUser(ctx context.Context, in *ViewIdRequest
 	return out, nil
 }
 
-func (c *viewServiceClient) GetListByItem(ctx context.Context, in *ViewIdRequest, opts ...grpc.CallOption) (*ViewList, error) {
+func (c *viewServiceClient) GetListByItem(ctx context.Context, in *ViewItemIdRequest, opts ...grpc.CallOption) (*ViewList, error) {
 	out := new(ViewList)
 	err := c.cc.Invoke(ctx, "/view.ViewService/GetListByItem", in, out, opts...)
 	if err != nil {
@@ -134,9 +134,9 @@ type ViewServiceServer interface {
 	// get by id
 	GetById(context.Context, *ViewIdRequest) (*View, error)
 	// get by user
-	GetListByUser(context.Context, *ViewIdRequest) (*ViewList, error)
+	GetListByUser(context.Context, *ViewUserIdRequest) (*ViewList, error)
 	// get by item
-	GetListByItem(context.Context, *ViewIdRequest) (*ViewList, error)
+	GetListByItem(context.Context, *ViewItemIdRequest) (*ViewList, error)
 	// get list by id list
 	GetListByIdList(context.Context, *ViewIdListRequest) (*ViewList, error)
 	// get all
@@ -159,10 +159,10 @@ func (UnimplementedViewServiceServer) Delete(context.Context, *ViewIdRequest) (*
 func (UnimplementedViewServiceServer) GetById(context.Context, *ViewIdRequest) (*View, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetById not implemented")
 }
-func (UnimplementedViewServiceServer) GetListByUser(context.Context, *ViewIdRequest) (*ViewList, error) {
+func (UnimplementedViewServiceServer) GetListByUser(context.Context, *ViewUserIdRequest) (*ViewList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetListByUser not implemented")
 }
-func (UnimplementedViewServiceServer) GetListByItem(context.Context, *ViewIdRequest) (*ViewList, error) {
+func (UnimplementedViewServiceServer) GetListByItem(context.Context, *ViewItemIdRequest) (*ViewList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetListByItem not implemented")
 }
 func (UnimplementedViewServiceServer) GetListByIdList(context.Context, *ViewIdListRequest) (*ViewList, error) {
@@ -256,7 +256,7 @@ func _ViewService_GetById_Handler(srv interface{}, ctx context.Context, dec func
 }
 
 func _ViewService_GetListByUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ViewIdRequest)
+	in := new(ViewUserIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -268,13 +268,13 @@ func _ViewService_GetListByUser_Handler(srv interface{}, ctx context.Context, de
 		FullMethod: "/view.ViewService/GetListByUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ViewServiceServer).GetListByUser(ctx, req.(*ViewIdRequest))
+		return srv.(ViewServiceServer).GetListByUser(ctx, req.(*ViewUserIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _ViewService_GetListByItem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ViewIdRequest)
+	in := new(ViewItemIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -286,7 +286,7 @@ func _ViewService_GetListByItem_Handler(srv interface{}, ctx context.Context, de
 		FullMethod: "/view.ViewService/GetListByItem",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ViewServiceServer).GetListByItem(ctx, req.(*ViewIdRequest))
+		return srv.(ViewServiceServer).GetListByItem(ctx, req.(*ViewItemIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

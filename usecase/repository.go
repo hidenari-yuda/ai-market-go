@@ -70,34 +70,34 @@ type ItemRepository interface {
 	GetById(id int64) (*pb.Item, error)
 
 	// get list by type
-	GetListByUser(userId int64) ([]*pb.User, error)
+	GetListByUser(userId int64) ([]*pb.Item, error)
 
 	// get list by category
-	GetListByCategory(category, subCategory int64) ([]*pb.Item, error)
+	GetListByFreeWord(freeWord string) ([]*pb.Item, error)
 
 	// get by latest id=user_id
-	GetLatestList(userId int64) (*pb.Item, error)
+	GetLatestList(userId int64) ([]*pb.Item, error)
 
 	// get by trend id=user_id
-	GetTrendList(userId int64) (*pb.Item, error)
+	GetTrendList(userId int64) ([]*pb.Item, error)
 
 	// get recommended list
 	GetRecommendedListByUser(userId int64) ([]*pb.Item, error)
 
 	// get by sold id=user_id
-	GetSoldListByUser(userId int64) (*pb.Item, error)
+	GetSoldListByUser(userId int64) ([]*pb.Item, error)
 
 	// get by purchased id=user_id
-	GetPurchasedListByUser(userId int64) (*pb.Item, error)
+	GetPurchasedListByUser(userId int64) ([]*pb.Item, error)
 
 	// get by liked id=user_id
-	GetLikedListByUser(userId int64) (*pb.Item, error)
+	GetLikedListByUser(userId int64) ([]*pb.Item, error)
 
 	// get list by id list
   GetListByIdList(idList []int64) ([]*pb.Item, error)
 
 	// admin
-	GetAll() ([]*pb.User, error)
+	GetAll() ([]*pb.Item, error)
 }
 
 // itemContent
@@ -382,63 +382,62 @@ type CashbackRepository interface {
 	GetAll() ([]*pb.Cashback, error)
 }
 
+type ChatGroupRepository interface {
+	// Gest API
+	// Create
+	Create(param *pb.ChatGroup) error
 
-// type ChatGroupRepository interface {
-// 	// Gest API
-// 	// Create
-// 	Create(param *pb.ChatGroup) error
+	// Update
+	Update(param *pb.ChatGroup) error
 
-// 	// Update
-// 	Update(param *pb.ChatGroup) error
+	// Delete
+	Delete(id int64) error
 
-// 	// Delete
-// 	Delete(id int64) error
+	// Get
+	GetById(id int64) (*pb.ChatGroup, error)
 
-// 	// Get
-// 	GetById(id int64) (*pb.ChatGroup, error)
+	// get list by user id
+	GetListByUser(userId int64) ([]*pb.ChatGroup, error)
 
-// 	// get list by user id
-// 	GetListByUser(userId int64) ([]*pb.ChatGroup, error)
+	// admin
+	GetAll() ([]*pb.ChatGroup, error)
+}
 
-// 	// admin
-// 	GetAll() ([]*pb.ChatGroup, error)
-// }
+type ChatRepository interface {
+	// Gest API
+	// Create
+	Create(param *pb.Chat) error
 
-// type ChatRepository interface {
-// 	// Gest API
-// 	// Create
-// 	Create(param *pb.Chat) error
+	// Update
+	Update(param *pb.Chat) error
 
-// 	// Update
-// 	Update(param *pb.Chat) error
+	// Delete
+	Delete(id int64) error
 
-// 	// Delete
-// 	Delete(id int64) error
+	// Get
+	GetById(id int64) (*pb.Chat, error)
 
-// 	// Get
-// 	GetById(id int64) (*pb.Chat, error)
+	// get list by user id
+	GetListByGroup(groupId int64) ([]*pb.Chat, error)
 
-// 	// get list by user id
-// 	GetListByGroup(groupId int64) ([]*pb.Chat, error)
+	// get stream by group
+	GetStreamByGroup(groupId int64) ([]*pb.Chat, error)
 
-// 	// get stream by group
-// 	GetStreamByGroup(groupId int64) ([]*pb.Chat, error)
+	// get latest chat for notification
+	GetLatestChatByUser(userId int64) (*pb.Chat, error)
+}
 
-// 	// get latest chat for notification
-// 	GetLatestChatByUser(userId int64) (*pb.Chat, error)
-// }
+type ChatUserRepository interface {
+	// Gest API
+	// Create
+	Create(param *pb.ChatUser) error
 
-// type ChatUserRepository interface {
-// 	// Gest API
-// 	// Create
-// 	Create(param *pb.ChatUser) error
+	// Delete
+	Delete(id int64) error
 
-// 	// Delete
-// 	Delete(id int64) error
+	// Get
+	GetById(id int64) (*pb.ChatUser, error)
 
-// 	// Get
-// 	GetById(id int64) (*pb.ChatUser, error)
-
-// 	// get list by group id
-// 	GetListByGroup(groupId int64) ([]*pb.ChatUser, error)
-// }
+	// get list by group id
+	GetListByGroup(groupId int64) ([]*pb.ChatUser, error)
+}
