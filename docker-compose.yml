@@ -1,0 +1,34 @@
+version: '3'
+networks:
+  ai-market-network:
+    driver: bridge
+services:
+  db:
+    container_name: ai_market_local_db
+    image: mysql:8.0.30
+    networks:
+      - ai-market-network
+    ports:
+      - 3306:3306
+    volumes:
+      - .conf/conf.d:/etc/mysql/conf.d
+    environment:
+      MYSQL_DATABASE: ai_market_local
+      MYSQL_ROOT_PASSWORD: password
+  butler:
+    build:
+      context: .
+      dockerfile: Dockerfile.local
+    networks:
+      - ai-market-network
+    volumes:
+      - .:/go/src/app
+    env_file:
+      - .env
+    environment:
+      APP_SERVICE: batch
+      APP_BATCH_TYPE: butler
+      DB_HOST: db
+    depends_on:
+      - db
+    command: go run ./cmd/main.go
