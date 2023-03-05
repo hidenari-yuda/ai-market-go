@@ -16,14 +16,14 @@ type UserRepository interface {
 	// Get
 	GetById(id int64) (*pb.User, error)
 
-	// get list by type
-	GetListByType(userType *pb.User_Type) ([]*pb.User, error)
+	// // get list by type
+	// GetListByType(userType *pb.User_Type) ([]*pb.User, error)
 
-	// get top list
-	GetTopList(param *pb.UserTopRequest) ([]*pb.User, error)
+	// // get top list
+	// GetTopList(param *pb.UserTopRequest) ([]*pb.User, error)
 
-	// get list by search
-	GetListBySearch(param *pb.UserSearchRequest) ([]*pb.User, error)
+	// // get list by search
+	// GetListBySearch(param *pb.UserSearchRequest) ([]*pb.User, error)
 
 	// admin
 	GetAll() ([]*pb.User, error)
@@ -53,127 +53,127 @@ type BillingRepository interface {
 	GetListByUser(userId int64) ([]*pb.Billing, error)
 }
 
-/******************* item *******************/
-// item
-type ItemRepository interface {
+/******************* content *******************/
+// content
+type ContentRepository interface {
 	// Gest API
 	// Create
-	Create(param *pb.Item) error
+	Create(param *pb.Content) error
 
 	// Update
-	Update(param *pb.Item) error
+	Update(param *pb.Content) error
 
 	// Delete
 	Delete(id int64) error
 
 	// Get
-	GetById(id int64) (*pb.Item, error)
+	GetById(id int64) (*pb.Content, error)
 
 	// get list by type
-	GetListByUser(userId int64) ([]*pb.Item, error)
+	GetListByUser(userId int64) ([]*pb.Content, error)
 
 	// get list by category
-	GetListByFreeWord(freeWord string) ([]*pb.Item, error)
+	GetListByFreeWord(freeWord string) ([]*pb.Content, error)
 
 	// get by latest id=user_id
-	GetLatestList(userId int64) ([]*pb.Item, error)
+	GetLatestList(userId int64) ([]*pb.Content, error)
 
 	// get by trend id=user_id
-	GetTrendList(userId int64) ([]*pb.Item, error)
+	GetTrendList(userId int64) ([]*pb.Content, error)
 
 	// get recommended list
-	GetRecommendedListByUser(userId int64) ([]*pb.Item, error)
+	GetRecommendedListByUser(userId int64) ([]*pb.Content, error)
 
 	// get by sold id=user_id
-	GetSoldListByUser(userId int64) ([]*pb.Item, error)
+	GetSoldListByUser(userId int64) ([]*pb.Content, error)
 
 	// get by purchased id=user_id
-	GetPurchasedListByUser(userId int64) ([]*pb.Item, error)
+	GetPurchasedListByUser(userId int64) ([]*pb.Content, error)
 
 	// get by liked id=user_id
-	GetLikedListByUser(userId int64) ([]*pb.Item, error)
+	GetLikedListByUser(userId int64) ([]*pb.Content, error)
 
 	// get list by id list
-  GetListByIdList(idList []int64) ([]*pb.Item, error)
+  GetListByIdList(idList []int64) ([]*pb.Content, error)
 
 	// admin
-	GetAll() ([]*pb.Item, error)
+	GetAll() ([]*pb.Content, error)
 }
 
-// itemContent
-type ItemContentRepository interface {
+// contentContent
+type ContentDetailRepository interface {
 	// Gest API
 	// Create
-	Create(param *pb.ItemContent) error
+	Create(param *pb.ContentDetail) error
 
 	// Update
 	Delete(id int64) error
 
 	// Get
-	GetById(id int64) (*pb.ItemContent, error)
+	GetById(id int64) (*pb.ContentDetail, error)
 
-	// get list by item id
-	GetListByItem(itemId int64) ([]*pb.ItemContent, error)
+	// get list by content id
+	GetListByContent(contentId int64) ([]*pb.ContentDetail, error)
 
 	// get list by id list
-	GetListByIdList(idList []int64) ([]*pb.ItemContent, error)
+	GetListByIdList(idList []int64) ([]*pb.ContentDetail, error)
 }
 
-// itemTool
-type ItemToolRepository interface {
+// contentTool
+type ContentToolRepository interface {
 	// Gest API
 	// Create
-	Create(param *pb.ItemTool) error
+	Create(param *pb.ContentTool) error
 
 	// Update
 	Delete(id int64) error
 
 	// Get
-	GetById(id int64) (*pb.ItemTool, error)
+	GetById(id int64) (*pb.ContentTool, error)
 
-	// get list by item id
-	GetListByItem(itemId int64) ([]*pb.ItemTool, error)
+	// get list by content id
+	GetListByContent(contentId int64) ([]*pb.ContentTool, error)
 
 	// get list by id list
-	GetListByIdList(idList []int64) ([]*pb.ItemTool, error)
+	GetListByIdList(idList []int64) ([]*pb.ContentTool, error)
 }
 
-// itemCategory
-type ItemCategoryRepository interface {
+// contentCategory
+type ContentCategoryRepository interface {
 	// Gest API
 	// Create
-	Create(param *pb.ItemCategory) error
+	Create(param *pb.ContentCategory) error
 
 	// Update
 	Delete(id int64) error
 
 	// Get
-	GetById(id int64) (*pb.ItemCategory, error)
+	GetById(id int64) (*pb.ContentCategory, error)
 
-	// get list by item id
-	GetListByItem(itemId int64) ([]*pb.ItemCategory, error)
+	// get list by content id
+	GetListByContent(contentId int64) ([]*pb.ContentCategory, error)
 
 	// get list by id list
-	GetListByIdList(idList []int64) ([]*pb.ItemCategory, error)
+	GetListByIdList(idList []int64) ([]*pb.ContentCategory, error)
 }
 
-// itemSubCategory
-type ItemSubCategoryRepository interface {
+// contentSubCategory
+type ContentSubCategoryRepository interface {
 	// Gest API
 	// Create
-	Create(param *pb.ItemSubCategory) error
+	Create(param *pb.ContentSubCategory) error
 
 	// Update
 	Delete(id int64) error
 
 	// Get
-	GetById(id int64) (*pb.ItemSubCategory, error)
+	GetById(id int64) (*pb.ContentSubCategory, error)
 
-	// get list by item id
-	GetListByItem(itemId int64) ([]*pb.ItemSubCategory, error)
+	// get list by content id
+	GetListByContent(contentId int64) ([]*pb.ContentSubCategory, error)
 
 	// get list by id list
-	GetListByIdList(idList []int64) ([]*pb.ItemSubCategory, error)
+	GetListByIdList(idList []int64) ([]*pb.ContentSubCategory, error)
 }
 
 /******************* like *******************/
@@ -195,8 +195,8 @@ type LikeRepository interface {
 	// get list by user id
 	GetListByUser(userId int64) ([]*pb.Like, error)
 
-	// get list by item id
-	GetListByItem(itemId int64) ([]*pb.Like, error)
+	// get list by content id
+	GetListByContent(contentId int64) ([]*pb.Like, error)
 
 	// get list by id list
 	GetListByIdList(idList []int64) ([]*pb.Like, error)
@@ -224,8 +224,8 @@ type ViewRepository interface {
 	// get list by user id
 	GetListByUser(userId int64) ([]*pb.View, error)
 
-	// get list by item id
-	GetListByItem(itemId int64) ([]*pb.View, error)
+	// get list by content id
+	GetListByContent(contentId int64) ([]*pb.View, error)
 
 	// get list by id list
 	GetListByIdList(idList []int64) ([]*pb.View, error)
@@ -253,8 +253,8 @@ type ReviewRepository interface {
 	// get list by user id
 	GetListByUser(userId int64) ([]*pb.Review, error)
 
-	// get list by item id
-	GetListByItem(itemId int64) ([]*pb.Review, error)
+	// get list by content id
+	GetListByContent(contentId int64) ([]*pb.Review, error)
 
 	// get list by id list
 	GetListByIdList(idList []int64) ([]*pb.Review, error)
@@ -282,8 +282,8 @@ type AspRepository interface {
 	// get list by user id
 	GetListByUser(userId int64) ([]*pb.Asp, error)
 
-	// get list by item id
-	GetListByItem(itemId int64) ([]*pb.Asp, error)
+	// get list by content id
+	GetListByContent(contentId int64) ([]*pb.Asp, error)
 
 	// get list by service
 	GetListByService(service int64) ([]*pb.Asp, error)
@@ -353,33 +353,33 @@ type OrderRepository interface {
 	GetAll() ([]*pb.Order, error)
 }
 
-/******************* cashback *******************/
-// cashback
-type CashbackRepository interface {
+/******************* pointHistory *******************/
+// pointHistory
+type PointHistoryRepository interface {
 	// Gest API
 	// Create
-	Create(param *pb.Cashback) error
+	Create(param *pb.PointHistory) error
 
 	// Update
-	Update(param *pb.Cashback) error
+	Update(param *pb.PointHistory) error
 
 	// Delete
 	Delete(id int64) error
 
 	// Get
-	GetById(id int64) (*pb.Cashback, error)
+	GetById(id int64) (*pb.PointHistory, error)
 
 	// get sold list by user id
-	GetListByUser(userId int64) ([]*pb.Cashback, error)
+	GetListByUser(userId int64) ([]*pb.PointHistory, error)
 
 	// get purchased list by user id
-	GetPurchasedListByUser(userId int64) ([]*pb.Cashback, error)
+	GetPurchasedListByUser(userId int64) ([]*pb.PointHistory, error)
 
 	// get list by id list
-	GetListByIdList(idList []int64) ([]*pb.Cashback, error)
+	GetListByIdList(idList []int64) ([]*pb.PointHistory, error)
 
 	// admin
-	GetAll() ([]*pb.Cashback, error)
+	GetAll() ([]*pb.PointHistory, error)
 }
 
 type ChatGroupRepository interface {

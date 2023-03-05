@@ -11,10 +11,11 @@ import (
 	"github.com/hidenari-yuda/ai-market-go/usecase/interactor"
 	"google.golang.org/grpc"
 )
+
 // RegisterServiceServer is a function to register service server
 func RegisterServiceServer(ctx context.Context, s *grpc.Server, db *database.Db, firebase usecase.Firebase) {
 	regsiterUserServiceServer(ctx, s, db, firebase)
-	registerItemServiceServer(ctx, s, db, firebase)
+	registerContentServiceServer(ctx, s, db, firebase)
 	registerChatServiceServer(ctx, s, db, firebase)
 	registerChatGroupServiceServer(ctx, s, db, firebase)
 }
@@ -25,10 +26,14 @@ func regsiterUserServiceServer(ctx context.Context, s *grpc.Server, db *database
 	pb.RegisterUserServiceServer(s, handler.NewUserSercviceServer(interactor.NewUserInteractorImpl(firebase, userRepository)))
 }
 
-// item
-func registerItemServiceServer(ctx context.Context, s *grpc.Server, db *database.Db, firebase usecase.Firebase) {
-	itemRepository := repository.NewItemRepositoryImpl(db)
-	pb.RegisterItemServiceServer(s, handler.NewItemSercviceServer(interactor.NewItemInteractorImpl(firebase, itemRepository)))
+// content
+func registerContentServiceServer(ctx context.Context, s *grpc.Server, db *database.Db, firebase usecase.Firebase) {
+	contentRepository := repository.NewContentRepositoryImpl(db)
+	contentContentRepository := repository.NewContentDetailRepositoryImpl(db)
+	contentToolRepository := repository.NewContentToolRepositoryImpl(db)
+	contentCategoryRepository := repository.NewContentCategoryRepositoryImpl(db)
+	contentSubCategoryRepository := repository.NewContentSubCategoryRepositoryImpl(db)
+	pb.RegisterContentServiceServer(s, handler.NewContentSercviceServer(interactor.NewContentInteractorImpl(firebase, contentRepository, contentContentRepository, contentToolRepository, contentCategoryRepository, contentSubCategoryRepository)))
 }
 
 // chatGroup
@@ -43,4 +48,3 @@ func registerChatServiceServer(ctx context.Context, s *grpc.Server, db *database
 	chatRepository := repository.NewChatRepositoryImpl(db)
 	pb.RegisterChatServiceServer(s, handler.NewChatSercviceServer(interactor.NewChatInteractorImpl(firebase, chatRepository)))
 }
-

@@ -5,13 +5,12 @@ import (
 
 	"github.com/hidenari-yuda/ai-market-go/infra/database"
 	"github.com/hidenari-yuda/ai-market-go/infra/driver"
+	"github.com/hidenari-yuda/ai-market-go/pb"
 	"github.com/hidenari-yuda/ai-market-go/usecase"
 	"github.com/hidenari-yuda/ai-market-go/usecase/interactor"
-	"google.golang.org/protobuf/types/known/emptypb"
-
-	"github.com/hidenari-yuda/ai-market-go/pb"
 
 	"golang.org/x/xerrors"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 // server is used to implement helloworld.GreeterServer.

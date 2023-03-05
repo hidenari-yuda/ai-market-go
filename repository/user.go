@@ -34,7 +34,7 @@ func (r *UserRepositoryImpl) Create(param *pb.User) error {
 			name, 
 			email, 
 			password,
-			user_type,
+			type,
 			created_at,
 			updated_at
 			) VALUES (
@@ -52,7 +52,7 @@ func (r *UserRepositoryImpl) Create(param *pb.User) error {
 		param.Name,
 		param.Email,
 		param.Password,
-		param.UserType,
+		param.Type,
 		now,
 		now,
 	)
@@ -72,13 +72,13 @@ func (r *UserRepositoryImpl) Update(user *pb.User) error {
 			name = ?,
 			email = ?,
 			password = ?,
-			user_type = ?,
+			type = ?,
 			updated_at = ?
 		WHERE _id = ?`,
 		user.Name,
 		user.Email,
 		user.Password,
-		user.UserType,
+		user.Type,
 		time.Now(),
 		user.Id,
 	)
