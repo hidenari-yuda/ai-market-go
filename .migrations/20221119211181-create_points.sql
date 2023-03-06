@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS points (
   created_at DATETIME NOT NULL,
   updated_at DATETIME NOT NULL,
   is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
   INDEX idx_points_user_id (user_id)
 );
 

@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS content_details (
   content INT NOT NULL DEFAULT 0,
   created_at DATETIME NOT NULL,
   updated_at DATETIME NOT NULL,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
   INDEX idx_content_details_content_id (content_id)
 );
 

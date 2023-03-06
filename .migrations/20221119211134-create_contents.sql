@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS contents (
   created_at DATETIME NOT NULL,
   updated_at DATETIME NOT NULL,
   is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
   INDEX idx_contents_user_id (user_id)
 );
 
