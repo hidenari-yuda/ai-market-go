@@ -106,6 +106,8 @@ type ContentDetailRepository interface {
 	// Create
 	Create(param *pb.ContentDetail) error
 
+	Update(param *pb.ContentDetail) error
+
 	// Update
 	Delete(id int64) error
 
@@ -124,6 +126,8 @@ type ContentToolRepository interface {
 	// Gest API
 	// Create
 	Create(param *pb.ContentTool) error
+
+	Update(param *pb.ContentTool) error
 
 	// Update
 	Delete(id int64) error
@@ -144,6 +148,8 @@ type ContentCategoryRepository interface {
 	// Create
 	Create(param *pb.ContentCategory) error
 
+	Update(param *pb.ContentCategory) error
+
 	// Update
 	Delete(id int64) error
 
@@ -162,6 +168,8 @@ type ContentSubCategoryRepository interface {
 	// Gest API
 	// Create
 	Create(param *pb.ContentSubCategory) error
+
+	Update(param *pb.ContentSubCategory) error
 
 	// Update
 	Delete(id int64) error
@@ -353,6 +361,32 @@ type OrderRepository interface {
 	GetAll() ([]*pb.Order, error)
 }
 
+/******************* point *******************/
+// point
+type PointRepository interface {
+	// Gest API
+	// Create
+	Create(param *pb.Point) error
+
+	// Update
+	Update(param *pb.Point) error
+
+	// Delete
+	Delete(id int64) error
+
+	// Get
+	GetById(id int64) (*pb.Point, error)
+
+	// get sold list by user id
+	GetListByUser(userId int64) ([]*pb.Point, error)
+
+	// get list by id list
+	GetListByIdList(idList []int64) ([]*pb.Point, error)
+
+	// admin
+	GetAll() ([]*pb.Point, error)
+}
+
 /******************* pointHistory *******************/
 // pointHistory
 type PointHistoryRepository interface {
@@ -431,6 +465,8 @@ type ChatUserRepository interface {
 	// Gest API
 	// Create
 	Create(param *pb.ChatUser) error
+
+	Update(param *pb.ChatUser) error
 
 	// Delete
 	Delete(id int64) error

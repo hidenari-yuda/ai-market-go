@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS contents (
   thumbnail VARCHAR(2000) NOT NULL,
   price INT NOT NULL DEFAULT 0,
   asp_rate INT NOT NULL DEFAULT 0,
-  requuest_progress BOOLEAN NOT NULL DEFAULT FALSE, -- コンテンツの審査。false:未審査、true:審査済み
+  request_progress BOOLEAN NOT NULL DEFAULT FALSE, -- コンテンツの審査。false:未審査、true:審査済み
   is_open BOOLEAN NOT NULL DEFAULT FALSE, -- コンテンツの公開。false:非公開、true:公開
   like_count INT NOT NULL DEFAULT 0,
   view_count INT NOT NULL DEFAULT 0,
