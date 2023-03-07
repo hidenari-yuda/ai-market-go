@@ -24,7 +24,7 @@ func NewContentDetailRepositoryImpl(ex SQLExecuter) usecase.ContentDetailReposit
 
 // create
 func (r *ContentDetailRepositoryImpl) Create(param *pb.ContentDetail) error {
-	now := time.Now()
+	now := time.Now().UTC()
 
 	_, err := r.executer.Exec(
 		r.Name+"Create",
@@ -60,6 +60,8 @@ func (r *ContentDetailRepositoryImpl) Create(param *pb.ContentDetail) error {
 
 // update
 func (r *ContentDetailRepositoryImpl) Update(param *pb.ContentDetail) error {
+		now := time.Now().UTC()
+
 	_, err := r.executer.Exec(
 		r.Name+"Update",
 		`UPDATE content_tools SET
@@ -69,7 +71,7 @@ func (r *ContentDetailRepositoryImpl) Update(param *pb.ContentDetail) error {
 		WHERE id = ?`,
 		param.Title,
 		param.Description,
-		time.Now(),
+		now,
 		param.Id,
 	)
 

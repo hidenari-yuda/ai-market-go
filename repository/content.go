@@ -24,7 +24,7 @@ func NewContentRepositoryImpl(ex SQLExecuter) usecase.ContentRepository {
 
 // create
 func (r *ContentRepositoryImpl) Create(param *pb.Content) error {
-	now := time.Now()
+	now := time.Now().UTC()
 
 	_, err := r.executer.Exec(
 		r.Name+"Create",
@@ -90,6 +90,8 @@ func (r *ContentRepositoryImpl) Create(param *pb.Content) error {
 
 // update
 func (r *ContentRepositoryImpl) Update(param *pb.Content) error {
+		now := time.Now().UTC()
+
 	_, err := r.executer.Exec(
 		r.Name+"Update",
 		`UPDATE contents SET
@@ -117,7 +119,7 @@ func (r *ContentRepositoryImpl) Update(param *pb.Content) error {
 		param.ViewCount,
 		param.ReviewCount,
 		param.PurchaseCount,
-		time.Now(),
+		now,
 		param.Id,
 	)
 
@@ -208,7 +210,7 @@ func (r *ContentRepositoryImpl) GetListByFreeWord(freeWord string) ([]*pb.Conten
 }
 
 // get by latest id=user_id
-func (r *ContentRepositoryImpl) GetLatestList(userId int64) ([]*pb.Content, error) {
+func (r *ContentRepositoryImpl) GetLatestList() ([]*pb.Content, error) {
 	var (
 		contents []*pb.Content
 	)
@@ -216,8 +218,7 @@ func (r *ContentRepositoryImpl) GetLatestList(userId int64) ([]*pb.Content, erro
 	err := r.executer.Select(
 		r.Name+"GetLatestList",
 		&contents,
-		"SELECT * FROM contents WHERE user_id = ? ORDER BY created_at DESC",
-		userId,
+		"SELECT * FROM contents ORDER BY created_at DESC",
 	)
 
 	if err != nil {
@@ -228,7 +229,7 @@ func (r *ContentRepositoryImpl) GetLatestList(userId int64) ([]*pb.Content, erro
 }
 
 // get by trend id=user_id
-func (r *ContentRepositoryImpl) GetTrendList(userId int64) ([]*pb.Content, error) {
+func (r *ContentRepositoryImpl) GetTrendList() ([]*pb.Content, error) {
 	var (
 		contents []*pb.Content
 	)
@@ -236,8 +237,7 @@ func (r *ContentRepositoryImpl) GetTrendList(userId int64) ([]*pb.Content, error
 	err := r.executer.Select(
 		r.Name+"GetTrendList",
 		&contents,
-		"SELECT * FROM contents WHERE user_id = ? ORDER BY view_count DESC",
-		userId,
+		"SELECT * FROM contents ORDER BY view_count DESC",
 	)
 
 	if err != nil {

@@ -24,7 +24,7 @@ func NewContentToolRepositoryImpl(ex SQLExecuter) usecase.ContentToolRepository 
 
 // create
 func (r *ContentToolRepositoryImpl) Create(param *pb.ContentTool) error {
-	now := time.Now()
+	now := time.Now().UTC()
 
 	_, err := r.executer.Exec(
 		r.Name+"Create",
@@ -58,6 +58,8 @@ func (r *ContentToolRepositoryImpl) Create(param *pb.ContentTool) error {
 
 // update
 func (r *ContentToolRepositoryImpl) Update(param *pb.ContentTool) error {
+		now := time.Now().UTC()
+
 	_, err := r.executer.Exec(
 		r.Name+"Update",
 		`UPDATE content_tools SET
@@ -65,7 +67,7 @@ func (r *ContentToolRepositoryImpl) Update(param *pb.ContentTool) error {
 			updated_at = ?
 		WHERE id = ?`,
 		param.Tool,
-		time.Now(),
+		now,
 		param.Id,
 	)
 

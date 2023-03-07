@@ -24,9 +24,9 @@ func NewBillingRepositoryImpl(ex SQLExecuter) usecase.BillingRepository {
 
 // create
 func (r *BillingRepositoryImpl) Create(param *pb.Billing) error {
-	now := time.Now()
+	now := time.Now().UTC()
 
-	_, err := r.executer.Exec(
+	lastId, err := r.executer.Exec(
 		r.Name+"Create",
 		`INSERT INTO billings (
 			uuid,
@@ -79,12 +79,16 @@ func (r *BillingRepositoryImpl) Create(param *pb.Billing) error {
 		return err
 	}
 
+	param.Id = lastId
+
 	return nil
 }
 
 // update
-func (r *BillingRepositoryImpl) Update(billing *pb.Billing) error {
-	_, err := r.executer.Exec(
+func (r *BillingRepositoryImpl) Update(param *pb.Billing) error {
+	now := time.Now().UTC()
+
+	lastId, err := r.executer.Exec(
 		r.Name+"Update",
 		`UPDATE billings SET
 			title = ?,
@@ -98,17 +102,17 @@ func (r *BillingRepositoryImpl) Update(billing *pb.Billing) error {
 			is_registered = ?,
 			updated_at = ?
 		WHERE id = ?`,
-		billing.Title,
-		billing.Number,
-		billing.ExpirationYear,
-		billing.ExpirationMonth,
-		billing.SecurityCode,
-		billing.Name,
-		billing.Password,
-		billing.Service,
-		billing.IsRegistered,
-		time.Now(),
-		billing.Id,
+		param.Title,
+		param.Number,
+		param.ExpirationYear,
+		param.ExpirationMonth,
+		param.SecurityCode,
+		param.Name,
+		param.Password,
+		param.Service,
+		param.IsRegistered,
+		now,
+		param.Id,
 	)
 
 	if err != nil {
@@ -116,6 +120,8 @@ func (r *BillingRepositoryImpl) Update(billing *pb.Billing) error {
 		log.Println(err)
 		return err
 	}
+
+	param.Id = lastId
 
 	return nil
 }
@@ -142,14 +148,12 @@ func (r *BillingRepositoryImpl) GetById(id int64) (*pb.Billing, error) {
 		billing pb.Billing
 	)
 
-	err := r.executer.Get(
+	if err := r.executer.Get(
 		r.Name+"GetById",
 		&billing,
 		"SELECT * FROM billings WHERE id = ?",
 		id,
-	)
-
-	if err != nil {
+	); err != nil {
 		return nil, err
 	}
 
@@ -162,14 +166,12 @@ func (r *BillingRepositoryImpl) GetListByUser(userId int64) ([]*pb.Billing, erro
 		billings []*pb.Billing
 	)
 
-	err := r.executer.Select(
+	if err := r.executer.Select(
 		r.Name+"GetListByUser",
 		&billings,
 		"SELECT * FROM billings WHERE user_id = ?",
 		userId,
-	)
-
-	if err != nil {
+	); err != nil {
 		return nil, err
 	}
 
@@ -182,13 +184,12 @@ func (r *BillingRepositoryImpl) GetAll() ([]*pb.Billing, error) {
 	var (
 		billings []*pb.Billing
 	)
-	err := r.executer.Select(
+
+	if err := r.executer.Select(
 		r.Name+"GetAll",
 		&billings,
 		"SELECT * FROM billings ORDER BY id DESC",
-	)
-
-	if err != nil {
+	); err != nil {
 		err = fmt.Errorf("failed to get all billings: %w", err)
 		log.Println(err)
 		return nil, err

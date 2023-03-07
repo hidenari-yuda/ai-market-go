@@ -28,10 +28,10 @@ type ContentInteractor interface {
 	GetListBySearch(param *pb.ContentSearchRequest) ([]*pb.Content, error)
 
 	// get latest id=user_id
-	GetLatestList(param *pb.ContentUserIdRequest) ([]*pb.Content, error)
+	GetLatestList() ([]*pb.Content, error)
 
 	// get trend list by user id
-	GetTrendList(param *pb.ContentUserIdRequest) ([]*pb.Content, error)
+	GetTrendList() ([]*pb.Content, error)
 
 	// get recommended list by user id
 	GetRecommendedListByUser(param *pb.ContentUserIdRequest) ([]*pb.Content, error)
@@ -157,13 +157,13 @@ func (i *ContentInteractorImpl) GetListBySearch(param *pb.ContentSearchRequest) 
 
 // // get by latest id=user_id
 // rpc GetLatestList(ContentIdRequest) returns (ContentList) {}
-func (i *ContentInteractorImpl) GetLatestList(param *pb.ContentUserIdRequest) ([]*pb.Content, error) {
+func (i *ContentInteractorImpl) GetLatestList() ([]*pb.Content, error) {
 	var (
 		items []*pb.Content
 		err   error
 	)
 
-	items, err = i.itemRepository.GetLatestList(param.UserId)
+	items, err = i.itemRepository.GetLatestList()
 	if err != nil {
 		log.Println("error is:", err)
 		return items, err
@@ -174,13 +174,13 @@ func (i *ContentInteractorImpl) GetLatestList(param *pb.ContentUserIdRequest) ([
 
 // // get by trend id=user_id
 // rpc GetTrendList(ContentIdRequest) returns (ContentList) {}
-func (i *ContentInteractorImpl) GetTrendList(param *pb.ContentUserIdRequest) ([]*pb.Content, error) {
+func (i *ContentInteractorImpl) GetTrendList() ([]*pb.Content, error) {
 	var (
 		items []*pb.Content
 		err   error
 	)
 
-	items, err = i.itemRepository.GetTrendList(param.UserId)
+	items, err = i.itemRepository.GetTrendList()
 	if err != nil {
 		log.Println("error is:", err)
 		return items, err

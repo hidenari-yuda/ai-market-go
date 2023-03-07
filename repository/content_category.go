@@ -24,7 +24,7 @@ func NewContentCategoryRepositoryImpl(ex SQLExecuter) usecase.ContentCategoryRep
 
 // create
 func (r *ContentCategoryRepositoryImpl) Create(param *pb.ContentCategory) error {
-	now := time.Now()
+	now := time.Now().UTC()
 
 	_, err := r.executer.Exec(
 		r.Name+"Create",
@@ -58,6 +58,8 @@ func (r *ContentCategoryRepositoryImpl) Create(param *pb.ContentCategory) error 
 
 // update
 func (r *ContentCategoryRepositoryImpl) Update(param *pb.ContentCategory) error {
+		now := time.Now().UTC()
+
 	_, err := r.executer.Exec(
 		r.Name+"Update",
 		`UPDATE content_categories SET
@@ -65,7 +67,7 @@ func (r *ContentCategoryRepositoryImpl) Update(param *pb.ContentCategory) error 
 			updated_at = ?
 		WHERE id = ?`,
 		param.Category,
-		time.Now(),
+		now,
 		param.Id,
 	)
 

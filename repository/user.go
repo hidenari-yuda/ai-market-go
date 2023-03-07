@@ -24,7 +24,7 @@ func NewUserRepositoryImpl(ex SQLExecuter) usecase.UserRepository {
 
 // create
 func (r *UserRepositoryImpl) Create(param *pb.User) error {
-	now := time.Now()
+	now := time.Now().UTC()
 
 	_, err := r.executer.Exec(
 		r.Name+"Create",
@@ -66,6 +66,8 @@ func (r *UserRepositoryImpl) Create(param *pb.User) error {
 
 // update
 func (r *UserRepositoryImpl) Update(user *pb.User) error {
+		now := time.Now().UTC()
+
 	_, err := r.executer.Exec(
 		r.Name+"Update",
 		`UPDATE users SET
@@ -79,7 +81,7 @@ func (r *UserRepositoryImpl) Update(user *pb.User) error {
 		user.Email,
 		user.Password,
 		user.Type,
-		time.Now(),
+		now,
 		user.Id,
 	)
 

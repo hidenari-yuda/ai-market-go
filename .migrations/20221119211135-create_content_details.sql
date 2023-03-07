@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS content_details (
   description TEXT NOT NULL,
   created_at DATETIME NOT NULL,
   updated_at DATETIME NOT NULL,
+  is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
   PRIMARY KEY (id),
   INDEX idx_content_details_content_id (content_id)
 );
@@ -15,7 +16,7 @@ CREATE TABLE IF NOT EXISTS content_details (
 ALTER TABLE content_details 
   ADD CONSTRAINT fk_content_details_content_id
   FOREIGN KEY (content_id) 
-  REFERENCES details(id) 
+  REFERENCES contents(id) 
   ON DELETE CASCADE
   ON UPDATE CASCADE;
 

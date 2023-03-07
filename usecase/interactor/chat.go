@@ -3,7 +3,6 @@ package interactor
 import (
 	"context"
 	"fmt"
-	"log"
 
 	"github.com/hidenari-yuda/ai-market-go/pb"
 	"github.com/hidenari-yuda/ai-market-go/usecase"
@@ -34,20 +33,20 @@ type ChatInteractor interface {
 type ChatInteractorImpl struct {
 	firebase usecase.Firebase
 	// chatRepository      usecase.ChatRepository
-	chatRepository usecase.ChatRepository
+	// chatRepository usecase.ChatRepository
 	// chatUserRepository  usecase.ChatRepository
 }
 
 func NewChatInteractorImpl(
 	fb usecase.Firebase,
 	// cR usecase.ChatRepository,
-	cgR usecase.ChatRepository,
+	// cgR usecase.ChatRepository,
 	// cuR usecase.ChatUserRepository,
 ) ChatInteractor {
 	return &ChatInteractorImpl{
 		firebase: fb,
 		// chatRepository:      cR,
-		chatRepository: cgR,
+		// chatRepository: cgR,
 		// chatUserRepository:  cuR,
 	}
 }
@@ -55,10 +54,11 @@ func NewChatInteractorImpl(
 func (i *ChatInteractorImpl) Create(chat *pb.Chat) (*pb.Chat, error) {
 
 	// ユーザー登録
-	err := i.chatRepository.Create(chat)
-	if err != nil {
-		return chat, err
-	}
+	err := i.firebase.CreateChat(chat)
+	// err := i.chatRepository.Create(chat)
+	// if err != nil {
+	// 	return chat, err
+	// }
 
 	return chat, nil
 }
@@ -66,10 +66,10 @@ func (i *ChatInteractorImpl) Create(chat *pb.Chat) (*pb.Chat, error) {
 func (i *ChatInteractorImpl) Update(chat *pb.Chat) (bool, error) {
 
 	// ユーザー登録
-	err := i.chatRepository.Update(chat)
-	if err != nil {
-		return false, err
-	}
+	// err := i.chatRepository.Update(chat)
+	// if err != nil {
+	// 	return false, err
+	// }
 
 	return true, nil
 }
@@ -77,10 +77,10 @@ func (i *ChatInteractorImpl) Update(chat *pb.Chat) (bool, error) {
 func (i *ChatInteractorImpl) Delete(param *pb.ChatIdRequest) (bool, error) {
 
 	// ユーザー登録
-	err := i.chatRepository.Delete(param.Id)
-	if err != nil {
-		return false, err
-	}
+	// err := i.chatRepository.Delete(param.Id)
+	// if err != nil {
+	// 	return false, err
+	// }
 
 	return true, nil
 }
@@ -88,15 +88,15 @@ func (i *ChatInteractorImpl) Delete(param *pb.ChatIdRequest) (bool, error) {
 func (i *ChatInteractorImpl) GetById(param *pb.ChatIdRequest) (*pb.Chat, error) {
 	var (
 		chat *pb.Chat
-		err  error
+		// err  error
 	)
 
-	// ユーザー登録
-	chat, err = i.chatRepository.GetById(param.Id)
-	if err != nil {
-		log.Println("error is:", err)
-		return chat, err
-	}
+	// // ユーザー登録
+	// chat, err = i.chatRepository.GetById(param.Id)
+	// if err != nil {
+	// 	log.Println("error is:", err)
+	// 	return chat, err
+	// }
 
 	return chat, nil
 }
@@ -104,15 +104,15 @@ func (i *ChatInteractorImpl) GetById(param *pb.ChatIdRequest) (*pb.Chat, error) 
 func (i *ChatInteractorImpl) GetListByGroup(param *pb.ChatGroupIdRequest) ([]*pb.Chat, error) {
 	var (
 		chats []*pb.Chat
-		err   error
+		// err   error
 	)
 
 	// ユーザー登録
-	chats, err = i.chatRepository.GetListByGroup(param.GroupId)
-	if err != nil {
-		log.Println("error is:", err)
-		return chats, err
-	}
+	// chats, err = i.chatRepository.GetListByGroup(param.GroupId)
+	// if err != nil {
+	// 	log.Println("error is:", err)
+	// 	return chats, err
+	// }
 
 	return chats, nil
 }

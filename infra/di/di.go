@@ -38,13 +38,13 @@ func registerContentServiceServer(ctx context.Context, s *grpc.Server, db *datab
 
 // chatGroup
 func registerChatGroupServiceServer(ctx context.Context, s *grpc.Server, db *database.Db, firebase usecase.Firebase) {
-	chatGroupRepository := repository.NewChatGroupRepositoryImpl(db)
-	chatUserRepository := repository.NewChatUserRepositoryImpl(db)
-	pb.RegisterChatGroupServiceServer(s, handler.NewChatGroupSercviceServer(interactor.NewChatGroupInteractorImpl(firebase, chatGroupRepository, chatUserRepository)))
+	// chatGroupRepository := repository.NewChatGroupRepositoryImpl(db)
+	// chatUserRepository := repository.NewChatUserRepositoryImpl(db)
+	pb.RegisterChatGroupServiceServer(s, handler.NewChatGroupSercviceServer(interactor.NewChatGroupInteractorImpl(firebase)))
 }
 
 // chat
 func registerChatServiceServer(ctx context.Context, s *grpc.Server, db *database.Db, firebase usecase.Firebase) {
-	chatRepository := repository.NewChatRepositoryImpl(db)
-	pb.RegisterChatServiceServer(s, handler.NewChatSercviceServer(interactor.NewChatInteractorImpl(firebase, chatRepository)))
+	// chatRepository := repository.NewChatRepositoryImpl(db)
+	pb.RegisterChatServiceServer(s, handler.NewChatSercviceServer(interactor.NewChatInteractorImpl(firebase)))
 }

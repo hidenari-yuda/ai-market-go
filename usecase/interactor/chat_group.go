@@ -1,8 +1,6 @@
 package interactor
 
 import (
-	"log"
-
 	"github.com/hidenari-yuda/ai-market-go/pb"
 	"github.com/hidenari-yuda/ai-market-go/usecase"
 )
@@ -26,30 +24,30 @@ type ChatGroupInteractor interface {
 }
 
 type ChatGroupInteractorImpl struct {
-	firebase            usecase.Firebase
-	chatGroupRepository usecase.ChatGroupRepository
-	chatUserRepository  usecase.ChatUserRepository
+	firebase usecase.Firebase
+	// chatGroupRepository usecase.ChatGroupRepository
+	// chatUserRepository  usecase.ChatUserRepository
 }
 
 func NewChatGroupInteractorImpl(
 	fb usecase.Firebase,
-	cgR usecase.ChatGroupRepository,
-	cuR usecase.ChatUserRepository,
+	// cgR usecase.ChatGroupRepository,
+	// cuR usecase.ChatUserRepository,
 ) ChatGroupInteractor {
 	return &ChatGroupInteractorImpl{
-		firebase:            fb,
-		chatGroupRepository: cgR,
-		chatUserRepository:  cuR,
+		firebase: fb,
+		// chatGroupRepository: cgR,
+		// chatUserRepository:  cuR,
 	}
 }
 
 func (i *ChatGroupInteractorImpl) Create(chatGroup *pb.ChatGroup) (*pb.ChatGroup, error) {
 
 	// ユーザー登録
-	err := i.chatGroupRepository.Create(chatGroup)
-	if err != nil {
-		return chatGroup, err
-	}
+	// err := i.chatGroupRepository.Create(chatGroup)
+	// if err != nil {
+	// 	return chatGroup, err
+	// }
 
 	return chatGroup, nil
 }
@@ -57,10 +55,10 @@ func (i *ChatGroupInteractorImpl) Create(chatGroup *pb.ChatGroup) (*pb.ChatGroup
 func (i *ChatGroupInteractorImpl) Update(chatGroup *pb.ChatGroup) (bool, error) {
 
 	// ユーザー登録
-	err := i.chatGroupRepository.Update(chatGroup)
-	if err != nil {
-		return false, err
-	}
+	// err := i.chatGroupRepository.Update(chatGroup)
+	// if err != nil {
+	// 	return false, err
+	// }
 
 	return true, nil
 }
@@ -68,10 +66,10 @@ func (i *ChatGroupInteractorImpl) Update(chatGroup *pb.ChatGroup) (bool, error) 
 func (i *ChatGroupInteractorImpl) Delete(param *pb.ChatIdRequest) (bool, error) {
 
 	// ユーザー登録
-	err := i.chatGroupRepository.Delete(param.Id)
-	if err != nil {
-		return false, err
-	}
+	// err := i.chatGroupRepository.Delete(param.Id)
+	// if err != nil {
+	// 	return false, err
+	// }
 
 	return true, nil
 }
@@ -79,15 +77,15 @@ func (i *ChatGroupInteractorImpl) Delete(param *pb.ChatIdRequest) (bool, error) 
 func (i *ChatGroupInteractorImpl) GetById(param *pb.ChatIdRequest) (*pb.ChatGroup, error) {
 	var (
 		chatGroup *pb.ChatGroup
-		err       error
+		// err       error
 	)
 
 	// ユーザー登録
-	chatGroup, err = i.chatGroupRepository.GetById(param.Id)
-	if err != nil {
-		log.Println("error is:", err)
-		return chatGroup, err
-	}
+	// chatGroup, err = i.chatGroupRepository.GetById(param.Id)
+	// if err != nil {
+	// 	log.Println("error is:", err)
+	// 	return chatGroup, err
+	// }
 
 	return chatGroup, nil
 }
@@ -95,15 +93,15 @@ func (i *ChatGroupInteractorImpl) GetById(param *pb.ChatIdRequest) (*pb.ChatGrou
 func (i *ChatGroupInteractorImpl) GetListByUser(param *pb.ChatUserIdRequest) ([]*pb.ChatGroup, error) {
 	var (
 		chatGroups []*pb.ChatGroup
-		err        error
+		// err        error
 	)
 
 	// ユーザー登録
-	chatGroups, err = i.chatGroupRepository.GetListByUser(param.UserId)
-	if err != nil {
-		log.Println("error is:", err)
-		return chatGroups, err
-	}
+	// chatGroups, err = i.chatGroupRepository.GetListByUser(param.UserId)
+	// if err != nil {
+	// 	log.Println("error is:", err)
+	// 	return chatGroups, err
+	// }
 
 	return chatGroups, nil
 }

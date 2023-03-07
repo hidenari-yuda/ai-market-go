@@ -15,7 +15,17 @@ type Firebase interface {
 	CreateUser(email, password string) (string, error)
 	UpdateEmail(email, uid string) error
 	UpdatePassword(password, uid string) error
-	GetChatStream(ctx context.Context, stream chan<- pb.Chat) error
+
+	CreateChatGroup(ctx context.Context, chatGroup *pb.ChatGroup) error
+	UpdateChatGroup(ctx context.Context, chatGroup *pb.ChatGroup) error
+	GetChatGroupById(ctx context.Context, id int64) (*pb.ChatGroup, error)
+	GetChatGroupListByUser(ctx context.Context, userId int64) ([]*pb.ChatGroup, error)
+
+	CreateChat(ctx context.Context, chat *pb.Chat) error
+	UpdateChat(ctx context.Context, chat *pb.Chat) error
+	GetChatById(ctx context.Context, cid int64) (*pb.Chat, error)
+	GetChatListByGroup(ctx context.Context, groupId int64) ([]*pb.Chat, error)
+	GetChatStreamByGroup(ctx context.Context, stream chan<- pb.Chat, groupId int64) error
 }
 
 type Cache interface {

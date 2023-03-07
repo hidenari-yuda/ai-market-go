@@ -8,20 +8,21 @@ import (
 	"github.com/hidenari-yuda/ai-market-go/pb"
 	"github.com/hidenari-yuda/ai-market-go/usecase"
 	"github.com/hidenari-yuda/ai-market-go/usecase/interactor"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type ContentServiceServer struct {
 	pb.UnimplementedContentServiceServer
 	ContentInteractor interactor.ContentInteractor
-	Db             *database.Db
-	Firebase       usecase.Firebase
+	Db                *database.Db
+	Firebase          usecase.Firebase
 }
 
 func NewContentSercviceServer(ContentInteractor interactor.ContentInteractor) *ContentServiceServer {
 	return &ContentServiceServer{
 		ContentInteractor: ContentInteractor,
-		Db:             database.NewDb(),
-		Firebase:       driver.NewFirebaseImpl(),
+		Db:                database.NewDb(),
+		Firebase:          driver.NewFirebaseImpl(),
 	}
 }
 
@@ -113,9 +114,9 @@ func (s *ContentServiceServer) GetListBySearch(ctx context.Context, req *pb.Cont
 }
 
 // get latest id=user_id
-func (s *ContentServiceServer) GetLatestList(ctx context.Context, req *pb.ContentUserIdRequest) (*pb.ContentList, error) {
+func (s *ContentServiceServer) GetLatestList(ctx context.Context, req *emptypb.Empty) (*pb.ContentList, error) {
 
-	res, err := s.ContentInteractor.GetLatestList(req)
+	res, err := s.ContentInteractor.GetLatestList()
 	if err != nil {
 		return nil, err
 	}
@@ -124,9 +125,9 @@ func (s *ContentServiceServer) GetLatestList(ctx context.Context, req *pb.Conten
 }
 
 // get trend list by user id
-func (s *ContentServiceServer) GetTrendList(ctx context.Context, req *pb.ContentUserIdRequest) (*pb.ContentList, error) {
+func (s *ContentServiceServer) GetTrendList(ctx context.Context, req *emptypb.Empty) (*pb.ContentList, error) {
 
-	res, err := s.ContentInteractor.GetTrendList(req)
+	res, err := s.ContentInteractor.GetTrendList()
 	if err != nil {
 		return nil, err
 	}

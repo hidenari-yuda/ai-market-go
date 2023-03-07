@@ -5,7 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"strings"
@@ -18,6 +18,7 @@ import (
 	"github.com/hidenari-yuda/ai-market-go/pb"
 	"github.com/hidenari-yuda/ai-market-go/usecase"
 	"github.com/pkg/errors"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 )
 
@@ -106,7 +107,7 @@ func (d *FirebaseImpl) GetIDToken(token string) (string, error) {
 		return "", errors.Wrap(entity.ErrServerError, err.Error())
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", errors.Wrap(entity.ErrServerError, err.Error())
 	}
@@ -188,9 +189,71 @@ func (d *FirebaseImpl) UpdatePassword(password, uid string) error {
 	return err
 }
 
+// create chat group
+func (d *FirebaseImpl) CreateChatGroup(ctx context.Context, chatGroup *pb.ChatGroup) error {
+	_, err := d.firestore.Collection("chat_groups").Doc(fmt.Sprint(chatGroup.Id)).Set(ctx, chatGroup)
+	if err != nil {
+		return fmt.Errorf("failed to chatRepositoryImpl.CreateChatGroup, firestore.Collection: %s", err)
+	}
+	return nil
+}
+
+// update chat group
+func (d *FirebaseImpl) UpdateChatGroup(ctx context.Context, chatGroup *pb.ChatGroup) error {
+	_, err := d.firestore.Collection("chat_groups").Doc(fmt.Sprint(chatGroup.Id)).Set(ctx, chatGroup)
+	if err != nil {
+		return fmt.Errorf("failed to chatRepositoryImpl.UpdateChatGroup, firestore.Collection: %s", err)
+	}
+
+	return nil
+}
+
+// get chat group
+func (d *FirebaseImpl) GetChatGroupById(ctx context.Context, id int64) (*pb.ChatGroup, error) {
+	doc, err := d.firestore.Collection("chat_groups").Doc(fmt.Sprint(id)).Get(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to chatRepositoryImpl.GetChatGroupById, firestore.Collection: %s", err)
+	}
+
+	chatGroup := &pb.ChatGroup{}
+	err = doc.DataTo(chatGroup)
+	if err != nil {
+		return nil, fmt.Errorf("failed to chatRepositoryImpl.GetChatGroupById, doc.DataTo: %s", err)
+	}
+
+	return chatGroup, nil
+}
+
+// get chat group list by user
+func (d *FirebaseImpl) GetChatGroupListByUser(ctx context.Context, userId int64) ([]*pb.ChatGroup, error) {
+	iter := d.firestore.Collection("chat_groups").Where("user_id", "array-contains", userId).Documents(ctx)
+	defer iter.Stop()
+
+	chatGroups := []*pb.ChatGroup{}
+	for {
+		doc, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return nil, fmt.Errorf("failed to chatRepositoryImpl.GetChatGroupListByUserId, firestore.Collection: %s", err)
+		}
+
+		chatGroup := &pb.ChatGroup{}
+		err = doc.DataTo(chatGroup)
+		if err != nil {
+			return nil, fmt.Errorf("failed to chatRepositoryImpl.GetChatGroupListByUserId, doc.DataTo: %s", err)
+		}
+
+		chatGroups = append(chatGroups, chatGroup)
+	}
+
+	return chatGroups, nil
+}
+
 // create chat
 func (d *FirebaseImpl) CreateChat(ctx context.Context, chat *pb.Chat) error {
-	_, err := d.firestore.Collection("chat").Doc(fmt.Sprint(chat.Id)).Set(ctx, chat)
+	_, err := d.firestore.Collection("chas").Doc(fmt.Sprint(chat.Id)).Set(ctx, chat)
 	if err != nil {
 		return fmt.Errorf("failed to chatRepositoryImpl.CreateChat, firestore.Collection: %s", err)
 	}
@@ -199,7 +262,7 @@ func (d *FirebaseImpl) CreateChat(ctx context.Context, chat *pb.Chat) error {
 
 // update chat
 func (d *FirebaseImpl) UpdateChat(ctx context.Context, chat *pb.Chat) error {
-	_, err := d.firestore.Collection("chat").Doc(fmt.Sprint(chat.Id)).Set(ctx, chat)
+	_, err := d.firestore.Collection("chats").Doc(fmt.Sprint(chat.Id)).Set(ctx, chat)
 	if err != nil {
 		return fmt.Errorf("failed to chatRepositoryImpl.UpdateChat, firestore.Collection: %s", err)
 	}
@@ -219,9 +282,37 @@ func (d *FirebaseImpl) GetChatById(ctx context.Context, id int64) (*pb.Chat, err
 	return &chat, nil
 }
 
+// get chat list by group
+func (d *FirebaseImpl) GetChatListByGroup(ctx context.Context, chatGroupId int64) ([]*pb.Chat, error) {
+	iter := d.firestore.Collection("chat").Where("chat_group_id", "==", chatGroupId).Documents(ctx)
+	defer iter.Stop()
+
+	chats := []*pb.Chat{}
+	for {
+		doc, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return nil, fmt.Errorf("failed to chatRepositoryImpl.GetChatListByGroupId, firestore.Collection: %s", err)
+		}
+
+		chat := &pb.Chat{}
+		err = doc.DataTo(chat)
+		if err != nil {
+			return nil, fmt.Errorf("failed to chatRepositoryImpl.GetChatListByGroupId, doc.DataTo: %s", err)
+		}
+
+		chats = append(chats, chat)
+	}
+
+	return chats, nil
+}
+
 // Listen はchatコレクションのリアルタイムアップデートを確認する処理です
-//  https://firebase.google.com/docs/firestore/query-data/listen#view_changes_between_snapshots
-func (d *FirebaseImpl) GetChatStream(ctx context.Context, stream chan<- pb.Chat) error {
+//
+//	https://firebase.google.com/docs/firestore/query-data/listen#view_changes_between_snapshots
+func (d *FirebaseImpl) GetChatStreamByGroup(ctx context.Context, stream chan<- pb.Chat, groupId int64) error {
 	chat := pb.Chat{}
 
 	snapIter := d.firestore.Collection("chat").Snapshots(ctx)

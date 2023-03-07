@@ -76,10 +76,10 @@ type ContentRepository interface {
 	GetListByFreeWord(freeWord string) ([]*pb.Content, error)
 
 	// get by latest id=user_id
-	GetLatestList(userId int64) ([]*pb.Content, error)
+	GetLatestList() ([]*pb.Content, error)
 
 	// get by trend id=user_id
-	GetTrendList(userId int64) ([]*pb.Content, error)
+	GetTrendList() ([]*pb.Content, error)
 
 	// get recommended list
 	GetRecommendedListByUser(userId int64) ([]*pb.Content, error)
