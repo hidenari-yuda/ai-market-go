@@ -1,10 +1,15 @@
 package interactor
 
 import (
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/hex"
 	"log"
 
+	"github.com/hidenari-yuda/ai-market-go/domain/config"
 	"github.com/hidenari-yuda/ai-market-go/pb"
 	"github.com/hidenari-yuda/ai-market-go/usecase"
+	"golang.org/x/xerrors"
 )
 
 type UserInteractor interface {
@@ -23,6 +28,15 @@ type UserInteractor interface {
 
 	// get by uuid
 	GetByUuid(param *pb.UserUuidRequest) (*pb.User, error)
+
+	// get latest list
+	GetLatestList() ([]*pb.User, error)
+
+	// get trend list
+	GetTrendList() ([]*pb.User, error)
+
+	// get list by search
+	GetListBySearch(param *pb.UserSearchRequest) ([]*pb.User, error)
 
 	// admin API
 	GetAll() ([]*pb.User, error)
@@ -48,10 +62,34 @@ func NewUserInteractorImpl(
 
 // Create
 func (i *UserInteractorImpl) Create(user *pb.User) (*pb.User, error) {
+	var (
+		err error
+	)
+
+	// Firebase Authentication Create
+	if user.FirebaseId == "" {
+		firebaseID, err := i.firebase.CreateUser(
+			user.Email,
+			user.Password,
+		)
+		if err != nil {
+			return nil, err
+		}
+		user.FirebaseId = firebaseID
+	} else if user.Password == "" {
+		mac := hmac.New(sha256.New, []byte(config.App.BasicSecret))
+		_, err = mac.Write([]byte(user.FirebaseId))
+		if err != nil {
+			return nil, xerrors.Errorf("failed to write: %w", err)
+		}
+		user.Password = hex.EncodeToString(mac.Sum(nil))
+	} else {
+		err = xerrors.New("firebase id and password are not empty")
+		return nil, err
+	}
 
 	// ユーザー登録
-	err := i.userRepository.Create(user)
-	if err != nil {
+	if err := i.userRepository.Create(user); err != nil {
 		return user, err
 	}
 
@@ -62,8 +100,7 @@ func (i *UserInteractorImpl) Create(user *pb.User) (*pb.User, error) {
 func (i *UserInteractorImpl) Update(user *pb.User) (bool, error) {
 
 	// ユーザー登録
-	err := i.userRepository.Update(user)
-	if err != nil {
+	if err := i.userRepository.Update(user); err != nil {
 		return false, err
 	}
 
@@ -73,8 +110,7 @@ func (i *UserInteractorImpl) Update(user *pb.User) (bool, error) {
 // delete
 func (i *UserInteractorImpl) Delete(param *pb.UserIdRequest) (bool, error) {
 
-	err := i.userRepository.Delete(param.Id)
-	if err != nil {
+	if err := i.userRepository.Delete(param.Id); err != nil {
 		return false, err
 	}
 
@@ -138,6 +174,51 @@ func (i *UserInteractorImpl) SignIn(param *pb.SignInRequest) (*pb.User, error) {
 
 	return user, nil
 
+}
+
+// GetLatestList
+func (i *UserInteractorImpl) GetLatestList() ([]*pb.User, error) {
+	var (
+		users []*pb.User
+		err   error
+	)
+
+	users, err = i.userRepository.GetLatestList()
+	if err != nil {
+		return users, err
+	}
+
+	return users, nil
+}
+
+// GetTrendList
+func (i *UserInteractorImpl) GetTrendList() ([]*pb.User, error) {
+	var (
+		users []*pb.User
+		err   error
+	)
+
+	users, err = i.userRepository.GetTrendList()
+	if err != nil {
+		return users, err
+	}
+
+	return users, nil
+}
+
+// GetListBySearch
+func (i *UserInteractorImpl) GetListBySearch(param *pb.UserSearchRequest) ([]*pb.User, error) {
+	var (
+		users []*pb.User
+		err   error
+	)
+
+	users, err = i.userRepository.GetListBySearch(param.FreeWord)
+	if err != nil {
+		return users, err
+	}
+
+	return users, nil
 }
 
 // GetAll

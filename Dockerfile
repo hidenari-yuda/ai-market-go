@@ -6,9 +6,7 @@ COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
 ADD https://github.com/golang/go/raw/master/lib/time/zoneinfo.zip .
-RUN ls -la .
-RUN chmod 755 ./zoneinfo.zip
-RUN make build
+RUN ls -la . &&  chmod 755 ./zoneinfo.zip && make build
 
 FROM scratch
 USER app

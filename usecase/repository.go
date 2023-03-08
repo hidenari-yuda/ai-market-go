@@ -19,14 +19,14 @@ type UserRepository interface {
 	// get by uuid
 	GetByUuid(uuid string) (*pb.User, error)
 
-	// // get list by type
-	// GetListByType(userType *pb.User_Type) ([]*pb.User, error)
+	// get latest list
+	GetLatestList() ([]*pb.User, error)
 
-	// // get top list
-	// GetTopList(param *pb.UserTopRequest) ([]*pb.User, error)
+	// get trend list
+	GetTrendList() ([]*pb.User, error)
 
-	// // get list by search
-	// GetListBySearch(param *pb.UserSearchRequest) ([]*pb.User, error)
+	// get list by search
+	GetListBySearch(freeWord string) ([]*pb.User, error)
 
 	// admin
 	GetAll() ([]*pb.User, error)

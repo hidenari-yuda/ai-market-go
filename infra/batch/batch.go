@@ -7,4 +7,5 @@ func NewBatch() *Batch {
 	return &Batch{}
 }
 
-func (b *Batch) Start() {}
+func (b *Batch) Start() {
+}

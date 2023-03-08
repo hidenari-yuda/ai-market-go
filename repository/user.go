@@ -148,6 +148,79 @@ func (r *UserRepositoryImpl) GetByUuid(uuid string) (*pb.User, error) {
 	return &user, nil
 }
 
+// get latest list
+func (r *UserRepositoryImpl) GetLatestList() ([]*pb.User, error) {
+	var (
+		users []*pb.User
+	)
+
+	if err := r.executer.Select(
+		r.Name+"GetLatestList",
+		&users,
+		"SELECT * FROM users ORDER BY id DESC LIMIT 10",
+	); err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}
+
+// get trend list
+func (r *UserRepositoryImpl) GetTrendList() ([]*pb.User, error) {
+	var (
+		users []*pb.User
+	)
+
+	if err := r.executer.Select(
+		r.Name+"GetTrendList",
+		&users,
+		"SELECT * FROM users ORDER BY id DESC LIMIT 10",
+	); err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}
+
+// get list by search
+func (r *UserRepositoryImpl) GetListBySearch(freeWord string) ([]*pb.User, error) {
+	var (
+		users []*pb.User
+	)
+
+	if err := r.executer.Select(
+		r.Name+"GetListBySearch",
+		&users,
+		"SELECT * FROM users WHERE name LIKE ? ORDER BY id DESC",
+		"%"+freeWord+"%",
+	); err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}
+
+// admin
+// getAll
+func (r *UserRepositoryImpl) GetAll() ([]*pb.User, error) {
+	var (
+		users []*pb.User
+	)
+	err := r.executer.Select(
+		r.Name+"GetAll",
+		&users,
+		"SELECT * FROM users ORDER BY id DESC",
+	)
+
+	if err != nil {
+		err = fmt.Errorf("failed to get all users: %w", err)
+		log.Println(err)
+		return nil, err
+	}
+
+	return users, nil
+}
+
 // auth
 // SignIn
 func (r *UserRepositoryImpl) SignIn(email, password string) (user *pb.User, err error) {
@@ -185,25 +258,4 @@ func (r *UserRepositoryImpl) GetByFirebaseId(firebaseId string) (*pb.User, error
 	}
 
 	return &user, nil
-}
-
-// admin
-// getAll
-func (r *UserRepositoryImpl) GetAll() ([]*pb.User, error) {
-	var (
-		users []*pb.User
-	)
-	err := r.executer.Select(
-		r.Name+"GetAll",
-		&users,
-		"SELECT * FROM users ORDER BY id DESC",
-	)
-
-	if err != nil {
-		err = fmt.Errorf("failed to get all users: %w", err)
-		log.Println(err)
-		return nil, err
-	}
-
-	return users, nil
 }
