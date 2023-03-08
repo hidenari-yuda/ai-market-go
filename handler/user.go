@@ -9,7 +9,6 @@ import (
 	"github.com/hidenari-yuda/ai-market-go/usecase"
 	"github.com/hidenari-yuda/ai-market-go/usecase/interactor"
 
-	"golang.org/x/xerrors"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
@@ -34,7 +33,6 @@ func (s *UserServiceServer) Create(ctx context.Context, req *pb.User) (*pb.User,
 
 	tx, err := s.Db.Begin()
 	if err != nil {
-		xerrors.Errorf("failed to begin transaction: %w", err)
 		return nil, handleError(err)
 	}
 
@@ -92,6 +90,17 @@ func (s *UserServiceServer) Delete(ctx context.Context, req *pb.UserIdRequest) (
 func (s *UserServiceServer) GetById(ctx context.Context, req *pb.UserIdRequest) (*pb.User, error) {
 
 	res, err := s.UserInteractor.GetById(req)
+	if err != nil {
+		return nil, handleError(err)
+	}
+
+	return res, nil
+}
+
+// get user by uuid
+func (s *UserServiceServer) GetByUuid(ctx context.Context, req *pb.UserUuidRequest) (*pb.User, error) {
+
+	res, err := s.UserInteractor.GetByUuid(req)
 	if err != nil {
 		return nil, handleError(err)
 	}

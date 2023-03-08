@@ -119,7 +119,7 @@ func (r *PointRepositoryImpl) GetById(id int64) (*pb.Point, error) {
 }
 
 // get by uuid
-func (r *PointRepositoryImpl) GetByUuid(uuid int64) (*pb.Point, error) {
+func (r *PointRepositoryImpl) GetByUuid(uuid string) (*pb.Point, error) {
 	var (
 		content pb.Point
 	)

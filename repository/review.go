@@ -132,7 +132,7 @@ func (r *ReviewRepositoryImpl) GetById(id int64) (*pb.Review, error) {
 }
 
 // get by uuid
-func (r *ReviewRepositoryImpl) GetByUuid(uuid int64) (*pb.Review, error) {
+func (r *ReviewRepositoryImpl) GetByUuid(uuid string) (*pb.Review, error) {
 	var (
 		content pb.Review
 	)

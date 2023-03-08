@@ -26,7 +26,7 @@ func NewContentRepositoryImpl(ex SQLExecuter) usecase.ContentRepository {
 func (r *ContentRepositoryImpl) Create(param *pb.Content) error {
 	now := time.Now().UTC()
 
-	_, err := r.executer.Exec(
+	lastId, err := r.executer.Exec(
 		r.Name+"Create",
 		`INSERT INTO contents (
 			uuid,
@@ -85,6 +85,8 @@ func (r *ContentRepositoryImpl) Create(param *pb.Content) error {
 		return err
 	}
 
+	param.Id = lastId
+
 	return nil
 }
 
@@ -92,7 +94,7 @@ func (r *ContentRepositoryImpl) Create(param *pb.Content) error {
 func (r *ContentRepositoryImpl) Update(param *pb.Content) error {
 		now := time.Now().UTC()
 
-	_, err := r.executer.Exec(
+	lastId, err := r.executer.Exec(
 		r.Name+"Update",
 		`UPDATE contents SET
 			title = ?,
@@ -129,6 +131,8 @@ func (r *ContentRepositoryImpl) Update(param *pb.Content) error {
 		return err
 	}
 
+	param.Id = lastId
+
 	return nil
 }
 
@@ -154,14 +158,30 @@ func (r *ContentRepositoryImpl) GetById(id int64) (*pb.Content, error) {
 		content pb.Content
 	)
 
-	err := r.executer.Get(
+	if err := r.executer.Get(
 		r.Name+"GetById",
 		&content,
 		"SELECT * FROM contents WHERE id = ?",
 		id,
+	);err != nil {
+		return nil, err
+	}
+
+	return &content, nil
+}
+
+// get by uuid
+func (r *ContentRepositoryImpl) GetByUuid(uuid string) (*pb.Content, error) {
+	var (
+		content pb.Content
 	)
 
-	if err != nil {
+	if err := r.executer.Get(
+		r.Name+"GetByUuid",
+		&content,
+		"SELECT * FROM contents WHERE uuid = ?",
+		uuid,
+	); err != nil {
 		return nil, err
 	}
 
@@ -174,14 +194,12 @@ func (r *ContentRepositoryImpl) GetListByUser(userId int64) ([]*pb.Content, erro
 		contents []*pb.Content
 	)
 
-	err := r.executer.Select(
+	if err := r.executer.Select(
 		r.Name+"GetListByUser",
 		&contents,
 		"SELECT * FROM contents WHERE user_id = ?",
 		userId,
-	)
-
-	if err != nil {
+	); err != nil {
 		return nil, err
 	}
 
@@ -194,15 +212,13 @@ func (r *ContentRepositoryImpl) GetListByFreeWord(freeWord string) ([]*pb.Conten
 		contents []*pb.Content
 	)
 
-	err := r.executer.Select(
+	if err := r.executer.Select(
 		r.Name+"GetListByFreeWord",
 		&contents,
 		"SELECT * FROM contents WHERE title LIKE ? OR description LIKE ?",
 		"%"+freeWord+"%",
 		"%"+freeWord+"%",
-	)
-
-	if err != nil {
+	); err != nil {
 		return nil, err
 	}
 
@@ -215,13 +231,11 @@ func (r *ContentRepositoryImpl) GetLatestList() ([]*pb.Content, error) {
 		contents []*pb.Content
 	)
 
-	err := r.executer.Select(
+	if err := r.executer.Select(
 		r.Name+"GetLatestList",
 		&contents,
 		"SELECT * FROM contents ORDER BY created_at DESC",
-	)
-
-	if err != nil {
+	); err != nil {
 		return nil, err
 	}
 
@@ -234,13 +248,11 @@ func (r *ContentRepositoryImpl) GetTrendList() ([]*pb.Content, error) {
 		contents []*pb.Content
 	)
 
-	err := r.executer.Select(
+	if err := r.executer.Select(
 		r.Name+"GetTrendList",
 		&contents,
 		"SELECT * FROM contents ORDER BY view_count DESC",
-	)
-
-	if err != nil {
+	); err != nil {
 		return nil, err
 	}
 
@@ -253,14 +265,12 @@ func (r *ContentRepositoryImpl) GetRecommendedListByUser(userId int64) ([]*pb.Co
 		contents []*pb.Content
 	)
 
-	err := r.executer.Select(
+	if err := r.executer.Select(
 		r.Name+"GetRecommendedListByUser",
 		&contents,
 		"SELECT * FROM contents WHERE user_id = ? ORDER BY view_count DESC",
 		userId,
-	)
-
-	if err != nil {
+	); err != nil {
 		return nil, err
 	}
 
@@ -273,14 +283,12 @@ func (r *ContentRepositoryImpl) GetSoldListByUser(userId int64) ([]*pb.Content, 
 		contents []*pb.Content
 	)
 
-	err := r.executer.Select(
+	if err := r.executer.Select(
 		r.Name+"GetSoldListByUser",
 		&contents,
 		"SELECT * FROM contents WHERE user_id = ? ORDER BY created_at DESC",
 		userId,
-	)
-
-	if err != nil {
+	); err != nil {
 		return nil, err
 	}
 
@@ -294,14 +302,12 @@ func (r *ContentRepositoryImpl) GetPurchasedListByUser(userId int64) ([]*pb.Cont
 		contents []*pb.Content
 	)
 
-	err := r.executer.Select(
+	if err := r.executer.Select(
 		r.Name+"GetPurchasedListByUser",
 		&contents,
 		"SELECT * FROM contents WHERE user_id = ? ORDER BY created_at DESC",
 		userId,
-	)
-
-	if err != nil {
+	); err != nil {
 		return nil, err
 	}
 
@@ -315,14 +321,12 @@ func (r *ContentRepositoryImpl) GetLikedListByUser(userId int64) ([]*pb.Content,
 		contents []*pb.Content
 	)
 
-	err := r.executer.Select(
+	if err := r.executer.Select(
 		r.Name+"GetLikedListByUser",
 		&contents,
 		"SELECT * FROM contents WHERE user_id = ? ORDER BY created_at DESC",
 		userId,
-	)
-
-	if err != nil {
+	); err != nil {
 		return nil, err
 	}
 
@@ -337,14 +341,12 @@ func (r *ContentRepositoryImpl) GetListByIdList(idList []int64) ([]*pb.Content, 
 		contents []*pb.Content
 	)
 
-	err := r.executer.Select(
+	if err := r.executer.Select(
 		r.Name+"GetListByIdList",
 		&contents,
 		"SELECT * FROM contents WHERE id IN (?)",
 		idList,
-	)
-
-	if err != nil {
+	); err != nil {
 		return nil, err
 	}
 
@@ -357,13 +359,12 @@ func (r *ContentRepositoryImpl) GetAll() ([]*pb.Content, error) {
 	var (
 		contents []*pb.Content
 	)
-	err := r.executer.Select(
+
+	if err := r.executer.Select(
 		r.Name+"GetAll",
 		&contents,
 		"SELECT * FROM contents ORDER BY id DESC",
-	)
-
-	if err != nil {
+	); err != nil {
 		err = fmt.Errorf("failed to get all contents: %w", err)
 		log.Println(err)
 		return nil, err

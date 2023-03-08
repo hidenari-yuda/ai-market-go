@@ -19,6 +19,9 @@ type ChatGroupInteractor interface {
 	// Get
 	GetById(param *pb.ChatIdRequest) (*pb.ChatGroup, error)
 
+	// get by uuid
+	GetByUuid(param *pb.ChatUuidRequest) (*pb.ChatGroup, error)
+
 	// get list by user id
 	GetListByUser(param *pb.ChatUserIdRequest) ([]*pb.ChatGroup, error)
 }
@@ -82,6 +85,22 @@ func (i *ChatGroupInteractorImpl) GetById(param *pb.ChatIdRequest) (*pb.ChatGrou
 
 	// ユーザー登録
 	// chatGroup, err = i.chatGroupRepository.GetById(param.Id)
+	// if err != nil {
+	// 	log.Println("error is:", err)
+	// 	return chatGroup, err
+	// }
+
+	return chatGroup, nil
+}
+
+func (i *ChatGroupInteractorImpl) GetByUuid(param *pb.ChatUuidRequest) (*pb.ChatGroup, error) {
+	var (
+		chatGroup *pb.ChatGroup
+		// err       error
+	)
+
+	// ユーザー登録
+	// chatGroup, err = i.chatGroupRepository.GetByUuid(param.Uuid)
 	// if err != nil {
 	// 	log.Println("error is:", err)
 	// 	return chatGroup, err

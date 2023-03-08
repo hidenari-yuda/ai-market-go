@@ -26,7 +26,7 @@ func NewOrderRepositoryImpl(ex SQLExecuter) usecase.OrderRepository {
 func (r *OrderRepositoryImpl) Create(param *pb.Order) error {
 	now := time.Now().UTC()
 
-	_, err := r.executer.Exec(
+	lastId, err := r.executer.Exec(
 		r.Name+"Create",
 		`INSERT INTO orders (
 			uuid,
@@ -76,6 +76,8 @@ func (r *OrderRepositoryImpl) Create(param *pb.Order) error {
 		return err
 	}
 
+	param.Id = lastId
+
 	return nil
 }
 
@@ -83,7 +85,7 @@ func (r *OrderRepositoryImpl) Create(param *pb.Order) error {
 func (r *OrderRepositoryImpl) Update(param *pb.Order) error {
 	now := time.Now().UTC()
 	
-	_, err := r.executer.Exec(
+	lastId, err := r.executer.Exec(
 		r.Name+"Update",
 		`UPDATE orders SET
 			progress = ?,
@@ -110,11 +112,14 @@ func (r *OrderRepositoryImpl) Update(param *pb.Order) error {
 		return err
 	}
 
+	param.Id = lastId
+
 	return nil
 }
 
 // delete
 func (r *OrderRepositoryImpl) Delete(id int64) error {
+	
 	_, err := r.executer.Exec(
 		r.Name+"Delete",
 		"UPDATE orders SET is_deleted = ? WHERE id = ?",
@@ -135,14 +140,12 @@ func (r *OrderRepositoryImpl) GetById(id int64) (*pb.Order, error) {
 		content pb.Order
 	)
 
-	err := r.executer.Get(
+	if err := r.executer.Get(
 		r.Name+"GetById",
 		&content,
 		"SELECT * FROM orders WHERE id = ?",
 		id,
-	)
-
-	if err != nil {
+	); err != nil {
 		return nil, err
 	}
 
@@ -150,19 +153,17 @@ func (r *OrderRepositoryImpl) GetById(id int64) (*pb.Order, error) {
 }
 
 // get by uuid
-func (r *OrderRepositoryImpl) GetByUuid(uuid int64) (*pb.Order, error) {
+func (r *OrderRepositoryImpl) GetByUuid(uuid string) (*pb.Order, error) {
 	var (
 		content pb.Order
 	)
 
-	err := r.executer.Get(
+	if err := r.executer.Get(
 		r.Name+"GetByUuid",
 		&content,
 		"SELECT * FROM orders WHERE uuid = ?",
 		uuid,
-	)
-
-	if err != nil {
+	); err != nil {
 		return nil, err
 	}
 
@@ -175,14 +176,12 @@ func (r *OrderRepositoryImpl) GetListByUser(userId int64) ([]*pb.Order, error) {
 		orders []*pb.Order
 	)
 
-	err := r.executer.Select(
+	if err := r.executer.Select(
 		r.Name+"GetListByUser",
 		&orders,
 		"SELECT * FROM orders WHERE user_id = ?",
 		userId,
-	)
-
-	if err != nil {
+	); err != nil {
 		return nil, err
 	}
 
@@ -195,15 +194,13 @@ func (r *OrderRepositoryImpl) GetListByFreeWord(freeWord string) ([]*pb.Order, e
 		orders []*pb.Order
 	)
 
-	err := r.executer.Select(
+	if err := r.executer.Select(
 		r.Name+"GetListByFreeWord",
 		&orders,
 		"SELECT * FROM orders WHERE title LIKE ? OR description LIKE ?",
 		"%"+freeWord+"%",
 		"%"+freeWord+"%",
-	)
-
-	if err != nil {
+	); err != nil {
 		return nil, err
 	}
 
@@ -216,14 +213,12 @@ func (r *OrderRepositoryImpl) GetLatestList(userId int64) ([]*pb.Order, error) {
 		orders []*pb.Order
 	)
 
-	err := r.executer.Select(
+	if err := r.executer.Select(
 		r.Name+"GetLatestList",
 		&orders,
 		"SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC",
 		userId,
-	)
-
-	if err != nil {
+	); err != nil {
 		return nil, err
 	}
 
@@ -236,14 +231,12 @@ func (r *OrderRepositoryImpl) GetSoldListByUser(userId int64) ([]*pb.Order, erro
 		orders []*pb.Order
 	)
 
-	err := r.executer.Select(
+	if err := r.executer.Select(
 		r.Name+"GetSoldListByUser",
 		&orders,
 		"SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC",
 		userId,
-	)
-
-	if err != nil {
+	); err != nil {
 		return nil, err
 	}
 
@@ -257,14 +250,12 @@ func (r *OrderRepositoryImpl) GetPurchasedListByUser(userId int64) ([]*pb.Order,
 		orders []*pb.Order
 	)
 
-	err := r.executer.Select(
+	if err := r.executer.Select(
 		r.Name+"GetPurchasedListByUser",
 		&orders,
 		"SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC",
 		userId,
-	)
-
-	if err != nil {
+	); err != nil {
 		return nil, err
 	}
 
@@ -279,14 +270,12 @@ func (r *OrderRepositoryImpl) GetListByIdList(idList []int64) ([]*pb.Order, erro
 		orders []*pb.Order
 	)
 
-	err := r.executer.Select(
+	if err := r.executer.Select(
 		r.Name+"GetListByIdList",
 		&orders,
 		"SELECT * FROM orders WHERE id IN (?)",
 		idList,
-	)
-
-	if err != nil {
+	); err != nil {
 		return nil, err
 	}
 
@@ -299,13 +288,12 @@ func (r *OrderRepositoryImpl) GetAll() ([]*pb.Order, error) {
 	var (
 		orders []*pb.Order
 	)
-	err := r.executer.Select(
+
+	if err := r.executer.Select(
 		r.Name+"GetAll",
 		&orders,
 		"SELECT * FROM orders ORDER BY id DESC",
-	)
-
-	if err != nil {
+	); err != nil {
 		err = fmt.Errorf("failed to get all orders: %w", err)
 		log.Println(err)
 		return nil, err

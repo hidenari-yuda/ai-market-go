@@ -26,7 +26,7 @@ func NewFollowingRepositoryImpl(ex SQLExecuter) usecase.FollowingRepository {
 func (r *FollowingRepositoryImpl) Create(param *pb.Following) error {
 	now := time.Now().UTC()
 
-	_, err := r.executer.Exec(
+	lastId, err := r.executer.Exec(
 		r.Name+"Create",
 		`INSERT INTO followings (
 			uuid,
@@ -53,6 +53,8 @@ func (r *FollowingRepositoryImpl) Create(param *pb.Following) error {
 		return err
 	}
 
+	param.Id = lastId
+
 	return nil
 }
 
@@ -60,7 +62,7 @@ func (r *FollowingRepositoryImpl) Create(param *pb.Following) error {
 func (r *FollowingRepositoryImpl) Update(param *pb.Following) error {
 	now := time.Now().UTC()
 	
-	_, err := r.executer.Exec(
+	lastId, err := r.executer.Exec(
 		r.Name+"Update",
 		`UPDATE followings SET
 		WHERE id = ?`,
@@ -73,6 +75,8 @@ func (r *FollowingRepositoryImpl) Update(param *pb.Following) error {
 		log.Println(err)
 		return err
 	}
+
+	param.Id = lastId
 
 	return nil
 }
@@ -99,14 +103,12 @@ func (r *FollowingRepositoryImpl) GetById(id int64) (*pb.Following, error) {
 		content pb.Following
 	)
 
-	err := r.executer.Get(
+	if err := r.executer.Get(
 		r.Name+"GetById",
 		&content,
 		"SELECT * FROM followings WHERE id = ?",
 		id,
-	)
-
-	if err != nil {
+	); err != nil {
 		return nil, err
 	}
 
@@ -114,19 +116,17 @@ func (r *FollowingRepositoryImpl) GetById(id int64) (*pb.Following, error) {
 }
 
 // get by uuid
-func (r *FollowingRepositoryImpl) GetByUuid(uuid int64) (*pb.Following, error) {
+func (r *FollowingRepositoryImpl) GetByUuid(uuid string) (*pb.Following, error) {
 	var (
 		content pb.Following
 	)
 
-	err := r.executer.Get(
+	if err := r.executer.Get(
 		r.Name+"GetByUuid",
 		&content,
 		"SELECT * FROM followings WHERE uuid = ?",
 		uuid,
-	)
-
-	if err != nil {
+	); err != nil {
 		return nil, err
 	}
 
@@ -157,14 +157,12 @@ func (r *FollowingRepositoryImpl) GetFollowingListByUser(userId int64) ([]*pb.Fo
 		followings []*pb.Following
 	)
 
-	err := r.executer.Select(
+	if err := r.executer.Select(
 		r.Name+"GetFollowingListByUser",
 		&followings,
 		"SELECT * FROM followings WHERE following_user_id = ?",
 		userId,
-	)
-
-	if err != nil {
+	); err != nil {
 		return nil, err
 	}
 
@@ -177,14 +175,12 @@ func (r *FollowingRepositoryImpl) GetListByContent(contentId int64) ([]*pb.Follo
 		followings []*pb.Following
 	)
 
-	err := r.executer.Select(
+	if err := r.executer.Select(
 		r.Name+"GetListByContent",
 		&followings,
 		"SELECT * FROM followings WHERE content_id = ?",
 		contentId,
-	)
-
-	if err != nil {
+	); err != nil {
 		return nil, err
 	}
 
@@ -199,14 +195,12 @@ func (r *FollowingRepositoryImpl) GetListByIdList(idList []int64) ([]*pb.Followi
 		followings []*pb.Following
 	)
 
-	err := r.executer.Select(
+	if err := r.executer.Select(
 		r.Name+"GetListByIdList",
 		&followings,
 		"SELECT * FROM followings WHERE id IN (?)",
 		idList,
-	)
-
-	if err != nil {
+	); err != nil {
 		return nil, err
 	}
 
@@ -219,13 +213,12 @@ func (r *FollowingRepositoryImpl) GetAll() ([]*pb.Following, error) {
 	var (
 		followings []*pb.Following
 	)
-	err := r.executer.Select(
+
+	if err := r.executer.Select(
 		r.Name+"GetAll",
 		&followings,
 		"SELECT * FROM followings ORDER BY id DESC",
-	)
-
-	if err != nil {
+	); err != nil {
 		err = fmt.Errorf("failed to get all followings: %w", err)
 		log.Println(err)
 		return nil, err

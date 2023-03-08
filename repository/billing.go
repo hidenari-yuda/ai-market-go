@@ -160,6 +160,24 @@ func (r *BillingRepositoryImpl) GetById(id int64) (*pb.Billing, error) {
 	return &billing, nil
 }
 
+// get by uuid
+func (r *BillingRepositoryImpl) GetByUuid(uuid string) (*pb.Billing, error) {
+	var (
+		billing pb.Billing
+	)
+
+	if err := r.executer.Get(
+		r.Name+"GetByUuid",
+		&billing,
+		"SELECT * FROM billings WHERE uuid = ?",
+		uuid,
+	); err != nil {
+		return nil, err
+	}
+
+	return &billing, nil
+}
+
 // getByUser
 func (r *BillingRepositoryImpl) GetListByUser(userId int64) ([]*pb.Billing, error) {
 	var (

@@ -122,7 +122,7 @@ func (r *AspRepositoryImpl) GetById(id int64) (*pb.Asp, error) {
 }
 
 // get by uuid
-func (r *AspRepositoryImpl) GetByUuid(uuid int64) (*pb.Asp, error) {
+func (r *AspRepositoryImpl) GetByUuid(uuid string) (*pb.Asp, error) {
 	var (
 		content pb.Asp
 	)

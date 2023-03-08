@@ -110,7 +110,7 @@ func (s *ChatServiceServer) GetStreamByGroup(req *pb.ChatGroupIdRequest, server 
 	stream := make(chan pb.Chat)
 
 	go func() {
-		err := s.ChatInteractor.GetStream(ctx, stream)
+		err := s.ChatInteractor.GetStreamByGroup(ctx, stream, req.GroupId)
 		if err != nil {
 			log.Println(err)
 		}

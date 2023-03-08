@@ -21,6 +21,9 @@ type UserInteractor interface {
 	// Get
 	GetById(param *pb.UserIdRequest) (*pb.User, error)
 
+	// get by uuid
+	GetByUuid(param *pb.UserUuidRequest) (*pb.User, error)
+
 	// admin API
 	GetAll() ([]*pb.User, error)
 
@@ -87,6 +90,23 @@ func (i *UserInteractorImpl) GetById(param *pb.UserIdRequest) (*pb.User, error) 
 
 	// ユーザー登録
 	user, err = i.userRepository.GetById(param.Id)
+	if err != nil {
+		log.Println("error is:", err)
+		return user, err
+	}
+
+	return user, nil
+}
+
+// GetByUuid
+func (i *UserInteractorImpl) GetByUuid(param *pb.UserUuidRequest) (*pb.User, error) {
+	var (
+		user *pb.User
+		err  error
+	)
+
+	// ユーザー登録
+	user, err = i.userRepository.GetByUuid(param.Uuid)
 	if err != nil {
 		log.Println("error is:", err)
 		return user, err

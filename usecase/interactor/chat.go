@@ -27,7 +27,7 @@ type ChatInteractor interface {
 	GetListByGroup(param *pb.ChatGroupIdRequest) ([]*pb.Chat, error)
 
 	// stream
-	GetStream(ctx context.Context, stream chan<- pb.Chat) error
+	GetStreamByGroup(ctx context.Context, stream chan<- pb.Chat, groupId int64) error
 }
 
 type ChatInteractorImpl struct {
@@ -54,7 +54,11 @@ func NewChatInteractorImpl(
 func (i *ChatInteractorImpl) Create(chat *pb.Chat) (*pb.Chat, error) {
 
 	// ユーザー登録
-	err := i.firebase.CreateChat(chat)
+	ctx := context.Background()
+	if err := i.firebase.CreateChat(ctx, chat); err != nil {
+		return chat, err
+	}
+
 	// err := i.chatRepository.Create(chat)
 	// if err != nil {
 	// 	return chat, err
@@ -118,11 +122,11 @@ func (i *ChatInteractorImpl) GetListByGroup(param *pb.ChatGroupIdRequest) ([]*pb
 }
 
 // get stream
-func (i *ChatInteractorImpl) GetStream(ctx context.Context, stream chan<- pb.Chat) error {
+func (i *ChatInteractorImpl) GetStreamByGroup(ctx context.Context, stream chan<- pb.Chat, groupId int64) error {
 	defer close(stream)
 	eg, _ := errgroup.WithContext(ctx)
 	eg.Go(func() error {
-		err := i.firebase.GetChatStream(ctx, stream)
+		err := i.firebase.GetChatStreamByGroup(ctx, stream, groupId)
 		if err != nil {
 			return err
 		}

@@ -58,7 +58,7 @@ func (r *ContentToolRepositoryImpl) Create(param *pb.ContentTool) error {
 
 // update
 func (r *ContentToolRepositoryImpl) Update(param *pb.ContentTool) error {
-		now := time.Now().UTC()
+	now := time.Now().UTC()
 
 	_, err := r.executer.Exec(
 		r.Name+"Update",
@@ -84,9 +84,24 @@ func (r *ContentToolRepositoryImpl) Update(param *pb.ContentTool) error {
 func (r *ContentToolRepositoryImpl) Delete(id int64) error {
 	_, err := r.executer.Exec(
 		r.Name+"Delete",
-		"UPDATE content_tools SET is_deleted = ? WHERE id = ?",
+		`UPDATE content_tools SET is_deleted = ? WHERE id = ?`,
 		true,
 		id,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// delete by content
+func (r *ContentToolRepositoryImpl) DeleteByContent(contentId int64) error {
+	_, err := r.executer.Exec(
+		r.Name+"DeleteByContent",
+		`DELETE FROM content_tools WHERE content_id = ?`,
+		contentId,
 	)
 
 	if err != nil {
@@ -105,7 +120,7 @@ func (r *ContentToolRepositoryImpl) GetById(id int64) (*pb.ContentTool, error) {
 	err := r.executer.Get(
 		r.Name+"GetById",
 		&contentTool,
-		"SELECT * FROM content_tools WHERE id = ?",
+		`SELECT * FROM content_tools WHERE id = ?`,
 		id,
 	)
 
@@ -119,13 +134,13 @@ func (r *ContentToolRepositoryImpl) GetById(id int64) (*pb.ContentTool, error) {
 // getByContent
 func (r *ContentToolRepositoryImpl) GetListByContent(contentId int64) ([]*pb.ContentTool, error) {
 	var (
-		content_tools []*pb.ContentTool
+		contentTools []*pb.ContentTool
 	)
 
 	err := r.executer.Select(
 		r.Name+"GetListByContent",
-		&content_tools,
-		"SELECT * FROM content_tools WHERE content_id = ?",
+		&contentTools,
+		`SELECT * FROM content_tools WHERE content_id = ?`,
 		contentId,
 	)
 
@@ -133,19 +148,47 @@ func (r *ContentToolRepositoryImpl) GetListByContent(contentId int64) ([]*pb.Con
 		return nil, err
 	}
 
-	return content_tools, nil
+	return contentTools, nil
+}
+
+// get list by user
+func (r *ContentToolRepositoryImpl) GetListByUser(userId int64) ([]*pb.ContentTool, error) {
+	var (
+		contentTools []*pb.ContentTool
+	)
+
+	err := r.executer.Select(
+		r.Name+"GetListByUser",
+		&contentTools,
+		`
+		SELECT * 
+		FROM content_tools 
+		WHERE content_id IN (
+			SELECT id FROM contents WHERE user_id = ?
+		)
+		AND is_deleted = false
+		ORDER BY id DESC
+		`,
+		userId,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return contentTools, nil
 }
 
 // get list by id list
 func (r *ContentToolRepositoryImpl) GetListByIdList(idList []int64) ([]*pb.ContentTool, error) {
 	var (
-		content_tools []*pb.ContentTool
+		contentTools []*pb.ContentTool
 	)
 
 	err := r.executer.Select(
 		r.Name+"GetListByIdList",
-		&content_tools,
-		"SELECT * FROM content_tools WHERE id IN (?)",
+		&contentTools,
+		`SELECT * FROM content_tools WHERE id IN (?)`,
 		idList,
 	)
 
@@ -153,19 +196,39 @@ func (r *ContentToolRepositoryImpl) GetListByIdList(idList []int64) ([]*pb.Conte
 		return nil, err
 	}
 
-	return content_tools, nil
+	return contentTools, nil
+}
+
+// get list by content id list
+func (r *ContentToolRepositoryImpl) GetListByContentIdList(contentIdList []int64) ([]*pb.ContentTool, error) {
+	var (
+		contentTools []*pb.ContentTool
+	)
+
+	err := r.executer.Select(
+		r.Name+"GetListByContentIdList",
+		&contentTools,
+		"SELECT * FROM content_tools WHERE content_id IN (?)",
+		contentIdList,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return contentTools, nil
 }
 
 // admin
 // getAll
 func (r *ContentToolRepositoryImpl) GetAll() ([]*pb.ContentTool, error) {
 	var (
-		content_tools []*pb.ContentTool
+		contentTools []*pb.ContentTool
 	)
 	err := r.executer.Select(
 		r.Name+"GetAll",
-		&content_tools,
-		"SELECT * FROM content_tools ORDER BY id DESC",
+		&contentTools,
+		`SELECT * FROM content_tools ORDER BY id DESC`,
 	)
 
 	if err != nil {
@@ -174,5 +237,5 @@ func (r *ContentToolRepositoryImpl) GetAll() ([]*pb.ContentTool, error) {
 		return nil, err
 	}
 
-	return content_tools, nil
+	return contentTools, nil
 }

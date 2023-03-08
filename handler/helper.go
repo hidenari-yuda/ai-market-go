@@ -2,11 +2,13 @@ package handler
 
 import (
 	"fmt"
+	"log"
 	"strconv"
 
 	"github.com/hidenari-yuda/ai-market-go/domain/config"
 	"github.com/hidenari-yuda/ai-market-go/domain/entity"
 	"github.com/labstack/echo/v4"
+	"golang.org/x/xerrors"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/status"
 )
@@ -55,6 +57,9 @@ func handleError(err error) error {
 	})
 
 	err = stat.Err()
+
+	err = xerrors.Errorf("failed to begin transaction: %w", err)
+	log.Println(err)
 
 	return err
 }

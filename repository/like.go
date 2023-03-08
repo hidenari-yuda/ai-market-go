@@ -26,7 +26,7 @@ func NewLikeRepositoryImpl(ex SQLExecuter) usecase.LikeRepository {
 func (r *LikeRepositoryImpl) Create(param *pb.Like) error {
 	now := time.Now().UTC()
 
-	_, err := r.executer.Exec(
+	lastId, err := r.executer.Exec(
 		r.Name+"Create",
 		`INSERT INTO likes (
 			uuid,
@@ -53,6 +53,8 @@ func (r *LikeRepositoryImpl) Create(param *pb.Like) error {
 		return err
 	}
 
+	param.Id = lastId
+
 	return nil
 }
 
@@ -60,7 +62,7 @@ func (r *LikeRepositoryImpl) Create(param *pb.Like) error {
 func (r *LikeRepositoryImpl) Update(param *pb.Like) error {
 	now := time.Now().UTC()
 	
-	_, err := r.executer.Exec(
+	lastId, err := r.executer.Exec(
 		r.Name+"Update",
 		`UPDATE likes SET
 		WHERE id = ?`,
@@ -73,6 +75,8 @@ func (r *LikeRepositoryImpl) Update(param *pb.Like) error {
 		log.Println(err)
 		return err
 	}
+
+	param.Id = lastId
 
 	return nil
 }
@@ -99,14 +103,12 @@ func (r *LikeRepositoryImpl) GetById(id int64) (*pb.Like, error) {
 		content pb.Like
 	)
 
-	err := r.executer.Get(
+	if err := r.executer.Get(
 		r.Name+"GetById",
 		&content,
 		"SELECT * FROM likes WHERE id = ?",
 		id,
-	)
-
-	if err != nil {
+	); err != nil {
 		return nil, err
 	}
 
@@ -119,14 +121,12 @@ func (r *LikeRepositoryImpl) GetByUuid(uuid int64) (*pb.Like, error) {
 		content pb.Like
 	)
 
-	err := r.executer.Get(
+	if err := r.executer.Get(
 		r.Name+"GetByUuid",
 		&content,
 		"SELECT * FROM likes WHERE uuid = ?",
 		uuid,
-	)
-
-	if err != nil {
+	); err != nil {
 		return nil, err
 	}
 
@@ -139,14 +139,12 @@ func (r *LikeRepositoryImpl) GetListByUser(userId int64) ([]*pb.Like, error) {
 		likes []*pb.Like
 	)
 
-	err := r.executer.Select(
+	if err := r.executer.Select(
 		r.Name+"GetListByUser",
 		&likes,
 		"SELECT * FROM likes WHERE user_id = ?",
 		userId,
-	)
-
-	if err != nil {
+	); err != nil {
 		return nil, err
 	}
 
@@ -159,14 +157,12 @@ func (r *LikeRepositoryImpl) GetListByContent(contentId int64) ([]*pb.Like, erro
 		likes []*pb.Like
 	)
 
-	err := r.executer.Select(
+	if err := r.executer.Select(
 		r.Name+"GetListByContent",
 		&likes,
 		"SELECT * FROM likes WHERE content_id = ?",
 		contentId,
-	)
-
-	if err != nil {
+	); err != nil {
 		return nil, err
 	}
 
@@ -181,14 +177,12 @@ func (r *LikeRepositoryImpl) GetListByIdList(idList []int64) ([]*pb.Like, error)
 		likes []*pb.Like
 	)
 
-	err := r.executer.Select(
+	if err := r.executer.Select(
 		r.Name+"GetListByIdList",
 		&likes,
 		"SELECT * FROM likes WHERE id IN (?)",
 		idList,
-	)
-
-	if err != nil {
+	); err != nil {
 		return nil, err
 	}
 
@@ -201,13 +195,12 @@ func (r *LikeRepositoryImpl) GetAll() ([]*pb.Like, error) {
 	var (
 		likes []*pb.Like
 	)
-	err := r.executer.Select(
+
+	if err := r.executer.Select(
 		r.Name+"GetAll",
 		&likes,
 		"SELECT * FROM likes ORDER BY id DESC",
-	)
-
-	if err != nil {
+	); err != nil {
 		err = fmt.Errorf("failed to get all likes: %w", err)
 		log.Println(err)
 		return nil, err

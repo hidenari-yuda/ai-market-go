@@ -58,7 +58,7 @@ func (r *ContentSubCategoryRepositoryImpl) Create(param *pb.ContentSubCategory) 
 
 // update
 func (r *ContentSubCategoryRepositoryImpl) Update(param *pb.ContentSubCategory) error {
-		now := time.Now().UTC()
+	now := time.Now().UTC()
 
 	_, err := r.executer.Exec(
 		r.Name+"Update",
@@ -96,6 +96,21 @@ func (r *ContentSubCategoryRepositoryImpl) Delete(id int64) error {
 	return nil
 }
 
+// delete by content
+func (r *ContentSubCategoryRepositoryImpl) DeleteByContent(contentId int64) error {
+	_, err := r.executer.Exec(
+		r.Name+"DeleteByContent",
+		"DELETE FROM content_sub_categories WHERE content_id = ?",
+		contentId,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // get
 func (r *ContentSubCategoryRepositoryImpl) GetById(id int64) (*pb.ContentSubCategory, error) {
 	var (
@@ -119,12 +134,12 @@ func (r *ContentSubCategoryRepositoryImpl) GetById(id int64) (*pb.ContentSubCate
 // getByContent
 func (r *ContentSubCategoryRepositoryImpl) GetListByContent(contentId int64) ([]*pb.ContentSubCategory, error) {
 	var (
-		content_sub_categories []*pb.ContentSubCategory
+		contentSubCategories []*pb.ContentSubCategory
 	)
 
 	err := r.executer.Select(
 		r.Name+"GetListByContent",
-		&content_sub_categories,
+		&contentSubCategories,
 		"SELECT * FROM content_sub_categories WHERE content_id = ?",
 		contentId,
 	)
@@ -133,18 +148,40 @@ func (r *ContentSubCategoryRepositoryImpl) GetListByContent(contentId int64) ([]
 		return nil, err
 	}
 
-	return content_sub_categories, nil
+	return contentSubCategories, nil
+}
+
+// get list by user
+func (r *ContentSubCategoryRepositoryImpl) GetListByUser(userId int64) ([]*pb.ContentSubCategory, error) {
+	var (
+		contentSubCategories []*pb.ContentSubCategory
+	)
+
+	err := r.executer.Select(
+		r.Name+"GetListByUser",
+		&contentSubCategories,
+		`SELECT * FROM content_sub_categories WHERE content_id IN (
+			SELECT id FROM contents WHERE user_id = ?
+		)`,
+		userId,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return contentSubCategories, nil
 }
 
 // get list by id list
 func (r *ContentSubCategoryRepositoryImpl) GetListByIdList(idList []int64) ([]*pb.ContentSubCategory, error) {
 	var (
-		content_sub_categories []*pb.ContentSubCategory
+		contentSubCategories []*pb.ContentSubCategory
 	)
 
 	err := r.executer.Select(
 		r.Name+"GetListByIdList",
-		&content_sub_categories,
+		&contentSubCategories,
 		"SELECT * FROM content_sub_categories WHERE id IN (?)",
 		idList,
 	)
@@ -153,18 +190,38 @@ func (r *ContentSubCategoryRepositoryImpl) GetListByIdList(idList []int64) ([]*p
 		return nil, err
 	}
 
-	return content_sub_categories, nil
+	return contentSubCategories, nil
+}
+
+// get list by content id list
+func (r *ContentSubCategoryRepositoryImpl) GetListByContentIdList(contentIdList []int64) ([]*pb.ContentSubCategory, error) {
+	var (
+		contentSubCategories []*pb.ContentSubCategory
+	)
+
+	err := r.executer.Select(
+		r.Name+"GetListByContentIdList",
+		&contentSubCategories,
+		"SELECT * FROM content_sub_categories WHERE content_id IN (?)",
+		contentIdList,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return contentSubCategories, nil
 }
 
 // admin
 // getAll
 func (r *ContentSubCategoryRepositoryImpl) GetAll() ([]*pb.ContentSubCategory, error) {
 	var (
-		content_sub_categories []*pb.ContentSubCategory
+		contentSubCategories []*pb.ContentSubCategory
 	)
 	err := r.executer.Select(
 		r.Name+"GetAll",
-		&content_sub_categories,
+		&contentSubCategories,
 		"SELECT * FROM content_sub_categories ORDER BY id DESC",
 	)
 
@@ -174,5 +231,5 @@ func (r *ContentSubCategoryRepositoryImpl) GetAll() ([]*pb.ContentSubCategory, e
 		return nil, err
 	}
 
-	return content_sub_categories, nil
+	return contentSubCategories, nil
 }

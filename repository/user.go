@@ -130,6 +130,24 @@ func (r *UserRepositoryImpl) GetById(id int64) (*pb.User, error) {
 	return &user, nil
 }
 
+// get by uuid
+func (r *UserRepositoryImpl) GetByUuid(uuid string) (*pb.User, error) {
+	var (
+		user pb.User
+	)
+
+	if err := r.executer.Get(
+		r.Name+"GetByUuid",
+		&user,
+		"SELECT * FROM users WHERE uuid = ?",
+		uuid,
+	); err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
 // auth
 // SignIn
 func (r *UserRepositoryImpl) SignIn(email, password string) (user *pb.User, err error) {

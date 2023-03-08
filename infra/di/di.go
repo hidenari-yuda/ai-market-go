@@ -16,6 +16,7 @@ import (
 func RegisterServiceServer(ctx context.Context, s *grpc.Server, db *database.Db, firebase usecase.Firebase) {
 	regsiterUserServiceServer(ctx, s, db, firebase)
 	registerContentServiceServer(ctx, s, db, firebase)
+	registerOrderServiceServer(ctx, s, db, firebase)
 	registerChatServiceServer(ctx, s, db, firebase)
 	registerChatGroupServiceServer(ctx, s, db, firebase)
 }
@@ -34,6 +35,12 @@ func registerContentServiceServer(ctx context.Context, s *grpc.Server, db *datab
 	contentCategoryRepository := repository.NewContentCategoryRepositoryImpl(db)
 	contentSubCategoryRepository := repository.NewContentSubCategoryRepositoryImpl(db)
 	pb.RegisterContentServiceServer(s, handler.NewContentSercviceServer(interactor.NewContentInteractorImpl(firebase, contentRepository, contentContentRepository, contentToolRepository, contentCategoryRepository, contentSubCategoryRepository)))
+}
+
+// order
+func registerOrderServiceServer(ctx context.Context, s *grpc.Server, db *database.Db, firebase usecase.Firebase) {
+	orderRepository := repository.NewOrderRepositoryImpl(db)
+	pb.RegisterOrderServiceServer(s, handler.NewOrderSercviceServer(interactor.NewOrderInteractorImpl(firebase, orderRepository)))
 }
 
 // chatGroup

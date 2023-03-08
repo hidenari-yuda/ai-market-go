@@ -28,7 +28,7 @@ func (r *ContentDetailRepositoryImpl) Create(param *pb.ContentDetail) error {
 
 	_, err := r.executer.Exec(
 		r.Name+"Create",
-		`INSERT INTO content_tools (
+		`INSERT INTO content_details (
 			uuid,
 			content_id,
 			title,
@@ -64,7 +64,7 @@ func (r *ContentDetailRepositoryImpl) Update(param *pb.ContentDetail) error {
 
 	_, err := r.executer.Exec(
 		r.Name+"Update",
-		`UPDATE content_tools SET
+		`UPDATE content_details SET
 			title = ?,
 			description = ?,
 			updated_at = ?
@@ -88,9 +88,24 @@ func (r *ContentDetailRepositoryImpl) Update(param *pb.ContentDetail) error {
 func (r *ContentDetailRepositoryImpl) Delete(id int64) error {
 	_, err := r.executer.Exec(
 		r.Name+"Delete",
-		"UPDATE content_tools SET is_deleted = ? WHERE id = ?",
+		"UPDATE content_details SET is_deleted = ? WHERE id = ?",
 		true,
 		id,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// delete by content
+func (r *ContentDetailRepositoryImpl) DeleteByContent(contentId int64) error {
+	_, err := r.executer.Exec(
+		r.Name+"DeleteByContent",
+		"DELETE FROM content_details WHERE content_id = ?",
+		contentId,
 	)
 
 	if err != nil {
@@ -109,7 +124,7 @@ func (r *ContentDetailRepositoryImpl) GetById(id int64) (*pb.ContentDetail, erro
 	err := r.executer.Get(
 		r.Name+"GetById",
 		&contentDetail,
-		"SELECT * FROM content_tools WHERE id = ?",
+		"SELECT * FROM content_details WHERE id = ?",
 		id,
 	)
 
@@ -123,13 +138,13 @@ func (r *ContentDetailRepositoryImpl) GetById(id int64) (*pb.ContentDetail, erro
 // getByContent
 func (r *ContentDetailRepositoryImpl) GetListByContent(contentId int64) ([]*pb.ContentDetail, error) {
 	var (
-		content_tools []*pb.ContentDetail
+		contentDetails []*pb.ContentDetail
 	)
 
 	err := r.executer.Select(
 		r.Name+"GetListByContent",
-		&content_tools,
-		"SELECT * FROM content_tools WHERE content_id = ?",
+		&contentDetails,
+		"SELECT * FROM content_details WHERE content_id = ?",
 		contentId,
 	)
 
@@ -137,19 +152,47 @@ func (r *ContentDetailRepositoryImpl) GetListByContent(contentId int64) ([]*pb.C
 		return nil, err
 	}
 
-	return content_tools, nil
+	return contentDetails, nil
+}
+
+// get list by user
+func (r *ContentDetailRepositoryImpl) GetListByUser(userId int64) ([]*pb.ContentDetail, error) {
+	var (
+		contentDetails []*pb.ContentDetail
+	)
+
+	err := r.executer.Select(
+		r.Name+"GetListByUser",
+		&contentDetails,
+		`
+		SELECT * 
+		FROM content_details 
+		WHERE content_id IN (
+			SELECT id FROM contents WHERE user_id = ?
+		)
+		AND is_deleted = false
+		ORDER BY id DESC
+		`,
+		userId,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return contentDetails, nil
 }
 
 // get list by id list
 func (r *ContentDetailRepositoryImpl) GetListByIdList(idList []int64) ([]*pb.ContentDetail, error) {
 	var (
-		content_tools []*pb.ContentDetail
+		contentDetails []*pb.ContentDetail
 	)
 
 	err := r.executer.Select(
 		r.Name+"GetListByIdList",
-		&content_tools,
-		"SELECT * FROM content_tools WHERE id IN (?)",
+		&contentDetails,
+		"SELECT * FROM content_details WHERE id IN (?)",
 		idList,
 	)
 
@@ -157,26 +200,46 @@ func (r *ContentDetailRepositoryImpl) GetListByIdList(idList []int64) ([]*pb.Con
 		return nil, err
 	}
 
-	return content_tools, nil
+	return contentDetails, nil
+}
+
+// get list by content id list
+func (r *ContentDetailRepositoryImpl) GetListByContentIdList(contentIdList []int64) ([]*pb.ContentDetail, error) {
+	var (
+		contentDetails []*pb.ContentDetail
+	)
+
+	err := r.executer.Select(
+		r.Name+"GetListByContentIdList",
+		&contentDetails,
+		"SELECT * FROM content_details WHERE content_id IN (?)",
+		contentIdList,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return contentDetails, nil
 }
 
 // admin
 // getAll
 func (r *ContentDetailRepositoryImpl) GetAll() ([]*pb.ContentDetail, error) {
 	var (
-		content_tools []*pb.ContentDetail
+		contentDetails []*pb.ContentDetail
 	)
 	err := r.executer.Select(
 		r.Name+"GetAll",
-		&content_tools,
-		"SELECT * FROM content_tools ORDER BY id DESC",
+		&contentDetails,
+		"SELECT * FROM content_details ORDER BY id DESC",
 	)
 
 	if err != nil {
-		err = fmt.Errorf("failed to get all content_tools: %w", err)
+		err = fmt.Errorf("failed to get all content_details: %w", err)
 		log.Println(err)
 		return nil, err
 	}
 
-	return content_tools, nil
+	return contentDetails, nil
 }
