@@ -7,9 +7,10 @@ import (
 	"log"
 
 	"github.com/hidenari-yuda/ai-market-go/domain/config"
+	"github.com/hidenari-yuda/ai-market-go/domain/entity"
 	"github.com/hidenari-yuda/ai-market-go/pb"
 	"github.com/hidenari-yuda/ai-market-go/usecase"
-	"golang.org/x/xerrors"
+	"github.com/pkg/errors"
 )
 
 type UserInteractor interface {
@@ -43,6 +44,8 @@ type UserInteractor interface {
 
 	// auth
 	SignIn(param *pb.SignInRequest) (*pb.User, error)
+	
+	SignInWithGoogle(param *pb.User) (*pb.User, error)
 }
 
 type UserInteractorImpl struct {
@@ -80,11 +83,10 @@ func (i *UserInteractorImpl) Create(user *pb.User) (*pb.User, error) {
 		mac := hmac.New(sha256.New, []byte(config.App.BasicSecret))
 		_, err = mac.Write([]byte(user.FirebaseId))
 		if err != nil {
-			return nil, xerrors.Errorf("failed to write: %w", err)
+			return nil, err
 		}
 		user.Password = hex.EncodeToString(mac.Sum(nil))
 	} else {
-		err = xerrors.New("firebase id and password are not empty")
 		return nil, err
 	}
 
@@ -158,17 +160,46 @@ func (i *UserInteractorImpl) SignIn(param *pb.SignInRequest) (*pb.User, error) {
 		err  error
 	)
 
-	firebaseId, err := i.firebase.VerifyIDToken(param.Token)
+	// firebaseId, err := i.firebase.VerifyIDToken(param.Token)
+	// if err != nil {
+	// 	return user, err
+	// }
+
+	// log.Println("exported firebaseToken is:", param.Token)
+	// log.Println("exported firebaseId is:", firebaseId)
+
+	// ユーザー登録
+	user, err = i.userRepository.GetByFirebaseId(param.Token)
 	if err != nil {
 		return user, err
 	}
 
-	log.Println("exported firebaseToken is:", param.Token)
-	log.Println("exported firebaseId is:", firebaseId)
+	if errors.Is(err, entity.ErrNotFound) {
+		// create
+		if err := i.userRepository.Create(user); err != nil {
+			return user, err
+		}
+	}
 
-	// ユーザー登録
-	user, err = i.userRepository.GetByFirebaseId(firebaseId)
-	if err != nil {
+	return user, nil
+
+}
+
+// SignIn
+func (i *UserInteractorImpl) SignInWithGoogle(param *pb.User) (*pb.User, error) {
+	var (
+		user *pb.User
+		err  error
+	)
+
+	// sign in
+	user, err = i.userRepository.GetByFirebaseId(param.FirebaseId)
+	if errors.Is(err, entity.ErrNotFound) {
+		// create
+		if err := i.userRepository.Create(user); err != nil {
+			return user, err
+		}
+	} else if err != nil {
 		return user, err
 	}
 

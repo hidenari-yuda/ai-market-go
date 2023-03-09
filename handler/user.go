@@ -9,7 +9,7 @@ import (
 	"github.com/hidenari-yuda/ai-market-go/usecase"
 	"github.com/hidenari-yuda/ai-market-go/usecase/interactor"
 
-	"google.golang.org/protobuf/types/known/emptypb"
+	// "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // server is used to implement helloworld.GreeterServer.
@@ -110,21 +110,32 @@ func (s *UserServiceServer) GetByUuid(ctx context.Context, req *pb.UserUuidReque
 
 // admin
 // get all user
-func (s *UserServiceServer) GetAll(ctx context.Context, req *emptypb.Empty) (*pb.UserList, error) {
+// func (s *UserServiceServer) GetAll(ctx context.Context, req *emptypb.Empty) (*pb.UserList, error) {
 
-	res, err := s.UserInteractor.GetAll()
-	if err != nil {
-		return nil, handleError(err)
-	}
+// 	res, err := s.UserInteractor.GetAll()
+// 	if err != nil {
+// 		return nil, handleError(err)
+// 	}
 
-	return &pb.UserList{User: res}, nil
-}
+// 	return &pb.UserList{User: res}, nil
+// }
 
 // auth
 // sign in
 func (s *UserServiceServer) SignIn(ctx context.Context, req *pb.SignInRequest) (*pb.User, error) {
 
 	res, err := s.UserInteractor.SignIn(req)
+	if err != nil {
+		return nil, handleError(err)
+	}
+
+	return res, nil
+}
+
+// sign in with google
+func (s *UserServiceServer) SignInWithGoogle(ctx context.Context, req *pb.User) (*pb.User, error) {
+
+	res, err := s.UserInteractor.SignInWithGoogle(req)
 	if err != nil {
 		return nil, handleError(err)
 	}
