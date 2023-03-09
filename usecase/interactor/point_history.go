@@ -32,23 +32,23 @@ type PointHistoryInteractor interface {
 }
 
 type PointHistoryInteractorImpl struct {
-	firebase                  usecase.Firebase
-	orderRepository						usecase.PointHistoryRepository
+	firebase              usecase.Firebase
+	pointHitoryRepository usecase.PointHistoryRepository
 }
 
 func NewPointHistoryInteractorImpl(
 	fb usecase.Firebase,
-	oR usecase.PointHistoryRepository,
+	phR usecase.PointHistoryRepository,
 ) PointHistoryInteractor {
 	return &PointHistoryInteractorImpl{
-		firebase:                  fb,
-		orderRepository:						oR,
+		firebase:              fb,
+		pointHitoryRepository: phR,
 	}
 }
 
-func (i *PointHistoryInteractorImpl) Create(param*pb.PointHistory) (*pb.PointHistory, error) {
+func (i *PointHistoryInteractorImpl) Create(param *pb.PointHistory) (*pb.PointHistory, error) {
 
-	err := i.orderRepository.Create(param)
+	err := i.pointHitoryRepository.Create(param)
 	if err != nil {
 		return param, err
 	}
@@ -56,9 +56,9 @@ func (i *PointHistoryInteractorImpl) Create(param*pb.PointHistory) (*pb.PointHis
 	return param, nil
 }
 
-func (i *PointHistoryInteractorImpl) Update(param*pb.PointHistory) (bool, error) {
+func (i *PointHistoryInteractorImpl) Update(param *pb.PointHistory) (bool, error) {
 
-	err := i.orderRepository.Update(param)
+	err := i.pointHitoryRepository.Update(param)
 	if err != nil {
 		return false, err
 	}
@@ -68,7 +68,7 @@ func (i *PointHistoryInteractorImpl) Update(param*pb.PointHistory) (bool, error)
 
 func (i *PointHistoryInteractorImpl) Delete(param *pb.PointHistoryIdRequest) (bool, error) {
 
-	err := i.orderRepository.Delete(param.Id)
+	err := i.pointHitoryRepository.Delete(param.Id)
 	if err != nil {
 		return false, err
 	}
@@ -78,80 +78,80 @@ func (i *PointHistoryInteractorImpl) Delete(param *pb.PointHistoryIdRequest) (bo
 
 func (i *PointHistoryInteractorImpl) GetById(param *pb.PointHistoryIdRequest) (*pb.PointHistory, error) {
 	var (
-		order *pb.PointHistory
-		err  error
+		pointHitory *pb.PointHistory
+		err         error
 	)
 
-	order, err = i.orderRepository.GetById(param.Id)
+	pointHitory, err = i.pointHitoryRepository.GetById(param.Id)
 	if err != nil {
 		log.Println("error is:", err)
-		return order, err
+		return pointHitory, err
 	}
 
-	return order, nil
+	return pointHitory, nil
 }
 
 func (i *PointHistoryInteractorImpl) GetByUuid(param *pb.PointHistoryUuidRequest) (*pb.PointHistory, error) {
 	var (
-		order *pb.PointHistory
-		err  error
+		pointHitory *pb.PointHistory
+		err         error
 	)
 
-	order, err = i.orderRepository.GetByUuid(param.Uuid)
+	pointHitory, err = i.pointHitoryRepository.GetByUuid(param.Uuid)
 	if err != nil {
-			log.Println("error is:", err)
-			return order, err
+		log.Println("error is:", err)
+		return pointHitory, err
 	}
 
-	return order, nil
+	return pointHitory, nil
 }
 
 // rpc GetPurchasedListByUser(paramIdRequest) returns (paramList) {}
 func (i *PointHistoryInteractorImpl) GetPurchasedListByUser(param *pb.PointHistoryUserIdRequest) ([]*pb.PointHistory, error) {
 	var (
-		orders []*pb.PointHistory
-		err   error
+		pointHitorys []*pb.PointHistory
+		err          error
 	)
 
-	orders, err = i.orderRepository.GetPurchasedListByUser(param.UserId)
+	pointHitorys, err = i.pointHitoryRepository.GetPurchasedListByUser(param.UserId)
 	if err != nil {
 		log.Println("error is:", err)
-		return orders, err
+		return pointHitorys, err
 	}
 
-	return orders, nil
+	return pointHitorys, nil
 }
 
 // // get list by id list
 // rpc GetListByIdList (paramIdListRequest) returns (paramList) {}
 func (i *PointHistoryInteractorImpl) GetListByIdList(param *pb.PointHistoryIdListRequest) ([]*pb.PointHistory, error) {
 	var (
-		orders []*pb.PointHistory
-		err   error
+		pointHitorys []*pb.PointHistory
+		err          error
 	)
 
-	orders, err = i.orderRepository.GetListByIdList(param.Id)
+	pointHitorys, err = i.pointHitoryRepository.GetListByIdList(param.Id)
 	if err != nil {
 		log.Println("error is:", err)
-		return orders, err
+		return pointHitorys, err
 	}
 
-	return orders, nil
+	return pointHitorys, nil
 }
 
 // admin
 // get all
 func (i *PointHistoryInteractorImpl) GetAll() ([]*pb.PointHistory, error) {
 	var (
-		orders []*pb.PointHistory
-		err   error
+		pointHitorys []*pb.PointHistory
+		err          error
 	)
 
-	orders, err = i.orderRepository.GetAll()
+	pointHitorys, err = i.pointHitoryRepository.GetAll()
 	if err != nil {
 		log.Println("error is:", err)
-		return orders, err
+		return pointHitorys, err
 	}
 
-	return orders, nil
+	return pointHitorys, nil
 }

@@ -136,6 +136,90 @@ func (r *ContentRepositoryImpl) Update(param *pb.Content) error {
 	return nil
 }
 
+// update impression
+func (r *ContentRepositoryImpl) UpdateImpressionByIdList(idList []int64) error {
+	_, err := r.executer.Exec(
+		r.Name+"UpdateImpression",
+		`UPDATE contents SET
+			impression_count = impression_count + 1,
+			updated_at = ?
+		WHERE id IN (?)`,
+		time.Now().UTC(),
+		idList,
+	)
+
+	if err != nil {
+		err = fmt.Errorf("failed to update content impression: %w", err)
+		log.Println(err)
+		return err
+	}
+
+	return nil
+}
+
+// update view 
+func (r *ContentRepositoryImpl) UpdateView(id int64) error {
+	_, err := r.executer.Exec(
+		r.Name+"UpdateView",
+		`UPDATE contents SET
+			view_count = view_count + 1,
+			updated_at = ?
+		WHERE id = ?`,
+		time.Now().UTC(),
+		id,
+	)
+
+	if err != nil {
+		err = fmt.Errorf("failed to update content view: %w", err)
+		log.Println(err)
+		return err
+	}
+
+	return nil
+}
+
+// update like
+func (r *ContentRepositoryImpl) UpdateLike(id int64) error {
+	_, err := r.executer.Exec(
+		r.Name+"UpdateLike",
+		`UPDATE contents SET
+			like_count = like_count + 1,
+			updated_at = ?
+		WHERE id = ?`,
+		time.Now().UTC(),
+		id,
+	)
+
+	if err != nil {
+		err = fmt.Errorf("failed to update content like: %w", err)
+		log.Println(err)
+		return err
+	}
+
+	return nil
+}
+
+// update click
+func (r *ContentRepositoryImpl) UpdateClick(id int64) error {
+	_, err := r.executer.Exec(
+		r.Name+"UpdateClick",
+		`UPDATE contents SET
+			click_count = click_count + 1,
+			updated_at = ?
+		WHERE id = ?`,
+		time.Now().UTC(),
+		id,
+	)
+
+	if err != nil {
+		err = fmt.Errorf("failed to update content click: %w", err)
+		log.Println(err)
+		return err
+	}
+
+	return nil
+}
+
 // delete
 func (r *ContentRepositoryImpl) Delete(id int64) error {
 	_, err := r.executer.Exec(

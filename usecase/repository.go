@@ -69,6 +69,18 @@ type ContentRepository interface {
 	// Update
 	Update(param *pb.Content) error
 
+	// update impression
+	UpdateImpressionByIdList(idList []int64) error
+
+	// update view
+	UpdateView(id int64) error
+
+	// update click
+	UpdateClick(id int64) error
+
+	// update like
+	UpdateLike(id int64) error
+
 	// Delete
 	Delete(id int64) error
 
@@ -281,6 +293,35 @@ type ViewRepository interface {
 
 	// admin
 	GetAll() ([]*pb.View, error)
+}
+
+/******************* click *******************/
+// click
+type ClickRepository interface {
+	// Gest API
+	// Create
+	Create(param *pb.Click) error
+
+	// Update
+	Update(param *pb.Click) error
+
+	// Delete
+	Delete(id int64) error
+
+	// Get
+	GetById(id int64) (*pb.Click, error)
+
+	// get list by user id
+	GetListByUser(userId int64) ([]*pb.Click, error)
+
+	// get list by content id
+	GetListByContent(contentId int64) ([]*pb.Click, error)
+
+	// get list by id list
+	GetListByIdList(idList []int64) ([]*pb.Click, error)
+
+	// admin
+	GetAll() ([]*pb.Click, error)
 }
 
 /******************* review *******************/

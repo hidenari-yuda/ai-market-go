@@ -15,6 +15,18 @@ type ContentInteractor interface {
 	// Update
 	Update(param *pb.Content) (bool, error)
 
+	// update impression
+	UpdateImpressionByIdList(param *pb.ContentIdListRequest) (bool, error)
+
+	// update view
+	UpdateView(param *pb.ContentIdRequest) (bool, error)
+
+	// update click
+	UpdateClick(param *pb.ContentIdRequest) (bool, error)
+
+	// update like
+	UpdateLike(param *pb.ContentIdRequest) (bool, error)
+
 	// Delete
 	Delete(param *pb.ContentIdRequest) (bool, error)
 
@@ -87,21 +99,21 @@ func (i *ContentInteractorImpl) Create(param *pb.Content) (*pb.Content, error) {
 
 	for _, detail := range param.Details {
 		detail.ContentId = param.Id
-		if err := i.contentContentRepository.Create(detail);err != nil {
+		if err := i.contentContentRepository.Create(detail); err != nil {
 			return param, err
 		}
 	}
 
 	for _, tool := range param.Tools {
 		tool.ContentId = param.Id
-		if err := i.contentToolRepository.Create(tool);err != nil {
+		if err := i.contentToolRepository.Create(tool); err != nil {
 			return param, err
 		}
 	}
 
 	for _, category := range param.Categories {
 		category.ContentId = param.Id
-		if err := i.contentCategoryRepository.Create(category);err != nil {
+		if err := i.contentCategoryRepository.Create(category); err != nil {
 			return param, err
 		}
 	}
@@ -128,7 +140,7 @@ func (i *ContentInteractorImpl) Update(param *pb.Content) (bool, error) {
 
 	for _, detail := range param.Details {
 		detail.ContentId = param.Id
-		if err := i.contentContentRepository.Create(detail);err != nil {
+		if err := i.contentContentRepository.Create(detail); err != nil {
 			return false, err
 		}
 	}
@@ -139,7 +151,7 @@ func (i *ContentInteractorImpl) Update(param *pb.Content) (bool, error) {
 
 	for _, tool := range param.Tools {
 		tool.ContentId = param.Id
-		if err := i.contentToolRepository.Create(tool);err != nil {
+		if err := i.contentToolRepository.Create(tool); err != nil {
 			return false, err
 		}
 	}
@@ -150,7 +162,7 @@ func (i *ContentInteractorImpl) Update(param *pb.Content) (bool, error) {
 
 	for _, category := range param.Categories {
 		category.ContentId = param.Id
-		if err := i.contentCategoryRepository.Create(category);err != nil {
+		if err := i.contentCategoryRepository.Create(category); err != nil {
 			return false, err
 		}
 	}
@@ -164,6 +176,46 @@ func (i *ContentInteractorImpl) Update(param *pb.Content) (bool, error) {
 		if err := i.contentSubCategoryRepository.Create(subCategory); err != nil {
 			return false, err
 		}
+	}
+
+	return true, nil
+}
+
+// update impression by id list
+func (i *ContentInteractorImpl) UpdateImpressionByIdList(param *pb.ContentIdListRequest) (bool, error) {
+
+	if err := i.contentRepository.UpdateImpressionByIdList(param.Id); err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+// update view
+func (i *ContentInteractorImpl) UpdateView(param *pb.ContentIdRequest) (bool, error) {
+
+	if err := i.contentRepository.UpdateView(param.Id); err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+// update click
+func (i *ContentInteractorImpl) UpdateClick(param *pb.ContentIdRequest) (bool, error) {
+
+	if err := i.contentRepository.UpdateClick(param.Id); err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+// update like
+func (i *ContentInteractorImpl) UpdateLike(param *pb.ContentIdRequest) (bool, error) {
+
+	if err := i.contentRepository.UpdateLike(param.Id); err != nil {
+		return false, err
 	}
 
 	return true, nil
@@ -279,7 +331,7 @@ func (i *ContentInteractorImpl) GetListByUser(param *pb.ContentUserIdRequest) ([
 		return contents, err
 	}
 
-		details, err := i.contentContentRepository.GetListByUser(param.UserId)
+	details, err := i.contentContentRepository.GetListByUser(param.UserId)
 	if err != nil {
 		log.Println("error is:", err)
 		return contents, err
@@ -317,9 +369,9 @@ func (i *ContentInteractorImpl) GetListByUser(param *pb.ContentUserIdRequest) ([
 // rpc GetListByCategory (paramCategoryRequest) returns (paramList) {}
 func (i *ContentInteractorImpl) GetListBySearch(param *pb.ContentSearchRequest) ([]*pb.Content, error) {
 	var (
-		contents []*pb.Content
-		err      error
-		paramIdList  []int64
+		contents    []*pb.Content
+		err         error
+		paramIdList []int64
 	)
 
 	// categoryStrList := strings.Trim(strings.Join(strings.Fields(fmt.Sprint(input.IdList)), ", "), "[]")

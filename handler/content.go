@@ -8,6 +8,7 @@ import (
 	"github.com/hidenari-yuda/ai-market-go/pb"
 	"github.com/hidenari-yuda/ai-market-go/usecase"
 	"github.com/hidenari-yuda/ai-market-go/usecase/interactor"
+
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
@@ -57,6 +58,82 @@ func (s *ContentServiceServer) Update(ctx context.Context, req *pb.Content) (*pb
 		tx.Rollback()
 		return nil, err
 	}
+	tx.Commit()
+
+	return &pb.ContentBoolResponse{Error: res}, nil
+}
+
+// update impression
+func (s *ContentServiceServer) UpdateImpressionByIdList(ctx context.Context, req *pb.ContentIdListRequest) (*pb.ContentBoolResponse, error) {
+
+	tx, err := s.Db.Begin()
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := s.ContentInteractor.UpdateImpressionByIdList(req)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	tx.Commit()
+
+	return &pb.ContentBoolResponse{Error: res}, nil
+}
+
+// update view
+func (s *ContentServiceServer) UpdateView(ctx context.Context, req *pb.ContentIdRequest) (*pb.ContentBoolResponse, error) {
+
+	tx, err := s.Db.Begin()
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := s.ContentInteractor.UpdateView(req)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	tx.Commit()
+
+	return &pb.ContentBoolResponse{Error: res}, nil
+}
+
+// update click
+func (s *ContentServiceServer) UpdateClick(ctx context.Context, req *pb.ContentIdRequest) (*pb.ContentBoolResponse, error) {
+
+	tx, err := s.Db.Begin()
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := s.ContentInteractor.UpdateClick(req)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	tx.Commit()
+
+	return &pb.ContentBoolResponse{Error: res}, nil
+}
+
+// update like
+func (s *ContentServiceServer) UpdateLike(ctx context.Context, req *pb.ContentIdRequest) (*pb.ContentBoolResponse, error) {
+
+	tx, err := s.Db.Begin()
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := s.ContentInteractor.UpdateLike(req)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
 	tx.Commit()
 
 	return &pb.ContentBoolResponse{Error: res}, nil

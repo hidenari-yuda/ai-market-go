@@ -10,10 +10,10 @@ import (
 type BillingInteractor interface {
 	// Gest API
 	// Create
-	Create(Billing *pb.Billing) (*pb.Billing, error)
+	Create(billing *pb.Billing) (*pb.Billing, error)
 
 	// Update
-	Update(Billing *pb.Billing) (bool, error)
+	Update(billing *pb.Billing) (bool, error)
 
 	// Delete
 	Delete(param *pb.BillingIdRequest) (bool, error)
@@ -31,33 +31,33 @@ type BillingInteractor interface {
 }
 
 type BillingInteractorImpl struct {
-	firebase                  usecase.Firebase
-	orderRepository						usecase.BillingRepository
+	firebase          usecase.Firebase
+	billingRepository usecase.BillingRepository
 }
 
 func NewBillingInteractorImpl(
 	fb usecase.Firebase,
-	oR usecase.BillingRepository,
+	bR usecase.BillingRepository,
 ) BillingInteractor {
 	return &BillingInteractorImpl{
-		firebase:                  fb,
-		orderRepository:						oR,
+		firebase:          fb,
+		billingRepository: bR,
 	}
 }
 
-func (i *BillingInteractorImpl) Create(order *pb.Billing) (*pb.Billing, error) {
+func (i *BillingInteractorImpl) Create(billing *pb.Billing) (*pb.Billing, error) {
 
-	err := i.orderRepository.Create(order)
+	err := i.billingRepository.Create(billing)
 	if err != nil {
-		return order, err
+		return billing, err
 	}
 
-	return order, nil
+	return billing, nil
 }
 
-func (i *BillingInteractorImpl) Update(order *pb.Billing) (bool, error) {
+func (i *BillingInteractorImpl) Update(billing *pb.Billing) (bool, error) {
 
-	err := i.orderRepository.Update(order)
+	err := i.billingRepository.Update(billing)
 	if err != nil {
 		return false, err
 	}
@@ -67,7 +67,7 @@ func (i *BillingInteractorImpl) Update(order *pb.Billing) (bool, error) {
 
 func (i *BillingInteractorImpl) Delete(param *pb.BillingIdRequest) (bool, error) {
 
-	err := i.orderRepository.Delete(param.Id)
+	err := i.billingRepository.Delete(param.Id)
 	if err != nil {
 		return false, err
 	}
@@ -77,80 +77,80 @@ func (i *BillingInteractorImpl) Delete(param *pb.BillingIdRequest) (bool, error)
 
 func (i *BillingInteractorImpl) GetById(param *pb.BillingIdRequest) (*pb.Billing, error) {
 	var (
-		order *pb.Billing
-		err  error
+		billing *pb.Billing
+		err     error
 	)
 
-	order, err = i.orderRepository.GetById(param.Id)
+	billing, err = i.billingRepository.GetById(param.Id)
 	if err != nil {
 		log.Println("error is:", err)
-		return order, err
+		return billing, err
 	}
 
-	return order, nil
+	return billing, nil
 }
 
 func (i *BillingInteractorImpl) GetByUuid(param *pb.BillingUuidRequest) (*pb.Billing, error) {
 	var (
-		order *pb.Billing
-		err  error
+		billing *pb.Billing
+		err     error
 	)
 
-	order, err = i.orderRepository.GetByUuid(param.Uuid)
+	billing, err = i.billingRepository.GetByUuid(param.Uuid)
 	if err != nil {
-			log.Println("error is:", err)
-			return order, err
+		log.Println("error is:", err)
+		return billing, err
 	}
 
-	return order, nil
+	return billing, nil
 }
 
 // get list by user
 func (i *BillingInteractorImpl) GetListByUser(param *pb.BillingUserIdRequest) ([]*pb.Billing, error) {
 	var (
-		orders []*pb.Billing
-		err   error
+		billings []*pb.Billing
+		err      error
 	)
 
-	orders, err = i.orderRepository.GetListByUser(param.UserId)
+	billings, err = i.billingRepository.GetListByUser(param.UserId)
 	if err != nil {
 		log.Println("error is:", err)
-		return orders, err
+		return billings, err
 	}
 
-	return orders, nil
+	return billings, nil
 }
 
 // // get list by id list
-// rpc GetListByIdList (BillingIdListRequest) returns (BillingList) {}
+// rpc GetListByIdList (billingIdListRequest) returns (billingList) {}
 // func (i *BillingInteractorImpl) GetListByIdList(param *pb.BillingIdListRequest) ([]*pb.Billing, error) {
 // 	var (
-// 		orders []*pb.Billing
+// 		billings []*pb.Billing
 // 		err   error
 // 	)
 
-// 	orders, err = i.orderRepository.GetListByIdList(param.Id)
+// 	billings, err = i.billingRepository.GetListByIdList(param.Id)
 // 	if err != nil {
 // 		log.Println("error is:", err)
-// 		return orders, err
+// 		return billings, err
 // 	}
 
-// 	return orders, nil
+// 	return billings, nil
 // }
 
 // // admin
 // // get all
 // func (i *BillingInteractorImpl) GetAll() ([]*pb.Billing, error) {
 // 	var (
-// 		orders []*pb.Billing
+// 		billings []*pb.Billing
 // 		err   error
 // 	)
 
-// 	orders, err = i.orderRepository.GetAll()
+// 	billings, err = i.billingRepository.GetAll()
 // 	if err != nil {
 // 		log.Println("error is:", err)
-// 		return orders, err
+// 		return billings, err
 // 	}
 
-// 	return orders, nil
+// 	return billings, nil
 // }

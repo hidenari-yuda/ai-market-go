@@ -90,6 +90,17 @@ func (s *ChatGroupServiceServer) GetById(ctx context.Context, req *pb.ChatIdRequ
 	return res, nil
 }
 
+// get chat group by uuid
+func (s *ChatGroupServiceServer) GetByUuid(ctx context.Context, req *pb.ChatUuidRequest) (*pb.ChatGroup, error) {
+
+	res, err := s.ChatGroupInteractor.GetByUuid(req)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
 // get chat group by user id
 func (s *ChatGroupServiceServer) GetListByUser(ctx context.Context, req *pb.ChatUserIdRequest) (*pb.ChatGroupList, error) {
 

@@ -24,28 +24,31 @@ type PointInteractor interface {
 	// get by uuid
 	GetByUuid(param *pb.PointUuidRequest) (*pb.Point, error)
 
+	// get list by user
+	GetListByUser(param *pb.PointUserIdRequest) ([]*pb.Point, error)
+
 	// get list by id list
 	GetListByIdList(param *pb.PointIdListRequest) ([]*pb.Point, error)
 }
 
 type PointInteractorImpl struct {
-	firebase                  usecase.Firebase
-	orderRepository						usecase.PointRepository
+	firebase        usecase.Firebase
+	pointRepository usecase.PointRepository
 }
 
 func NewPointInteractorImpl(
 	fb usecase.Firebase,
-	oR usecase.PointRepository,
+	pR usecase.PointRepository,
 ) PointInteractor {
 	return &PointInteractorImpl{
-		firebase:                  fb,
-		orderRepository:						oR,
+		firebase:        fb,
+		pointRepository: pR,
 	}
 }
 
 func (i *PointInteractorImpl) Create(param *pb.Point) (*pb.Point, error) {
 
-	err := i.orderRepository.Create(param)
+	err := i.pointRepository.Create(param)
 	if err != nil {
 		return param, err
 	}
@@ -55,7 +58,7 @@ func (i *PointInteractorImpl) Create(param *pb.Point) (*pb.Point, error) {
 
 func (i *PointInteractorImpl) Update(param *pb.Point) (bool, error) {
 
-	err := i.orderRepository.Update(param)
+	err := i.pointRepository.Update(param)
 	if err != nil {
 		return false, err
 	}
@@ -65,7 +68,7 @@ func (i *PointInteractorImpl) Update(param *pb.Point) (bool, error) {
 
 func (i *PointInteractorImpl) Delete(param *pb.PointIdRequest) (bool, error) {
 
-	err := i.orderRepository.Delete(param.Id)
+	err := i.pointRepository.Delete(param.Id)
 	if err != nil {
 		return false, err
 	}
@@ -75,64 +78,79 @@ func (i *PointInteractorImpl) Delete(param *pb.PointIdRequest) (bool, error) {
 
 func (i *PointInteractorImpl) GetById(param *pb.PointIdRequest) (*pb.Point, error) {
 	var (
-		order *pb.Point
-		err  error
+		point *pb.Point
+		err   error
 	)
 
-	order, err = i.orderRepository.GetById(param.Id)
+	point, err = i.pointRepository.GetById(param.Id)
 	if err != nil {
 		log.Println("error is:", err)
-		return order, err
+		return point, err
 	}
 
-	return order, nil
+	return point, nil
 }
 
 func (i *PointInteractorImpl) GetByUuid(param *pb.PointUuidRequest) (*pb.Point, error) {
 	var (
-		order *pb.Point
-		err  error
-	)
-
-	order, err = i.orderRepository.GetByUuid(param.Uuid)
-	if err != nil {
-			log.Println("error is:", err)
-			return order, err
-	}
-
-	return order, nil
-}
-
-// // get list by id list
-// rpc GetListByIdList (paramIdListRequest) returns (paramList) {}
-func (i *PointInteractorImpl) GetListByIdList(param *pb.PointIdListRequest) ([]*pb.Point, error) {
-	var (
-		orders []*pb.Point
+		point *pb.Point
 		err   error
 	)
 
-	orders, err = i.orderRepository.GetListByIdList(param.Id)
+	point, err = i.pointRepository.GetByUuid(param.Uuid)
 	if err != nil {
 		log.Println("error is:", err)
-		return orders, err
+		return point, err
 	}
 
-	return orders, nil
+	return point, nil
+}
+
+// get list by user
+func (i *PointInteractorImpl) GetListByUser(param *pb.PointUserIdRequest) ([]*pb.Point, error) {
+	var (
+		points []*pb.Point
+		err    error
+	)
+
+	points, err = i.pointRepository.GetListByUser(param.UserId)
+	if err != nil {
+		log.Println("error is:", err)
+		return points, err
+	}
+
+	return points, nil
+}
+
+// get list by id list
+func (i *PointInteractorImpl) GetListByIdList(param *pb.PointIdListRequest) ([]*pb.Point, error) {
+	var (
+		points []*pb.Point
+		err    error
+	)
+
+	points, err = i.pointRepository.GetListByIdList(param.Id)
+	if err != nil {
+		log.Println("error is:", err)
+		return points, err
+	}
+
+	return points, nil
 }
 
 // admin
 // get all
 func (i *PointInteractorImpl) GetAll() ([]*pb.Point, error) {
 	var (
-		orders []*pb.Point
-		err   error
+		points []*pb.Point
+		err    error
 	)
 
-	orders, err = i.orderRepository.GetAll()
+	points, err = i.pointRepository.GetAll()
 	if err != nil {
 		log.Println("error is:", err)
-		return orders, err
+		return points, err
 	}
 
-	return orders, nil
+	return points, nil
 }
