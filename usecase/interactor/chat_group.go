@@ -1,6 +1,8 @@
 package interactor
 
 import (
+	"context"
+
 	"github.com/hidenari-yuda/ai-market-go/pb"
 	"github.com/hidenari-yuda/ai-market-go/usecase"
 )
@@ -8,10 +10,10 @@ import (
 type ChatGroupInteractor interface {
 	// Gest API
 	// Create
-	Create(ChatGroup *pb.ChatGroup) (*pb.ChatGroup, error)
+	Create(param *pb.ChatGroup) (*pb.ChatGroup, error)
 
 	// Update
-	Update(ChatGroup *pb.ChatGroup) (bool, error)
+	Update(param *pb.ChatGroup) (bool, error)
 
 	// Delete
 	Delete(param *pb.ChatIdRequest) (bool, error)
@@ -44,35 +46,27 @@ func NewChatGroupInteractorImpl(
 	}
 }
 
-func (i *ChatGroupInteractorImpl) Create(chatGroup *pb.ChatGroup) (*pb.ChatGroup, error) {
+func (i *ChatGroupInteractorImpl) Create(param *pb.ChatGroup) (*pb.ChatGroup, error) {
 
-	// ユーザー登録
-	// err := i.chatGroupRepository.Create(chatGroup)
-	// if err != nil {
-	// 	return chatGroup, err
-	// }
+	ctx := context.Background()
+	if err := i.firebase.CreateChatGroup(ctx, param); err != nil {
+		return param, err
+	}
 
-	return chatGroup, nil
+	return param, nil
 }
 
-func (i *ChatGroupInteractorImpl) Update(chatGroup *pb.ChatGroup) (bool, error) {
+func (i *ChatGroupInteractorImpl) Update(param *pb.ChatGroup) (bool, error) {
 
-	// ユーザー登録
-	// err := i.chatGroupRepository.Update(chatGroup)
-	// if err != nil {
-	// 	return false, err
-	// }
+	ctx := context.Background()
+	if err := i.firebase.UpdateChatGroup(ctx, param); err != nil {
+		return false, err
+	}
 
 	return true, nil
 }
 
 func (i *ChatGroupInteractorImpl) Delete(param *pb.ChatIdRequest) (bool, error) {
-
-	// ユーザー登録
-	// err := i.chatGroupRepository.Delete(param.Id)
-	// if err != nil {
-	// 	return false, err
-	// }
 
 	return true, nil
 }
@@ -80,15 +74,13 @@ func (i *ChatGroupInteractorImpl) Delete(param *pb.ChatIdRequest) (bool, error) 
 func (i *ChatGroupInteractorImpl) GetById(param *pb.ChatIdRequest) (*pb.ChatGroup, error) {
 	var (
 		chatGroup *pb.ChatGroup
-		// err       error
+		err       error
 	)
 
-	// ユーザー登録
-	// chatGroup, err = i.chatGroupRepository.GetById(param.Id)
-	// if err != nil {
-	// 	log.Println("error is:", err)
-	// 	return chatGroup, err
-	// }
+	chatGroup, err = i.firebase.GetChatGroupById(context.Background(), param.Id)
+	if err != nil {
+		return chatGroup, err
+	}
 
 	return chatGroup, nil
 }
@@ -99,10 +91,8 @@ func (i *ChatGroupInteractorImpl) GetByUuid(param *pb.ChatUuidRequest) (*pb.Chat
 		// err       error
 	)
 
-	// ユーザー登録
-	// chatGroup, err = i.chatGroupRepository.GetByUuid(param.Uuid)
+	// chatGroup, err = i.firebase.GetChatGroupByUuid(context.Background(), param.Uuid)
 	// if err != nil {
-	// 	log.Println("error is:", err)
 	// 	return chatGroup, err
 	// }
 
@@ -112,15 +102,13 @@ func (i *ChatGroupInteractorImpl) GetByUuid(param *pb.ChatUuidRequest) (*pb.Chat
 func (i *ChatGroupInteractorImpl) GetListByUser(param *pb.ChatUserIdRequest) ([]*pb.ChatGroup, error) {
 	var (
 		chatGroups []*pb.ChatGroup
-		// err        error
+		err        error
 	)
-
-	// ユーザー登録
-	// chatGroups, err = i.chatGroupRepository.GetListByUser(param.UserId)
-	// if err != nil {
-	// 	log.Println("error is:", err)
-	// 	return chatGroups, err
-	// }
+	
+	chatGroups, err = i.firebase.GetChatGroupListByUser(context.Background(), param.UserId)
+	if err != nil {
+		return chatGroups, err
+	}
 
 	return chatGroups, nil
 }

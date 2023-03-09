@@ -10,10 +10,10 @@ import (
 type OrderInteractor interface {
 	// Gest API
 	// Create
-	Create(Order *pb.Order) (*pb.Order, error)
+	Create(param *pb.Order) (*pb.Order, error)
 
 	// Update
-	Update(Order *pb.Order) (bool, error)
+	Update(param *pb.Order) (bool, error)
 
 	// Delete
 	Delete(param *pb.OrderIdRequest) (bool, error)
@@ -49,19 +49,19 @@ func NewOrderInteractorImpl(
 	}
 }
 
-func (i *OrderInteractorImpl) Create(order *pb.Order) (*pb.Order, error) {
+func (i *OrderInteractorImpl) Create(param *pb.Order) (*pb.Order, error) {
 
-	err := i.orderRepository.Create(order)
+	err := i.orderRepository.Create(param)
 	if err != nil {
-		return order, err
+		return param, err
 	}
 
-	return order, nil
+	return param, nil
 }
 
-func (i *OrderInteractorImpl) Update(order *pb.Order) (bool, error) {
+func (i *OrderInteractorImpl) Update(param *pb.Order) (bool, error) {
 
-	err := i.orderRepository.Update(order)
+	err := i.orderRepository.Update(param)
 	if err != nil {
 		return false, err
 	}
@@ -109,8 +109,7 @@ func (i *OrderInteractorImpl) GetByUuid(param *pb.OrderUuidRequest) (*pb.Order, 
 	return order, nil
 }
 
-// // get by sold id=user_id
-// rpc GetSoldListByUser(OrderIdRequest) returns (OrderList) {}
+// get sold list by user id
 func (i *OrderInteractorImpl) GetSoldListByUser(param *pb.OrderUserIdRequest) ([]*pb.Order, error) {
 	var (
 		orders []*pb.Order
@@ -126,7 +125,7 @@ func (i *OrderInteractorImpl) GetSoldListByUser(param *pb.OrderUserIdRequest) ([
 	return orders, nil
 }
 
-// rpc GetPurchasedListByUser(OrderIdRequest) returns (OrderList) {}
+// get purchased list by user id
 func (i *OrderInteractorImpl) GetPurchasedListByUser(param *pb.OrderUserIdRequest) ([]*pb.Order, error) {
 	var (
 		orders []*pb.Order
@@ -142,8 +141,7 @@ func (i *OrderInteractorImpl) GetPurchasedListByUser(param *pb.OrderUserIdReques
 	return orders, nil
 }
 
-// // get list by id list
-// rpc GetListByIdList (OrderIdListRequest) returns (OrderList) {}
+// get list by id list
 func (i *OrderInteractorImpl) GetListByIdList(param *pb.OrderIdListRequest) ([]*pb.Order, error) {
 	var (
 		orders []*pb.Order

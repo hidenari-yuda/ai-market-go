@@ -16,10 +16,10 @@ import (
 type UserInteractor interface {
 	// Gest API
 	// Create
-	Create(user *pb.User) (*pb.User, error)
+	Create(param *pb.User) (*pb.User, error)
 
 	// Update
-	Update(user *pb.User) (bool, error)
+	Update(param *pb.User) (bool, error)
 
 	// Delete
 	Delete(param *pb.UserIdRequest) (bool, error)
@@ -64,45 +64,45 @@ func NewUserInteractorImpl(
 }
 
 // Create
-func (i *UserInteractorImpl) Create(user *pb.User) (*pb.User, error) {
+func (i *UserInteractorImpl) Create(param *pb.User) (*pb.User, error) {
 	var (
 		err error
 	)
 
 	// Firebase Authentication Create
-	if user.FirebaseId == "" {
+	if param.FirebaseId == "" {
 		firebaseID, err := i.firebase.CreateUser(
-			user.Email,
-			user.Password,
+			param.Email,
+			param.Password,
 		)
 		if err != nil {
 			return nil, err
 		}
-		user.FirebaseId = firebaseID
-	} else if user.Password == "" {
+		param.FirebaseId = firebaseID
+	} else if param.Password == "" {
 		mac := hmac.New(sha256.New, []byte(config.App.BasicSecret))
-		_, err = mac.Write([]byte(user.FirebaseId))
+		_, err = mac.Write([]byte(param.FirebaseId))
 		if err != nil {
 			return nil, err
 		}
-		user.Password = hex.EncodeToString(mac.Sum(nil))
+		param.Password = hex.EncodeToString(mac.Sum(nil))
 	} else {
 		return nil, err
 	}
 
 	// ユーザー登録
-	if err := i.userRepository.Create(user); err != nil {
-		return user, err
+	if err := i.userRepository.Create(param); err != nil {
+		return param, err
 	}
 
-	return user, nil
+	return param, nil
 }
 
 // Update
-func (i *UserInteractorImpl) Update(user *pb.User) (bool, error) {
+func (i *UserInteractorImpl) Update(param *pb.User) (bool, error) {
 
 	// ユーザー登録
-	if err := i.userRepository.Update(user); err != nil {
+	if err := i.userRepository.Update(param); err != nil {
 		return false, err
 	}
 
@@ -160,25 +160,18 @@ func (i *UserInteractorImpl) SignIn(param *pb.SignInRequest) (*pb.User, error) {
 		err  error
 	)
 
-	// firebaseId, err := i.firebase.VerifyIDToken(param.Token)
-	// if err != nil {
-	// 	return user, err
-	// }
+	firebaseId, err := i.firebase.VerifyIDToken(param.Token)
+	if err != nil {
+		return user, err
+	}
 
 	// log.Println("exported firebaseToken is:", param.Token)
 	// log.Println("exported firebaseId is:", firebaseId)
 
 	// ユーザー登録
-	user, err = i.userRepository.GetByFirebaseId(param.Token)
+	user, err = i.userRepository.GetByFirebaseId(firebaseId)
 	if err != nil {
 		return user, err
-	}
-
-	if errors.Is(err, entity.ErrNotFound) {
-		// create
-		if err := i.userRepository.Create(user); err != nil {
-			return user, err
-		}
 	}
 
 	return user, nil
@@ -196,7 +189,7 @@ func (i *UserInteractorImpl) SignInWithGoogle(param *pb.User) (*pb.User, error) 
 	user, err = i.userRepository.GetByFirebaseId(param.FirebaseId)
 	if errors.Is(err, entity.ErrNotFound) {
 		// create
-		if err := i.userRepository.Create(user); err != nil {
+		if err := i.userRepository.Create(param); err != nil {
 			return user, err
 		}
 	} else if err != nil {

@@ -2,7 +2,7 @@ package interactor
 
 import (
 	"context"
-	"fmt"
+	"log"
 
 	"github.com/hidenari-yuda/ai-market-go/pb"
 	"github.com/hidenari-yuda/ai-market-go/usecase"
@@ -12,10 +12,10 @@ import (
 type ChatInteractor interface {
 	// Gest API
 	// Create
-	Create(Chat *pb.Chat) (*pb.Chat, error)
+	Create(param *pb.Chat) (*pb.Chat, error)
 
 	// Update
-	Update(Chat *pb.Chat) (bool, error)
+	Update(param *pb.Chat) (bool, error)
 
 	// Delete
 	Delete(param *pb.ChatIdRequest) (bool, error)
@@ -51,38 +51,33 @@ func NewChatInteractorImpl(
 	}
 }
 
-func (i *ChatInteractorImpl) Create(chat *pb.Chat) (*pb.Chat, error) {
+func (i *ChatInteractorImpl) Create(param *pb.Chat) (*pb.Chat, error) {
 
-	// ユーザー登録
+	// create chat
 	ctx := context.Background()
-	if err := i.firebase.CreateChat(ctx, chat); err != nil {
-		return chat, err
+	if err := i.firebase.CreateChat(ctx, param); err != nil {
+		return param, err
 	}
 
-	// err := i.chatRepository.Create(chat)
-	// if err != nil {
-	// 	return chat, err
-	// }
-
-	return chat, nil
+	return param, nil
 }
 
-func (i *ChatInteractorImpl) Update(chat *pb.Chat) (bool, error) {
+func (i *ChatInteractorImpl) Update(param *pb.Chat) (bool, error) {
 
-	// ユーザー登録
-	// err := i.chatRepository.Update(chat)
-	// if err != nil {
-	// 	return false, err
-	// }
+	// update
+	ctx := context.Background()
+	if err := i.firebase.UpdateChat(ctx, param); err != nil {
+		return false, err
+	}
 
 	return true, nil
 }
 
 func (i *ChatInteractorImpl) Delete(param *pb.ChatIdRequest) (bool, error) {
 
-	// ユーザー登録
-	// err := i.chatRepository.Delete(param.Id)
-	// if err != nil {
+	// delete chat
+	// ctx := context.Background()
+	// if err := i.firebase.DeleteChat(ctx, param.Id); err != nil {
 	// 	return false, err
 	// }
 
@@ -92,15 +87,14 @@ func (i *ChatInteractorImpl) Delete(param *pb.ChatIdRequest) (bool, error) {
 func (i *ChatInteractorImpl) GetById(param *pb.ChatIdRequest) (*pb.Chat, error) {
 	var (
 		chat *pb.Chat
-		// err  error
+		err  error
 	)
 
-	// // ユーザー登録
-	// chat, err = i.chatRepository.GetById(param.Id)
-	// if err != nil {
-	// 	log.Println("error is:", err)
-	// 	return chat, err
-	// }
+	chat, err = i.firebase.GetChatById(context.Background(), param.Id)
+	if err != nil {
+		log.Println("error is:", err)
+		return chat, err
+	}
 
 	return chat, nil
 }
@@ -108,15 +102,14 @@ func (i *ChatInteractorImpl) GetById(param *pb.ChatIdRequest) (*pb.Chat, error) 
 func (i *ChatInteractorImpl) GetListByGroup(param *pb.ChatGroupIdRequest) ([]*pb.Chat, error) {
 	var (
 		chats []*pb.Chat
-		// err   error
+		err   error
 	)
 
-	// ユーザー登録
-	// chats, err = i.chatRepository.GetListByGroup(param.GroupId)
-	// if err != nil {
-	// 	log.Println("error is:", err)
-	// 	return chats, err
-	// }
+	chats, err = i.firebase.GetChatListByGroup(context.Background(), param.GroupId)
+	if err != nil {
+		log.Println("error is:", err)
+		return chats, err
+	}
 
 	return chats, nil
 }
@@ -133,7 +126,7 @@ func (i *ChatInteractorImpl) GetStreamByGroup(ctx context.Context, stream chan<-
 		return nil
 	})
 	if err := eg.Wait(); err != nil {
-		return fmt.Errorf("failed to GetMessageStreamService.Handle: %s", err)
+		return err
 	}
 	return nil
 }
