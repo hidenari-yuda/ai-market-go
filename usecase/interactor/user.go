@@ -188,10 +188,20 @@ func (i *UserInteractorImpl) SignInWithGoogle(param *pb.User) (*pb.User, error) 
 	// sign in
 	user, err = i.userRepository.GetByFirebaseId(param.FirebaseId)
 	if errors.Is(err, entity.ErrNotFound) {
-		// create
+		// create password
+		mac := hmac.New(sha256.New, []byte(config.App.BasicSecret))
+		_, err = mac.Write([]byte(param.FirebaseId))
+		if err != nil {
+			return nil, err
+		}
+		param.Password = hex.EncodeToString(mac.Sum(nil))
+
+		// create user
 		if err := i.userRepository.Create(param); err != nil {
 			return user, err
 		}
+		user = param
+		
 	} else if err != nil {
 		return user, err
 	}
