@@ -12,9 +12,14 @@ CREATE TABLE IF NOT EXISTS contents (
   request_progress BOOLEAN NOT NULL DEFAULT FALSE, -- コンテンツの審査。false:未審査、true:審査済み
   is_open BOOLEAN NOT NULL DEFAULT FALSE, -- コンテンツの公開。false:非公開、true:公開
   like_count INT NOT NULL DEFAULT 0,
+  share_count INT NOT NULL DEFAULT 0,
+  asp_count INT NOT NULL DEFAULT 0,
+  impression_count INT NOT NULL DEFAULT 0,
   view_count INT NOT NULL DEFAULT 0,
-  review_count INT NOT NULL DEFAULT 0,
+  click_couter INT NOT NULL DEFAULT 0,
+  order_count INT NOT NULL DEFAULT 0,
   purchase_count INT NOT NULL DEFAULT 0,
+  review_count INT NOT NULL DEFAULT 0,
   created_at DATETIME NOT NULL,
   updated_at DATETIME NOT NULL,
   is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
