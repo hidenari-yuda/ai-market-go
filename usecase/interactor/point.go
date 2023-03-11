@@ -1,7 +1,9 @@
 package interactor
 
 import (
+	"fmt"
 	"log"
+	"strings"
 
 	"github.com/hidenari-yuda/ai-market-go/pb"
 	"github.com/hidenari-yuda/ai-market-go/usecase"
@@ -125,11 +127,14 @@ func (i *PointInteractorImpl) GetListByUser(param *pb.PointUserIdRequest) ([]*pb
 // get list by id list
 func (i *PointInteractorImpl) GetListByIdList(param *pb.PointIdListRequest) ([]*pb.Point, error) {
 	var (
-		points []*pb.Point
-		err    error
+		points         []*pb.Point
+		err            error
+		paramIdListStr string
 	)
 
-	points, err = i.pointRepository.GetListByIdList(param.Id)
+	paramIdListStr = strings.Trim(strings.Join(strings.Fields(fmt.Sprint(param.Id)), ", "), "[]")
+
+	points, err = i.pointRepository.GetListByIdList(paramIdListStr)
 	if err != nil {
 		log.Println("error is:", err)
 		return points, err

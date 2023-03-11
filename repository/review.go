@@ -194,10 +194,14 @@ func (r *ReviewRepositoryImpl) GetListByContent(contentId int64) ([]*pb.Review, 
 // get list by id list
 //
 //	GetListByIdList(idList []int64) ([]*pb.Review, error)
-func (r *ReviewRepositoryImpl) GetListByIdList(idList []int64) ([]*pb.Review, error) {
+func (r *ReviewRepositoryImpl) GetListByIdList(idList string) ([]*pb.Review, error) {
 	var (
-		reviews []*pb.Review
+		reviews []*pb.Review = []*pb.Review{}
 	)
+
+	if idList == "" {
+		return reviews, nil
+	}
 
 	err := r.executer.Select(
 		r.Name+"GetListByIdList",

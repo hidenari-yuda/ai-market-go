@@ -154,12 +154,12 @@ func (r *PointHistoryRepositoryImpl) GetByUuid(uuid string) (*pb.PointHistory, e
 // getByUser
 func (r *PointHistoryRepositoryImpl) GetListByUser(userId int64) ([]*pb.PointHistory, error) {
 	var (
-		point_histories []*pb.PointHistory
+		pointHistories []*pb.PointHistory
 	)
 
 	err := r.executer.Select(
 		r.Name+"GetListByUser",
-		&point_histories,
+		&pointHistories,
 		"SELECT * FROM point_histories WHERE user_id = ?",
 		userId,
 	)
@@ -168,18 +168,18 @@ func (r *PointHistoryRepositoryImpl) GetListByUser(userId int64) ([]*pb.PointHis
 		return nil, err
 	}
 
-	return point_histories, nil
+	return pointHistories, nil
 }
 
 // get list by category
 func (r *PointHistoryRepositoryImpl) GetListByFreeWord(freeWord string) ([]*pb.PointHistory, error) {
 	var (
-		point_histories []*pb.PointHistory
+		pointHistories []*pb.PointHistory
 	)
 
 	err := r.executer.Select(
 		r.Name+"GetListByFreeWord",
-		&point_histories,
+		&pointHistories,
 		"SELECT * FROM point_histories WHERE title LIKE ? OR description LIKE ?",
 		"%"+freeWord+"%",
 		"%"+freeWord+"%",
@@ -189,18 +189,18 @@ func (r *PointHistoryRepositoryImpl) GetListByFreeWord(freeWord string) ([]*pb.P
 		return nil, err
 	}
 
-	return point_histories, nil
+	return pointHistories, nil
 }
 
 // get by latest id=user_id
 func (r *PointHistoryRepositoryImpl) GetLatestList(userId int64) ([]*pb.PointHistory, error) {
 	var (
-		point_histories []*pb.PointHistory
+		pointHistories []*pb.PointHistory
 	)
 
 	err := r.executer.Select(
 		r.Name+"GetLatestList",
-		&point_histories,
+		&pointHistories,
 		"SELECT * FROM point_histories WHERE user_id = ? ORDER BY created_at DESC",
 		userId,
 	)
@@ -209,18 +209,18 @@ func (r *PointHistoryRepositoryImpl) GetLatestList(userId int64) ([]*pb.PointHis
 		return nil, err
 	}
 
-	return point_histories, nil
+	return pointHistories, nil
 }
 
 // get by sold id=user_id
 func (r *PointHistoryRepositoryImpl) GetSoldListByUser(userId int64) ([]*pb.PointHistory, error) {
 	var (
-		point_histories []*pb.PointHistory
+		pointHistories []*pb.PointHistory
 	)
 
 	err := r.executer.Select(
 		r.Name+"GetSoldListByUser",
-		&point_histories,
+		&pointHistories,
 		"SELECT * FROM point_histories WHERE user_id = ? ORDER BY created_at DESC",
 		userId,
 	)
@@ -229,19 +229,19 @@ func (r *PointHistoryRepositoryImpl) GetSoldListByUser(userId int64) ([]*pb.Poin
 		return nil, err
 	}
 
-	return point_histories, nil
+	return pointHistories, nil
 }
 
 // get by purchased id=user_id
 // GetPurchasedListByUser(userId int64) ([]*pb.PointHistory, error)
 func (r *PointHistoryRepositoryImpl) GetPurchasedListByUser(userId int64) ([]*pb.PointHistory, error) {
 	var (
-		point_histories []*pb.PointHistory
+		pointHistories []*pb.PointHistory
 	)
 
 	err := r.executer.Select(
 		r.Name+"GetPurchasedListByUser",
-		&point_histories,
+		&pointHistories,
 		"SELECT * FROM point_histories WHERE user_id = ? ORDER BY created_at DESC",
 		userId,
 	)
@@ -250,20 +250,24 @@ func (r *PointHistoryRepositoryImpl) GetPurchasedListByUser(userId int64) ([]*pb
 		return nil, err
 	}
 
-	return point_histories, nil
+	return pointHistories, nil
 }
 
 // get list by id list
 //
 //	GetListByIdList(idList []int64) ([]*pb.PointHistory, error)
-func (r *PointHistoryRepositoryImpl) GetListByIdList(idList []int64) ([]*pb.PointHistory, error) {
+func (r *PointHistoryRepositoryImpl) GetListByIdList(idList string) ([]*pb.PointHistory, error) {
 	var (
-		point_histories []*pb.PointHistory
+		pointHistories []*pb.PointHistory = make([]*pb.PointHistory, 0)
 	)
+
+	if idList == "" {
+		return pointHistories, nil
+	}
 
 	err := r.executer.Select(
 		r.Name+"GetListByIdList",
-		&point_histories,
+		&pointHistories,
 		"SELECT * FROM point_histories WHERE id IN (?)",
 		idList,
 	)
@@ -272,18 +276,18 @@ func (r *PointHistoryRepositoryImpl) GetListByIdList(idList []int64) ([]*pb.Poin
 		return nil, err
 	}
 
-	return point_histories, nil
+	return pointHistories, nil
 }
 
 // admin
 // getAll
 func (r *PointHistoryRepositoryImpl) GetAll() ([]*pb.PointHistory, error) {
 	var (
-		point_histories []*pb.PointHistory
+		pointHistories []*pb.PointHistory
 	)
 	err := r.executer.Select(
 		r.Name+"GetAll",
-		&point_histories,
+		&pointHistories,
 		"SELECT * FROM point_histories ORDER BY id DESC",
 	)
 
@@ -293,5 +297,5 @@ func (r *PointHistoryRepositoryImpl) GetAll() ([]*pb.PointHistory, error) {
 		return nil, err
 	}
 
-	return point_histories, nil
+	return pointHistories, nil
 }

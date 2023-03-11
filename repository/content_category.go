@@ -174,10 +174,14 @@ func (r *ContentCategoryRepositoryImpl) GetListByUser(userId int64) ([]*pb.Conte
 }
 
 // get list by id list
-func (r *ContentCategoryRepositoryImpl) GetListByIdList(idList []int64) ([]*pb.ContentCategory, error) {
+func (r *ContentCategoryRepositoryImpl) GetListByIdList(idList string) ([]*pb.ContentCategory, error) {
 	var (
-		contentCategories []*pb.ContentCategory
+		contentCategories []*pb.ContentCategory = make([]*pb.ContentCategory, 0)
 	)
+
+	if idList == "" {
+		return contentCategories, nil
+	}
 
 	err := r.executer.Select(
 		r.Name+"GetListByIdList",
@@ -194,10 +198,14 @@ func (r *ContentCategoryRepositoryImpl) GetListByIdList(idList []int64) ([]*pb.C
 }
 
 // get list by content id list
-func (r *ContentCategoryRepositoryImpl) GetListByContentIdList(contentIdList []int64) ([]*pb.ContentCategory, error) {
+func (r *ContentCategoryRepositoryImpl) GetListByContentIdList(contentIdList string) ([]*pb.ContentCategory, error) {
 	var (
-		contentCategories []*pb.ContentCategory
+		contentCategories []*pb.ContentCategory = make([]*pb.ContentCategory, 0)
 	)
+
+	if contentIdList == "" {
+		return contentCategories, nil
+	}
 
 	err := r.executer.Select(
 		r.Name+"GetListByContentIdList",

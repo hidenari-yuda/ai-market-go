@@ -168,6 +168,17 @@ func (s *ContentServiceServer) GetById(ctx context.Context, req *pb.ContentIdReq
 	return res, nil
 }
 
+// get by uuid
+func (s *ContentServiceServer) GetByUuid(ctx context.Context, req *pb.ContentUuidRequest) (*pb.Content, error) {
+
+	res, err := s.ContentInteractor.GetByUuid(req)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
 // get Content group by user id
 func (s *ContentServiceServer) GetListByUser(ctx context.Context, req *pb.ContentUserIdRequest) (*pb.ContentList, error) {
 
@@ -216,6 +227,17 @@ func (s *ContentServiceServer) GetTrendList(ctx context.Context, req *emptypb.Em
 func (s *ContentServiceServer) GetRecommendedListByUser(ctx context.Context, req *pb.ContentUserIdRequest) (*pb.ContentList, error) {
 
 	res, err := s.ContentInteractor.GetRecommendedListByUser(req)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.ContentList{Content: res}, nil
+}
+
+// get recommended list by content id
+func (s *ContentServiceServer) GetRecommendedListByContent(ctx context.Context, req *pb.ContentIdRequest) (*pb.ContentList, error) {
+
+	res, err := s.ContentInteractor.GetRecommendedListByContent(req)
 	if err != nil {
 		return nil, err
 	}

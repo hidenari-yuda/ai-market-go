@@ -1,7 +1,9 @@
 package interactor
 
 import (
+	"fmt"
 	"log"
+	"strings"
 
 	"github.com/hidenari-yuda/ai-market-go/pb"
 	"github.com/hidenari-yuda/ai-market-go/usecase"
@@ -144,11 +146,13 @@ func (i *FollowingInteractorImpl) GetFollowedListByUser(param *pb.FollowingUserI
 // get list by id list
 func (i *FollowingInteractorImpl) GetListByIdList(param *pb.FollowingIdListRequest) ([]*pb.Following, error) {
 	var (
-		points []*pb.Following
-		err    error
+		points         []*pb.Following
+		err            error
+		paramIdListStr string
 	)
+	paramIdListStr = strings.Trim(strings.Join(strings.Fields(fmt.Sprint(param.Id)), ", "), "[]")
 
-	points, err = i.pointRepository.GetListByIdList(param.Id)
+	points, err = i.pointRepository.GetListByIdList(paramIdListStr)
 	if err != nil {
 		log.Println("error is:", err)
 		return points, err

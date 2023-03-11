@@ -184,10 +184,14 @@ func (r *ContentDetailRepositoryImpl) GetListByUser(userId int64) ([]*pb.Content
 }
 
 // get list by id list
-func (r *ContentDetailRepositoryImpl) GetListByIdList(idList []int64) ([]*pb.ContentDetail, error) {
+func (r *ContentDetailRepositoryImpl) GetListByIdList(idList string) ([]*pb.ContentDetail, error) {
 	var (
-		contentDetails []*pb.ContentDetail
+		contentDetails []*pb.ContentDetail = make([]*pb.ContentDetail, 0)
 	)
+
+	if idList == "" {
+		return contentDetails, nil
+	}
 
 	err := r.executer.Select(
 		r.Name+"GetListByIdList",
@@ -204,10 +208,14 @@ func (r *ContentDetailRepositoryImpl) GetListByIdList(idList []int64) ([]*pb.Con
 }
 
 // get list by content id list
-func (r *ContentDetailRepositoryImpl) GetListByContentIdList(contentIdList []int64) ([]*pb.ContentDetail, error) {
+func (r *ContentDetailRepositoryImpl) GetListByContentIdList(contentIdList string) ([]*pb.ContentDetail, error) {
 	var (
-		contentDetails []*pb.ContentDetail
+		contentDetails []*pb.ContentDetail = make([]*pb.ContentDetail, 0)
 	)
+
+	if contentIdList == "" {
+		return contentDetails, nil
+	}
 
 	err := r.executer.Select(
 		r.Name+"GetListByContentIdList",

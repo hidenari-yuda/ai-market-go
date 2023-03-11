@@ -265,10 +265,14 @@ func (r *OrderRepositoryImpl) GetPurchasedListByUser(userId int64) ([]*pb.Order,
 // get list by id list
 //
 //	GetListByIdList(idList []int64) ([]*pb.Order, error)
-func (r *OrderRepositoryImpl) GetListByIdList(idList []int64) ([]*pb.Order, error) {
+func (r *OrderRepositoryImpl) GetListByIdList(idList string) ([]*pb.Order, error) {
 	var (
-		orders []*pb.Order
+		orders []*pb.Order = make([]*pb.Order, 0)
 	)
+
+	if idList == "" {
+		return orders, nil
+	}
 
 	if err := r.executer.Select(
 		r.Name+"GetListByIdList",

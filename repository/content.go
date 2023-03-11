@@ -38,10 +38,6 @@ func (r *ContentRepositoryImpl) Create(param *pb.Content) error {
 			asp_rate,
 			request_progress,
 			is_open,
-			like_count,
-			view_count,
-			review_count,
-			purchase_count,
 			created_at,
 			updated_at,
 			is_deleted
@@ -58,10 +54,6 @@ func (r *ContentRepositoryImpl) Create(param *pb.Content) error {
 				?,
 				?,
 				?,
-				?,
-				?,
-				?,
-				?
 		)`,
 		utils.CreateUuid(),
 		param.UserId,
@@ -72,10 +64,6 @@ func (r *ContentRepositoryImpl) Create(param *pb.Content) error {
 		param.AspRate,
 		param.RequestProgress,
 		param.IsOpen,
-		param.LikeCount,
-		param.ViewCount,
-		param.ReviewCount,
-		param.PurchaseCount,
 		now,
 		now,
 		false,
@@ -92,7 +80,7 @@ func (r *ContentRepositoryImpl) Create(param *pb.Content) error {
 
 // update
 func (r *ContentRepositoryImpl) Update(param *pb.Content) error {
-		now := time.Now().UTC()
+	now := time.Now().UTC()
 
 	lastId, err := r.executer.Exec(
 		r.Name+"Update",
@@ -104,10 +92,6 @@ func (r *ContentRepositoryImpl) Update(param *pb.Content) error {
 			asp_rate = ?,
 			request_progress = ?,
 			is_open = ?,
-			like_count = ?,
-			view_count = ?,
-			review_count = ?,
-			purchase_count = ?,
 			updated_at = ?
 		WHERE id = ?`,
 		param.Title,
@@ -117,10 +101,6 @@ func (r *ContentRepositoryImpl) Update(param *pb.Content) error {
 		param.AspRate,
 		param.RequestProgress,
 		param.IsOpen,
-		param.LikeCount,
-		param.ViewCount,
-		param.ReviewCount,
-		param.PurchaseCount,
 		now,
 		param.Id,
 	)
@@ -137,7 +117,7 @@ func (r *ContentRepositoryImpl) Update(param *pb.Content) error {
 }
 
 // update impression
-func (r *ContentRepositoryImpl) UpdateImpressionByIdList(idList []int64) error {
+func (r *ContentRepositoryImpl) UpdateImpressionByIdList(idList string) error {
 	_, err := r.executer.Exec(
 		r.Name+"UpdateImpression",
 		`UPDATE contents SET
@@ -157,7 +137,7 @@ func (r *ContentRepositoryImpl) UpdateImpressionByIdList(idList []int64) error {
 	return nil
 }
 
-// update view 
+// update view
 func (r *ContentRepositoryImpl) UpdateView(id int64) error {
 	_, err := r.executer.Exec(
 		r.Name+"UpdateView",
@@ -224,8 +204,7 @@ func (r *ContentRepositoryImpl) UpdateClick(id int64) error {
 func (r *ContentRepositoryImpl) Delete(id int64) error {
 	_, err := r.executer.Exec(
 		r.Name+"Delete",
-		"UPDATE contents SET is_deleted = ? WHERE id = ?",
-		true,
+		`UPDATE contents SET is_deleted = true WHERE id = ?`,
 		id,
 	)
 
@@ -245,9 +224,16 @@ func (r *ContentRepositoryImpl) GetById(id int64) (*pb.Content, error) {
 	if err := r.executer.Get(
 		r.Name+"GetById",
 		&content,
-		"SELECT * FROM contents WHERE id = ?",
+		`
+		SELECT * 
+		FROM contents 
+		WHERE 
+			id = ?
+			AND 
+			is_deleted = false
+			`,
 		id,
-	);err != nil {
+	); err != nil {
 		return nil, err
 	}
 
@@ -263,7 +249,14 @@ func (r *ContentRepositoryImpl) GetByUuid(uuid string) (*pb.Content, error) {
 	if err := r.executer.Get(
 		r.Name+"GetByUuid",
 		&content,
-		"SELECT * FROM contents WHERE uuid = ?",
+		`
+		SELECT * 
+		FROM contents 
+		WHERE 
+			uuid = ?
+			AND 
+			is_deleted = false
+		`,
 		uuid,
 	); err != nil {
 		return nil, err
@@ -281,7 +274,14 @@ func (r *ContentRepositoryImpl) GetListByUser(userId int64) ([]*pb.Content, erro
 	if err := r.executer.Select(
 		r.Name+"GetListByUser",
 		&contents,
-		"SELECT * FROM contents WHERE user_id = ?",
+		`
+		SELECT * 
+		FROM contents 
+		WHERE 
+			user_id = ?
+			AND
+			is_deleted = false
+		`,
 		userId,
 	); err != nil {
 		return nil, err
@@ -299,7 +299,16 @@ func (r *ContentRepositoryImpl) GetListByFreeWord(freeWord string) ([]*pb.Conten
 	if err := r.executer.Select(
 		r.Name+"GetListByFreeWord",
 		&contents,
-		"SELECT * FROM contents WHERE title LIKE ? OR description LIKE ?",
+		`
+		SELECT * 
+		FROM contents 
+		WHERE 
+			title LIKE ? OR description LIKE ?
+			AND
+			is_deleted = false
+			AND
+			is_open = true
+			`,
 		"%"+freeWord+"%",
 		"%"+freeWord+"%",
 	); err != nil {
@@ -318,7 +327,17 @@ func (r *ContentRepositoryImpl) GetLatestList() ([]*pb.Content, error) {
 	if err := r.executer.Select(
 		r.Name+"GetLatestList",
 		&contents,
-		"SELECT * FROM contents ORDER BY created_at DESC",
+		`
+		SELECT 
+			*
+		FROM 
+			contents
+		WHERE 
+			is_deleted = false
+			AND
+			is_open = true
+		ORDER BY id DESC
+		`,
 	); err != nil {
 		return nil, err
 	}
@@ -335,7 +354,18 @@ func (r *ContentRepositoryImpl) GetTrendList() ([]*pb.Content, error) {
 	if err := r.executer.Select(
 		r.Name+"GetTrendList",
 		&contents,
-		"SELECT * FROM contents ORDER BY view_count DESC",
+		`
+		SELECT
+			* 
+		FROM 
+			contents 
+		WHERE 
+			is_deleted = false 
+			AND
+			is_open = true
+		ORDER BY 
+			view_count DESC
+		`,
 	); err != nil {
 		return nil, err
 	}
@@ -352,8 +382,47 @@ func (r *ContentRepositoryImpl) GetRecommendedListByUser(userId int64) ([]*pb.Co
 	if err := r.executer.Select(
 		r.Name+"GetRecommendedListByUser",
 		&contents,
-		"SELECT * FROM contents WHERE user_id = ? ORDER BY view_count DESC",
-		userId,
+		`
+		SELECT
+			* 
+		FROM 
+			contents 
+		WHERE 
+			is_deleted = false 
+			AND
+			is_open = true
+		ORDER BY 
+			view_count DESC
+		`,
+		// userId,
+	); err != nil {
+		return nil, err
+	}
+
+	return contents, nil
+}
+
+// get recommended list
+func (r *ContentRepositoryImpl) GetRecommendedListByContent() ([]*pb.Content, error) {
+	var (
+		contents []*pb.Content
+	)
+
+	if err := r.executer.Select(
+		r.Name+"GetRecommendedListByContent",
+		&contents,
+		`
+		SELECT
+			* 
+		FROM 
+			contents 
+		WHERE 
+			is_deleted = false 
+			AND
+			is_open = true
+		ORDER BY 
+			view_count DESC
+		`,
 	); err != nil {
 		return nil, err
 	}
@@ -370,7 +439,18 @@ func (r *ContentRepositoryImpl) GetSoldListByUser(userId int64) ([]*pb.Content, 
 	if err := r.executer.Select(
 		r.Name+"GetSoldListByUser",
 		&contents,
-		"SELECT * FROM contents WHERE user_id = ? ORDER BY created_at DESC",
+		`
+		SELECT
+			* 
+		FROM 
+			contents 
+		WHERE 
+			user_id = ?
+			AND
+			is_deleted = false
+		ORDER BY 
+			id DESC
+		`,
 		userId,
 	); err != nil {
 		return nil, err
@@ -389,7 +469,20 @@ func (r *ContentRepositoryImpl) GetPurchasedListByUser(userId int64) ([]*pb.Cont
 	if err := r.executer.Select(
 		r.Name+"GetPurchasedListByUser",
 		&contents,
-		"SELECT * FROM contents WHERE user_id = ? ORDER BY created_at DESC",
+		`
+		SELECT
+			* 
+		FROM 
+			contents 
+		WHERE 
+			user_id = ?
+			AND
+			is_deleted = false 
+			AND
+			is_open = true
+		ORDER BY 
+			id DESC
+		`,
 		userId,
 	); err != nil {
 		return nil, err
@@ -408,7 +501,20 @@ func (r *ContentRepositoryImpl) GetLikedListByUser(userId int64) ([]*pb.Content,
 	if err := r.executer.Select(
 		r.Name+"GetLikedListByUser",
 		&contents,
-		"SELECT * FROM contents WHERE user_id = ? ORDER BY created_at DESC",
+		`
+		SELECT
+			* 
+		FROM 
+			contents 
+		WHERE 
+			user_id = ?
+			AND
+			is_deleted = false 
+			AND
+			is_open = true
+		ORDER BY 
+			id DESC
+		`,
 		userId,
 	); err != nil {
 		return nil, err
@@ -420,7 +526,7 @@ func (r *ContentRepositoryImpl) GetLikedListByUser(userId int64) ([]*pb.Content,
 // get list by id list
 //
 //	GetListByIdList(idList []int64) ([]*pb.Content, error)
-func (r *ContentRepositoryImpl) GetListByIdList(idList []int64) ([]*pb.Content, error) {
+func (r *ContentRepositoryImpl) GetListByIdList(idList string) ([]*pb.Content, error) {
 	var (
 		contents []*pb.Content
 	)
@@ -428,7 +534,11 @@ func (r *ContentRepositoryImpl) GetListByIdList(idList []int64) ([]*pb.Content, 
 	if err := r.executer.Select(
 		r.Name+"GetListByIdList",
 		&contents,
-		"SELECT * FROM contents WHERE id IN (?)",
+		`
+		SELECT * 
+		FROM contents 
+		WHERE id IN (?)
+		`,
 		idList,
 	); err != nil {
 		return nil, err
@@ -447,7 +557,11 @@ func (r *ContentRepositoryImpl) GetAll() ([]*pb.Content, error) {
 	if err := r.executer.Select(
 		r.Name+"GetAll",
 		&contents,
-		"SELECT * FROM contents ORDER BY id DESC",
+		`
+		SELECT * 
+		FROM contents 
+		ORDER BY id DESC
+		`,
 	); err != nil {
 		err = fmt.Errorf("failed to get all contents: %w", err)
 		log.Println(err)

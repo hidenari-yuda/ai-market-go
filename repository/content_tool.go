@@ -180,10 +180,14 @@ func (r *ContentToolRepositoryImpl) GetListByUser(userId int64) ([]*pb.ContentTo
 }
 
 // get list by id list
-func (r *ContentToolRepositoryImpl) GetListByIdList(idList []int64) ([]*pb.ContentTool, error) {
+func (r *ContentToolRepositoryImpl) GetListByIdList(idList string) ([]*pb.ContentTool, error) {
 	var (
-		contentTools []*pb.ContentTool
+		contentTools []*pb.ContentTool = make([]*pb.ContentTool, 0)
 	)
+
+	if idList == "" {
+		return contentTools, nil
+	}
 
 	err := r.executer.Select(
 		r.Name+"GetListByIdList",
@@ -200,10 +204,14 @@ func (r *ContentToolRepositoryImpl) GetListByIdList(idList []int64) ([]*pb.Conte
 }
 
 // get list by content id list
-func (r *ContentToolRepositoryImpl) GetListByContentIdList(contentIdList []int64) ([]*pb.ContentTool, error) {
+func (r *ContentToolRepositoryImpl) GetListByContentIdList(contentIdList string) ([]*pb.ContentTool, error) {
 	var (
-		contentTools []*pb.ContentTool
+		contentTools []*pb.ContentTool = make([]*pb.ContentTool, 0)
 	)
+
+	if contentIdList == "" {
+		return contentTools, nil
+	}
 
 	err := r.executer.Select(
 		r.Name+"GetListByContentIdList",

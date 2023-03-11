@@ -176,10 +176,14 @@ func (r *ViewRepositoryImpl) GetListByContent(contentId int64) ([]*pb.View, erro
 // get list by id list
 //
 //	GetListByIdList(idList []int64) ([]*pb.View, error)
-func (r *ViewRepositoryImpl) GetListByIdList(idList []int64) ([]*pb.View, error) {
+func (r *ViewRepositoryImpl) GetListByIdList(idList string) ([]*pb.View, error) {
 	var (
-		views []*pb.View
+		views []*pb.View = make([]*pb.View, 0)
 	)
+
+	if idList == "" {
+		return views, nil
+	}
 
 	err := r.executer.Select(
 		r.Name+"GetListByIdList",

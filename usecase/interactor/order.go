@@ -1,7 +1,9 @@
 package interactor
 
 import (
+	"fmt"
 	"log"
+	"strings"
 
 	"github.com/hidenari-yuda/ai-market-go/pb"
 	"github.com/hidenari-yuda/ai-market-go/usecase"
@@ -35,8 +37,8 @@ type OrderInteractor interface {
 }
 
 type OrderInteractorImpl struct {
-	firebase                  usecase.Firebase
-	orderRepository						usecase.OrderRepository
+	firebase        usecase.Firebase
+	orderRepository usecase.OrderRepository
 }
 
 func NewOrderInteractorImpl(
@@ -44,8 +46,8 @@ func NewOrderInteractorImpl(
 	oR usecase.OrderRepository,
 ) OrderInteractor {
 	return &OrderInteractorImpl{
-		firebase:                  fb,
-		orderRepository:						oR,
+		firebase:        fb,
+		orderRepository: oR,
 	}
 }
 
@@ -82,7 +84,7 @@ func (i *OrderInteractorImpl) Delete(param *pb.OrderIdRequest) (bool, error) {
 func (i *OrderInteractorImpl) GetById(param *pb.OrderIdRequest) (*pb.Order, error) {
 	var (
 		order *pb.Order
-		err  error
+		err   error
 	)
 
 	order, err = i.orderRepository.GetById(param.Id)
@@ -97,13 +99,13 @@ func (i *OrderInteractorImpl) GetById(param *pb.OrderIdRequest) (*pb.Order, erro
 func (i *OrderInteractorImpl) GetByUuid(param *pb.OrderUuidRequest) (*pb.Order, error) {
 	var (
 		order *pb.Order
-		err  error
+		err   error
 	)
 
 	order, err = i.orderRepository.GetByUuid(param.Uuid)
 	if err != nil {
-			log.Println("error is:", err)
-			return order, err
+		log.Println("error is:", err)
+		return order, err
 	}
 
 	return order, nil
@@ -113,7 +115,7 @@ func (i *OrderInteractorImpl) GetByUuid(param *pb.OrderUuidRequest) (*pb.Order, 
 func (i *OrderInteractorImpl) GetSoldListByUser(param *pb.OrderUserIdRequest) ([]*pb.Order, error) {
 	var (
 		orders []*pb.Order
-		err   error
+		err    error
 	)
 
 	orders, err = i.orderRepository.GetSoldListByUser(param.UserId)
@@ -129,7 +131,7 @@ func (i *OrderInteractorImpl) GetSoldListByUser(param *pb.OrderUserIdRequest) ([
 func (i *OrderInteractorImpl) GetPurchasedListByUser(param *pb.OrderUserIdRequest) ([]*pb.Order, error) {
 	var (
 		orders []*pb.Order
-		err   error
+		err    error
 	)
 
 	orders, err = i.orderRepository.GetPurchasedListByUser(param.UserId)
@@ -144,11 +146,14 @@ func (i *OrderInteractorImpl) GetPurchasedListByUser(param *pb.OrderUserIdReques
 // get list by id list
 func (i *OrderInteractorImpl) GetListByIdList(param *pb.OrderIdListRequest) ([]*pb.Order, error) {
 	var (
-		orders []*pb.Order
-		err   error
+		orders         []*pb.Order
+		err            error
+		paramIdListStr string
 	)
 
-	orders, err = i.orderRepository.GetListByIdList(param.Id)
+	paramIdListStr = strings.Trim(strings.Join(strings.Fields(fmt.Sprint(param.Id)), ", "), "[]")
+
+	orders, err = i.orderRepository.GetListByIdList(paramIdListStr)
 	if err != nil {
 		log.Println("error is:", err)
 		return orders, err
@@ -162,7 +167,7 @@ func (i *OrderInteractorImpl) GetListByIdList(param *pb.OrderIdListRequest) ([]*
 func (i *OrderInteractorImpl) GetAll() ([]*pb.Order, error) {
 	var (
 		orders []*pb.Order
-		err   error
+		err    error
 	)
 
 	orders, err = i.orderRepository.GetAll()

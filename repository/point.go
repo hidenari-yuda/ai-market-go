@@ -162,10 +162,14 @@ func (r *PointRepositoryImpl) GetListByUser(userId int64) ([]*pb.Point, error) {
 // get list by id list
 //
 //	GetListByIdList(idList []int64) ([]*pb.Point, error)
-func (r *PointRepositoryImpl) GetListByIdList(idList []int64) ([]*pb.Point, error) {
+func (r *PointRepositoryImpl) GetListByIdList(idList string) ([]*pb.Point, error) {
 	var (
-		points []*pb.Point
+		points []*pb.Point = make([]*pb.Point, 0)
 	)
+
+	if idList == "" {
+		return points, nil
+	}
 
 	err := r.executer.Select(
 		r.Name+"GetListByIdList",

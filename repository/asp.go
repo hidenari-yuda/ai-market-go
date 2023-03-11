@@ -106,7 +106,7 @@ func (r *AspRepositoryImpl) Delete(id int64) error {
 // get
 func (r *AspRepositoryImpl) GetById(id int64) (*pb.Asp, error) {
 	var (
-		content pb.Asp
+		content pb.Asp 
 	)
 
 	if err := r.executer.Get(
@@ -144,7 +144,7 @@ func (r *AspRepositoryImpl) GetByUuid(uuid string) (*pb.Asp, error) {
 // getByUser
 func (r *AspRepositoryImpl) GetListByUser(userId int64) ([]*pb.Asp, error) {
 	var (
-		asps []*pb.Asp
+		asps []*pb.Asp = make([]*pb.Asp, 0)
 	)
 
 	if err := r.executer.Select(
@@ -162,7 +162,7 @@ func (r *AspRepositoryImpl) GetListByUser(userId int64) ([]*pb.Asp, error) {
 // get list by content
 func (r *AspRepositoryImpl) GetListByContent(contentId int64) ([]*pb.Asp, error) {
 	var (
-		asps []*pb.Asp
+		asps []*pb.Asp = make([]*pb.Asp, 0)
 	)
 
 	if err := r.executer.Select(
@@ -180,7 +180,7 @@ func (r *AspRepositoryImpl) GetListByContent(contentId int64) ([]*pb.Asp, error)
 // get list by service
 func (r *AspRepositoryImpl) GetListByService(service int64) ([]*pb.Asp, error) {
 	var (
-		asps []*pb.Asp
+		asps []*pb.Asp = make([]*pb.Asp, 0)
 	)
 
 	if err := r.executer.Select(
@@ -198,9 +198,9 @@ func (r *AspRepositoryImpl) GetListByService(service int64) ([]*pb.Asp, error) {
 // get list by id list
 //
 //	GetListByIdList(idList []int64) ([]*pb.Asp, error)
-func (r *AspRepositoryImpl) GetListByIdList(idList []int64) ([]*pb.Asp, error) {
+func (r *AspRepositoryImpl) GetListByIdList(idList string) ([]*pb.Asp, error) {
 	var (
-		asps []*pb.Asp
+		asps []*pb.Asp = make([]*pb.Asp, 0)
 	)
 
 	if err := r.executer.Select(
@@ -208,7 +208,7 @@ func (r *AspRepositoryImpl) GetListByIdList(idList []int64) ([]*pb.Asp, error) {
 		&asps,
 		"SELECT * FROM asps WHERE id IN (?)",
 		idList,
-	);err != nil {
+	); err != nil {
 		return nil, err
 	}
 
@@ -219,7 +219,7 @@ func (r *AspRepositoryImpl) GetListByIdList(idList []int64) ([]*pb.Asp, error) {
 // getAll
 func (r *AspRepositoryImpl) GetAll() ([]*pb.Asp, error) {
 	var (
-		asps []*pb.Asp
+		asps []*pb.Asp = make([]*pb.Asp, 0)
 	)
 
 	if err := r.executer.Select(

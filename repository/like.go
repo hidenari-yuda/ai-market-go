@@ -172,10 +172,14 @@ func (r *LikeRepositoryImpl) GetListByContent(contentId int64) ([]*pb.Like, erro
 // get list by id list
 //
 //	GetListByIdList(idList []int64) ([]*pb.Like, error)
-func (r *LikeRepositoryImpl) GetListByIdList(idList []int64) ([]*pb.Like, error) {
+func (r *LikeRepositoryImpl) GetListByIdList(idList string) ([]*pb.Like, error) {
 	var (
-		likes []*pb.Like
+		likes []*pb.Like = make([]*pb.Like, 0)
 	)
+
+	if idList == "" {
+		return likes, nil
+	}
 
 	if err := r.executer.Select(
 		r.Name+"GetListByIdList",

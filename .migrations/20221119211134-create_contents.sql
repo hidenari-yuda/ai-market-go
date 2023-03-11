@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS contents (
   order_count INT NOT NULL DEFAULT 0,
   purchase_count INT NOT NULL DEFAULT 0,
   review_count INT NOT NULL DEFAULT 0,
+  star_rate INT NOT NULL DEFAULT 0,
   created_at DATETIME NOT NULL,
   updated_at DATETIME NOT NULL,
   is_deleted BOOLEAN NOT NULL DEFAULT FALSE,

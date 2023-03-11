@@ -70,7 +70,7 @@ type ContentRepository interface {
 	Update(param *pb.Content) error
 
 	// update impression
-	UpdateImpressionByIdList(idList []int64) error
+	UpdateImpressionByIdList(idList string) error
 
 	// update view
 	UpdateView(id int64) error
@@ -105,6 +105,9 @@ type ContentRepository interface {
 	// get recommended list
 	GetRecommendedListByUser(userId int64) ([]*pb.Content, error)
 
+	// get recommended list by content
+	GetRecommendedListByContent() ([]*pb.Content, error)
+
 	// get by sold id=user_id
 	GetSoldListByUser(userId int64) ([]*pb.Content, error)
 
@@ -115,7 +118,7 @@ type ContentRepository interface {
 	GetLikedListByUser(userId int64) ([]*pb.Content, error)
 
 	// get list by id list
-	GetListByIdList(idList []int64) ([]*pb.Content, error)
+	GetListByIdList(idList string) ([]*pb.Content, error)
 
 	// admin
 	GetAll() ([]*pb.Content, error)
@@ -144,10 +147,10 @@ type ContentDetailRepository interface {
 	GetListByUser(userId int64) ([]*pb.ContentDetail, error)
 
 	// get list by id list
-	GetListByIdList(idList []int64) ([]*pb.ContentDetail, error)
+	GetListByIdList(idList string) ([]*pb.ContentDetail, error)
 
 	// get list by content id list
-	GetListByContentIdList(contentIdList []int64) ([]*pb.ContentDetail, error)
+	GetListByContentIdList(contentIdList string) ([]*pb.ContentDetail, error)
 }
 
 // contentTool
@@ -173,10 +176,10 @@ type ContentToolRepository interface {
 	GetListByUser(userId int64) ([]*pb.ContentTool, error)
 
 	// get list by id list
-	GetListByIdList(idList []int64) ([]*pb.ContentTool, error)
+	GetListByIdList(idList string) ([]*pb.ContentTool, error)
 
 	// get list by content id list
-	GetListByContentIdList(contentIdList []int64) ([]*pb.ContentTool, error)
+	GetListByContentIdList(contentIdList string) ([]*pb.ContentTool, error)
 }
 
 // contentCategory
@@ -202,10 +205,10 @@ type ContentCategoryRepository interface {
 	GetListByUser(userId int64) ([]*pb.ContentCategory, error)
 
 	// get list by id list
-	GetListByIdList(idList []int64) ([]*pb.ContentCategory, error)
+	GetListByIdList(idList string) ([]*pb.ContentCategory, error)
 
 	// get list by content id list
-	GetListByContentIdList(contentIdList []int64) ([]*pb.ContentCategory, error)
+	GetListByContentIdList(contentIdList string) ([]*pb.ContentCategory, error)
 }
 
 // contentSubCategory
@@ -231,10 +234,10 @@ type ContentSubCategoryRepository interface {
 	GetListByUser(userId int64) ([]*pb.ContentSubCategory, error)
 
 	// get list by id list
-	GetListByIdList(idList []int64) ([]*pb.ContentSubCategory, error)
+	GetListByIdList(idList string) ([]*pb.ContentSubCategory, error)
 
 	// get list by content id list
-	GetListByContentIdList(contentIdList []int64) ([]*pb.ContentSubCategory, error)
+	GetListByContentIdList(contentIdList string) ([]*pb.ContentSubCategory, error)
 }
 
 /******************* like *******************/
@@ -260,7 +263,7 @@ type LikeRepository interface {
 	GetListByContent(contentId int64) ([]*pb.Like, error)
 
 	// get list by id list
-	GetListByIdList(idList []int64) ([]*pb.Like, error)
+	GetListByIdList(idList string) ([]*pb.Like, error)
 
 	// admin
 	GetAll() ([]*pb.Like, error)
@@ -289,7 +292,7 @@ type ViewRepository interface {
 	GetListByContent(contentId int64) ([]*pb.View, error)
 
 	// get list by id list
-	GetListByIdList(idList []int64) ([]*pb.View, error)
+	GetListByIdList(idList string) ([]*pb.View, error)
 
 	// admin
 	GetAll() ([]*pb.View, error)
@@ -318,7 +321,7 @@ type ClickRepository interface {
 	GetListByContent(contentId int64) ([]*pb.Click, error)
 
 	// get list by id list
-	GetListByIdList(idList []int64) ([]*pb.Click, error)
+	GetListByIdList(idList string) ([]*pb.Click, error)
 
 	// admin
 	GetAll() ([]*pb.Click, error)
@@ -350,7 +353,7 @@ type ReviewRepository interface {
 	GetListByContent(contentId int64) ([]*pb.Review, error)
 
 	// get list by id list
-	GetListByIdList(idList []int64) ([]*pb.Review, error)
+	GetListByIdList(idList string) ([]*pb.Review, error)
 
 	// admin
 	GetAll() ([]*pb.Review, error)
@@ -385,7 +388,7 @@ type AspRepository interface {
 	GetListByService(service int64) ([]*pb.Asp, error)
 
 	// get list by id list
-	GetListByIdList(idList []int64) ([]*pb.Asp, error)
+	GetListByIdList(idList string) ([]*pb.Asp, error)
 
 	// admin
 	GetAll() ([]*pb.Asp, error)
@@ -417,7 +420,7 @@ type FollowingRepository interface {
 	GetFollowedListByUser(userId int64) ([]*pb.Following, error)
 
 	// get list by id list
-	GetListByIdList(idList []int64) ([]*pb.Following, error)
+	GetListByIdList(idList string) ([]*pb.Following, error)
 
 	// admin
 	GetAll() ([]*pb.Following, error)
@@ -449,7 +452,7 @@ type OrderRepository interface {
 	GetPurchasedListByUser(userId int64) ([]*pb.Order, error)
 
 	// get list by id list
-	GetListByIdList(idList []int64) ([]*pb.Order, error)
+	GetListByIdList(idList string) ([]*pb.Order, error)
 
 	// admin
 	GetAll() ([]*pb.Order, error)
@@ -478,7 +481,7 @@ type PointRepository interface {
 	GetListByUser(userId int64) ([]*pb.Point, error)
 
 	// get list by id list
-	GetListByIdList(idList []int64) ([]*pb.Point, error)
+	GetListByIdList(idList string) ([]*pb.Point, error)
 
 	// admin
 	GetAll() ([]*pb.Point, error)
@@ -510,7 +513,7 @@ type PointHistoryRepository interface {
 	GetPurchasedListByUser(userId int64) ([]*pb.PointHistory, error)
 
 	// get list by id list
-	GetListByIdList(idList []int64) ([]*pb.PointHistory, error)
+	GetListByIdList(idList string) ([]*pb.PointHistory, error)
 
 	// admin
 	GetAll() ([]*pb.PointHistory, error)

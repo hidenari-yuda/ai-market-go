@@ -190,10 +190,14 @@ func (r *FollowingRepositoryImpl) GetListByContent(contentId int64) ([]*pb.Follo
 // get list by id list
 //
 //	GetListByIdList(idList []int64) ([]*pb.Following, error)
-func (r *FollowingRepositoryImpl) GetListByIdList(idList []int64) ([]*pb.Following, error) {
+func (r *FollowingRepositoryImpl) GetListByIdList(idList string) ([]*pb.Following, error) {
 	var (
-		followings []*pb.Following
+		followings []*pb.Following = make([]*pb.Following, 0)
 	)
+
+	if idList == "" {
+		return followings, nil
+	}
 
 	if err := r.executer.Select(
 		r.Name+"GetListByIdList",
@@ -211,7 +215,7 @@ func (r *FollowingRepositoryImpl) GetListByIdList(idList []int64) ([]*pb.Followi
 // getAll
 func (r *FollowingRepositoryImpl) GetAll() ([]*pb.Following, error) {
 	var (
-		followings []*pb.Following
+		followings []*pb.Following = make([]*pb.Following, 0)
 	)
 
 	if err := r.executer.Select(

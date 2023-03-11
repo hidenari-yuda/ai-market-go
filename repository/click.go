@@ -96,7 +96,7 @@ func (r *ClickRepositoryImpl) Delete(id int64) error {
 // get
 func (r *ClickRepositoryImpl) GetById(id int64) (*pb.Click, error) {
 	var (
-		content pb.Click
+		content pb.Click = pb.Click{}
 	)
 
 	err := r.executer.Get(
@@ -116,7 +116,7 @@ func (r *ClickRepositoryImpl) GetById(id int64) (*pb.Click, error) {
 // get by uuid
 func (r *ClickRepositoryImpl) GetByUuid(uuid int64) (*pb.Click, error) {
 	var (
-		content pb.Click
+		content pb.Click = pb.Click{}
 	)
 
 	err := r.executer.Get(
@@ -136,7 +136,7 @@ func (r *ClickRepositoryImpl) GetByUuid(uuid int64) (*pb.Click, error) {
 // getByUser
 func (r *ClickRepositoryImpl) GetListByUser(userId int64) ([]*pb.Click, error) {
 	var (
-		clicks []*pb.Click
+		clicks []*pb.Click = make([]*pb.Click, 0)
 	)
 
 	err := r.executer.Select(
@@ -156,7 +156,7 @@ func (r *ClickRepositoryImpl) GetListByUser(userId int64) ([]*pb.Click, error) {
 // getByContent
 func (r *ClickRepositoryImpl) GetListByContent(contentId int64) ([]*pb.Click, error) {
 	var (
-		clicks []*pb.Click
+		clicks []*pb.Click = make([]*pb.Click, 0)
 	)
 
 	err := r.executer.Select(
@@ -176,10 +176,14 @@ func (r *ClickRepositoryImpl) GetListByContent(contentId int64) ([]*pb.Click, er
 // get list by id list
 //
 //	GetListByIdList(idList []int64) ([]*pb.Click, error)
-func (r *ClickRepositoryImpl) GetListByIdList(idList []int64) ([]*pb.Click, error) {
+func (r *ClickRepositoryImpl) GetListByIdList(idList string) ([]*pb.Click, error) {
 	var (
-		clicks []*pb.Click
+		clicks []*pb.Click = make([]*pb.Click, 0)
 	)
+
+	if idList == "" {
+		return clicks, nil
+	}
 
 	err := r.executer.Select(
 		r.Name+"GetListByIdList",
@@ -199,7 +203,7 @@ func (r *ClickRepositoryImpl) GetListByIdList(idList []int64) ([]*pb.Click, erro
 // getAll
 func (r *ClickRepositoryImpl) GetAll() ([]*pb.Click, error) {
 	var (
-		clicks []*pb.Click
+		clicks []*pb.Click = make([]*pb.Click, 0)
 	)
 	err := r.executer.Select(
 		r.Name+"GetAll",
