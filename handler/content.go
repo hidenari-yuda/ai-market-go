@@ -179,6 +179,17 @@ func (s *ContentServiceServer) GetByUuid(ctx context.Context, req *pb.ContentUui
 	return res, nil
 }
 
+// get by uuid and user
+func (s *ContentServiceServer) GetByUuidAndUser(ctx context.Context, req *pb.ContentUuidAndUserIdRequest) (*pb.Content, error) {
+
+	res, err := s.ContentInteractor.GetByUuidAndUser(req)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
 // get Content group by user id
 func (s *ContentServiceServer) GetListByUser(ctx context.Context, req *pb.ContentUserIdRequest) (*pb.ContentList, error) {
 

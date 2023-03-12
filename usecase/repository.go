@@ -36,6 +36,33 @@ type UserRepository interface {
 	GetByFirebaseId(firebaseId string) (*pb.User, error)
 }
 
+type UserMediaRepository interface {
+	// Gest API
+	// Create
+	Create(param *pb.UserMedia) error
+
+	// Update
+	Update(param *pb.UserMedia) error
+
+	// Delete
+	Delete(id int64) error
+
+	// delete by user id
+	DeleteByUser(userId int64) error
+
+	// Get
+	GetById(id int64) (*pb.UserMedia, error)
+
+	// get by uuid
+	GetByUuid(uuid string) (*pb.UserMedia, error)
+
+	// get list by user id
+	GetListByUser(userId int64) ([]*pb.UserMedia, error)
+
+	// get list by user id list
+	GetListByUserList(idList string) ([]*pb.UserMedia, error)
+}
+
 /******************* billing *******************/
 // billing
 type BillingRepository interface {
@@ -261,6 +288,9 @@ type LikeRepository interface {
 
 	// get list by content id
 	GetListByContent(contentId int64) ([]*pb.Like, error)
+
+	// get list by content id
+	GetBoolByUserAndContent(userId, contentId int64) (bool, error)
 
 	// get list by id list
 	GetListByIdList(idList string) ([]*pb.Like, error)

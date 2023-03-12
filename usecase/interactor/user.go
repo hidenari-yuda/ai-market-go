@@ -51,15 +51,18 @@ type UserInteractor interface {
 type UserInteractorImpl struct {
 	firebase       usecase.Firebase
 	userRepository usecase.UserRepository
+	userMediaRepository usecase.UserMediaRepository
 }
 
 func NewUserInteractorImpl(
 	fb usecase.Firebase,
 	uR usecase.UserRepository,
+	umR usecase.UserMediaRepository,
 ) UserInteractor {
 	return &UserInteractorImpl{
 		firebase:       fb,
 		userRepository: uR,
+		userMediaRepository: umR,
 	}
 }
 
@@ -101,9 +104,22 @@ func (i *UserInteractorImpl) Create(param *pb.User) (*pb.User, error) {
 // Update
 func (i *UserInteractorImpl) Update(param *pb.User) (bool, error) {
 
-	// ユーザー登録
+	// update user
 	if err := i.userRepository.Update(param); err != nil {
 		return false, err
+	}
+
+	// create user media
+	err := i.userMediaRepository.DeleteByUser(param.Id)
+	if err != nil {
+		return false, err
+	}
+
+	for _, media := range param.Media {
+		media.UserId = param.Id
+		if err := i.userMediaRepository.Create(media); err != nil {
+			return false, err
+		}
 	}
 
 	return true, nil

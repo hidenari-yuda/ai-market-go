@@ -169,6 +169,29 @@ func (r *LikeRepositoryImpl) GetListByContent(contentId int64) ([]*pb.Like, erro
 	return likes, nil
 }
 
+// get bool by user and content
+func (r *LikeRepositoryImpl)GetBoolByUserAndContent(userId, contentId int64) (bool, error) {
+	var (
+		like pb.Like
+	)
+
+	if err := r.executer.Get(
+		r.Name+"GetBoolByUserAndContent",
+		&like,
+		"SELECT * FROM likes WHERE user_id = ? AND content_id = ?",
+		userId,
+		contentId,
+	); err != nil {
+		return false, err
+	}
+
+	if like.Id == 0 {
+		return false, nil
+	}
+
+	return true, nil
+}
+
 // get list by id list
 //
 //	GetListByIdList(idList []int64) ([]*pb.Like, error)

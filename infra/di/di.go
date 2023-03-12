@@ -33,7 +33,8 @@ func RegisterServiceServer(ctx context.Context, s *grpc.Server, db *database.Db,
 // regsiterUserServiceServer is a function to register user service server
 func regsiterUserServiceServer(ctx context.Context, s *grpc.Server, db *database.Db, firebase usecase.Firebase) {
 	userRepository := repository.NewUserRepositoryImpl(db)
-	pb.RegisterUserServiceServer(s, handler.NewUserSercviceServer(interactor.NewUserInteractorImpl(firebase, userRepository)))
+	userMediaRepository := repository.NewUserMediaRepositoryImpl(db)
+	pb.RegisterUserServiceServer(s, handler.NewUserSercviceServer(interactor.NewUserInteractorImpl(firebase, userRepository, userMediaRepository)))
 }
 
 // content
@@ -43,7 +44,16 @@ func registerContentServiceServer(ctx context.Context, s *grpc.Server, db *datab
 	contentToolRepository := repository.NewContentToolRepositoryImpl(db)
 	contentCategoryRepository := repository.NewContentCategoryRepositoryImpl(db)
 	contentSubCategoryRepository := repository.NewContentSubCategoryRepositoryImpl(db)
-	pb.RegisterContentServiceServer(s, handler.NewContentSercviceServer(interactor.NewContentInteractorImpl(firebase, contentRepository, contentContentRepository, contentToolRepository, contentCategoryRepository, contentSubCategoryRepository)))
+	likeRepository := repository.NewLikeRepositoryImpl(db)
+	pb.RegisterContentServiceServer(s, handler.NewContentSercviceServer(interactor.NewContentInteractorImpl(
+			firebase, 
+			contentRepository, 
+			contentContentRepository, 
+			contentToolRepository, 
+			contentCategoryRepository, 
+			contentSubCategoryRepository,
+			likeRepository,
+			)))
 }
 
 // order

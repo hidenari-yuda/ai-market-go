@@ -166,7 +166,6 @@ func (r *ContentToolRepositoryImpl) GetListByUser(userId int64) ([]*pb.ContentTo
 		WHERE content_id IN (
 			SELECT id FROM contents WHERE user_id = ?
 		)
-		AND is_deleted = false
 		ORDER BY id DESC
 		`,
 		userId,

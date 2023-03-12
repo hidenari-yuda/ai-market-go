@@ -37,12 +37,14 @@ func (r *UserRepositoryImpl) Create(param *pb.User) error {
 			photo_url,
 			password,
 			type,
+			description,
 			created_at,
 			updated_at
 			) VALUES (
 				?,
 				?,
 				?, 
+				?,
 				?,
 				?,
 				?,
@@ -59,6 +61,7 @@ func (r *UserRepositoryImpl) Create(param *pb.User) error {
 		param.PhotoUrl,
 		param.Password,
 		param.Type,
+		param.Description,
 		now,
 		now,
 	)
@@ -83,6 +86,7 @@ func (r *UserRepositoryImpl) Update(user *pb.User) error {
 			photo_url = ?,
 			password = ?,
 			type = ?,
+			description = ?,
 			updated_at = ?
 		WHERE _id = ?`,
 		user.Name,
@@ -91,6 +95,7 @@ func (r *UserRepositoryImpl) Update(user *pb.User) error {
 		user.PhotoUrl,
 		user.Password,
 		user.Type,
+		user.Description,
 		now,
 		user.Id,
 	)

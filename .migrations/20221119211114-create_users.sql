@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS users (
   photo_url VARCHAR(255) NOT NULL,
   password VARCHAR(255) NOT NULL,
   type INT NOT NULL DEFAULT 0,
+  description TEXT NOT NULL,
   created_at DATETIME NOT NULL,
   updated_at DATETIME NOT NULL,
   is_deleted BOOLEAN NOT NULL DEFAULT FALSE,

@@ -1,12 +1,14 @@
 package interactor
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"strings"
 
 	"github.com/hidenari-yuda/ai-market-go/pb"
 	"github.com/hidenari-yuda/ai-market-go/usecase"
+	"github.com/pkg/errors"
 )
 
 type ContentInteractor interface {
@@ -37,6 +39,9 @@ type ContentInteractor interface {
 
 	// get by uuid
 	GetByUuid(param *pb.ContentUuidRequest) (*pb.Content, error)
+
+	// get by uuid and user id
+	GetByUuidAndUser(param *pb.ContentUuidAndUserIdRequest) (*pb.Content, error)
 
 	// get list by user id
 	GetListByUser(param *pb.ContentUserIdRequest) ([]*pb.Content, error)
@@ -76,6 +81,7 @@ type ContentInteractorImpl struct {
 	contentToolRepository        usecase.ContentToolRepository
 	contentCategoryRepository    usecase.ContentCategoryRepository
 	contentSubCategoryRepository usecase.ContentSubCategoryRepository
+	likeRepository               usecase.LikeRepository
 }
 
 func NewContentInteractorImpl(
@@ -85,6 +91,7 @@ func NewContentInteractorImpl(
 	ctR usecase.ContentToolRepository,
 	ccR usecase.ContentCategoryRepository,
 	cscR usecase.ContentSubCategoryRepository,
+	lR usecase.LikeRepository,
 ) ContentInteractor {
 	return &ContentInteractorImpl{
 		firebase:                     fb,
@@ -93,6 +100,7 @@ func NewContentInteractorImpl(
 		contentToolRepository:        ctR,
 		contentCategoryRepository:    ccR,
 		contentSubCategoryRepository: cscR,
+		likeRepository:               lR,
 	}
 }
 
@@ -330,6 +338,62 @@ func (i *ContentInteractorImpl) GetByUuid(param *pb.ContentUuidRequest) (*pb.Con
 	return content, nil
 }
 
+func (i *ContentInteractorImpl) GetByUuidAndUser(param *pb.ContentUuidAndUserIdRequest) (*pb.Content, error) {
+	var (
+		content *pb.Content
+		err     error
+	)
+
+	content, err = i.contentRepository.GetByUuid(param.Uuid)
+	if err != nil {
+		log.Println("error is:", err)
+		return content, err
+	}
+
+	details, err := i.contentContentRepository.GetListByContent(content.Id)
+	if err != nil {
+		log.Println("error is:", err)
+		return content, err
+	}
+
+	tools, err := i.contentToolRepository.GetListByContent(content.Id)
+	if err != nil {
+		log.Println("error is:", err)
+		return content, err
+	}
+
+	categories, err := i.contentCategoryRepository.GetListByContent(content.Id)
+	if err != nil {
+		log.Println("error is:", err)
+		return content, err
+	}
+
+	subCategories, err := i.contentSubCategoryRepository.GetListByContent(content.Id)
+	if err != nil {
+		log.Println("error is:", err)
+		return content, err
+	}
+
+	isLiked, err := i.likeRepository.GetBoolByUserAndContent(param.UserId, content.Id)
+	if errors.Is(err, sql.ErrNoRows) {
+		isLiked = false
+	}
+	// } else if err != nil {
+	// 	log.Println("error is:", err)
+	// 	return content, err
+	// }
+
+	content.IsLiked = isLiked
+	log.Println("isLiked is:", isLiked)
+
+	content.Details = details
+	content.Tools = tools
+	content.Categories = categories
+	content.SubCategories = subCategories
+
+	return content, nil
+}
+
 func (i *ContentInteractorImpl) GetListByUser(param *pb.ContentUserIdRequest) ([]*pb.Content, error) {
 	var (
 		contents []*pb.Content
@@ -367,10 +431,26 @@ func (i *ContentInteractorImpl) GetListByUser(param *pb.ContentUserIdRequest) ([
 	}
 
 	for _, content := range contents {
-		content.Details = details
-		content.Tools = tools
-		content.Categories = categories
-		content.SubCategories = subCategories
+		for _, detail := range details {
+			if content.Id == detail.ContentId {
+				content.Details = append(content.Details, detail)
+			}
+		}
+		for _, tool := range tools {
+			if content.Id == tool.ContentId {
+				content.Tools = append(content.Tools, tool)
+			}
+		}
+		for _, category := range categories {
+			if content.Id == category.ContentId {
+				content.Categories = append(content.Categories, category)
+			}
+		}
+		for _, subCategory := range subCategories {
+			if content.Id == subCategory.ContentId {
+				content.SubCategories = append(content.SubCategories, subCategory)
+			}
+		}
 	}
 
 	return contents, nil
