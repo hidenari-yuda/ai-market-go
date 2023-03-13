@@ -105,8 +105,11 @@ type ContentRepository interface {
 	// update click
 	UpdateClick(id int64) error
 
-	// update like
-	UpdateLike(id int64) error
+	// create like
+	CreateLike(id int64) error
+
+	// delete like
+	DeleteLike(id int64) error
 
 	// Delete
 	Delete(id int64) error
@@ -120,8 +123,14 @@ type ContentRepository interface {
 	// get list by type
 	GetListByUser(userId int64) ([]*pb.Content, error)
 
-	// get list by category
-	GetListByFreeWord(freeWord string) ([]*pb.Content, error)
+	// get newest list by keyword
+	GetNewestListByKeyword(keyword string) ([]*pb.Content, error)
+
+	// get hottest list by keyword
+	GetHottestListByKeyword(keyword string) ([]*pb.Content, error)
+
+	// get top list by keyword
+	GetTopListByKeyword(keyword string) ([]*pb.Content, error)
 
 	// get by latest id=user_id
 	GetLatestList() ([]*pb.Content, error)
@@ -279,6 +288,9 @@ type LikeRepository interface {
 
 	// Delete
 	Delete(id int64) error
+
+	// Delete by user and content
+	DeleteByUserAndContent(userId, contentId int64) error
 
 	// Get
 	GetById(id int64) (*pb.Like, error)

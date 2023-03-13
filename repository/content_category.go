@@ -183,11 +183,12 @@ func (r *ContentCategoryRepositoryImpl) GetListByIdList(idList string) ([]*pb.Co
 		return contentCategories, nil
 	}
 
+	query := fmt.Sprintf("SELECT * FROM content_categories WHERE id IN (%s)", idList)
+
 	err := r.executer.Select(
 		r.Name+"GetListByIdList",
 		&contentCategories,
-		"SELECT * FROM content_categories WHERE id IN (?)",
-		idList,
+		query,
 	)
 
 	if err != nil {
@@ -207,11 +208,12 @@ func (r *ContentCategoryRepositoryImpl) GetListByContentIdList(contentIdList str
 		return contentCategories, nil
 	}
 
+	query := fmt.Sprintf("SELECT * FROM content_categories WHERE content_id IN (%s)", contentIdList)
+
 	err := r.executer.Select(
 		r.Name+"GetListByContentIdList",
 		&contentCategories,
-		"SELECT * FROM content_categories WHERE content_id IN (?)",
-		contentIdList,
+		query,
 	)
 
 	if err != nil {

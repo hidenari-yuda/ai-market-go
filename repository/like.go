@@ -46,10 +46,10 @@ func (r *LikeRepositoryImpl) Create(param *pb.Like) error {
 		param.UserId,
 		now,
 		now,
-		false,
 	)
 
 	if err != nil {
+		log.Println(err)
 		return err
 	}
 
@@ -61,7 +61,7 @@ func (r *LikeRepositoryImpl) Create(param *pb.Like) error {
 // update
 func (r *LikeRepositoryImpl) Update(param *pb.Like) error {
 	now := time.Now().UTC()
-	
+
 	lastId, err := r.executer.Exec(
 		r.Name+"Update",
 		`UPDATE likes SET
@@ -85,12 +85,29 @@ func (r *LikeRepositoryImpl) Update(param *pb.Like) error {
 func (r *LikeRepositoryImpl) Delete(id int64) error {
 	_, err := r.executer.Exec(
 		r.Name+"Delete",
-		"UPDATE likes SET is_deleted = ? WHERE id = ?",
-		true,
+		"DELETE FROM likes WHERE id = ?",
 		id,
 	)
 
 	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	return nil
+}
+
+// delete by user and content
+func (r *LikeRepositoryImpl) DeleteByUserAndContent(userId, contentId int64) error {
+	_, err := r.executer.Exec(
+		r.Name+"Delete",
+		"DELETE FROM likes WHERE user_id = ? AND content_id = ?",
+		userId,
+		contentId,
+	)
+
+	if err != nil {
+		log.Println(err)
 		return err
 	}
 
@@ -109,6 +126,7 @@ func (r *LikeRepositoryImpl) GetById(id int64) (*pb.Like, error) {
 		"SELECT * FROM likes WHERE id = ?",
 		id,
 	); err != nil {
+		log.Println(err)
 		return nil, err
 	}
 
@@ -127,6 +145,7 @@ func (r *LikeRepositoryImpl) GetByUuid(uuid int64) (*pb.Like, error) {
 		"SELECT * FROM likes WHERE uuid = ?",
 		uuid,
 	); err != nil {
+		log.Println(err)
 		return nil, err
 	}
 
@@ -145,6 +164,7 @@ func (r *LikeRepositoryImpl) GetListByUser(userId int64) ([]*pb.Like, error) {
 		"SELECT * FROM likes WHERE user_id = ?",
 		userId,
 	); err != nil {
+		log.Println(err)
 		return nil, err
 	}
 
@@ -163,6 +183,7 @@ func (r *LikeRepositoryImpl) GetListByContent(contentId int64) ([]*pb.Like, erro
 		"SELECT * FROM likes WHERE content_id = ?",
 		contentId,
 	); err != nil {
+		log.Println(err)
 		return nil, err
 	}
 
@@ -170,7 +191,7 @@ func (r *LikeRepositoryImpl) GetListByContent(contentId int64) ([]*pb.Like, erro
 }
 
 // get bool by user and content
-func (r *LikeRepositoryImpl)GetBoolByUserAndContent(userId, contentId int64) (bool, error) {
+func (r *LikeRepositoryImpl) GetBoolByUserAndContent(userId, contentId int64) (bool, error) {
 	var (
 		like pb.Like
 	)
@@ -210,6 +231,7 @@ func (r *LikeRepositoryImpl) GetListByIdList(idList string) ([]*pb.Like, error) 
 		"SELECT * FROM likes WHERE id IN (?)",
 		idList,
 	); err != nil {
+		log.Println(err)
 		return nil, err
 	}
 

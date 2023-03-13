@@ -121,14 +121,33 @@ func (s *ContentServiceServer) UpdateClick(ctx context.Context, req *pb.ContentI
 }
 
 // update like
-func (s *ContentServiceServer) UpdateLike(ctx context.Context, req *pb.ContentIdRequest) (*pb.ContentBoolResponse, error) {
+func (s *ContentServiceServer) CreateLike(ctx context.Context, req *pb.ContentIdAndUserIdRequest) (*pb.ContentBoolResponse, error) {
 
 	tx, err := s.Db.Begin()
 	if err != nil {
 		return nil, err
 	}
 
-	res, err := s.ContentInteractor.UpdateLike(req)
+	res, err := s.ContentInteractor.CreateLike(req)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	tx.Commit()
+
+	return &pb.ContentBoolResponse{Error: res}, nil
+}
+
+// update like
+func (s *ContentServiceServer) DeleteLike(ctx context.Context, req *pb.ContentIdAndUserIdRequest) (*pb.ContentBoolResponse, error) {
+
+	tx, err := s.Db.Begin()
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := s.ContentInteractor.DeleteLike(req)
 	if err != nil {
 		tx.Rollback()
 		return nil, err
@@ -257,7 +276,7 @@ func (s *ContentServiceServer) GetRecommendedListByContent(ctx context.Context, 
 }
 
 // get sold list by user id
-func (s *ContentServiceServer) GetSoldListByUser(ctx context.Context, req *pb.ContentUserIdRequest) (*pb.ContentList, error) {
+func (s *ContentServiceServer) GetSoldListByUser(ctx context.Context, req *pb.ContentSearchRequest) (*pb.ContentList, error) {
 
 	res, err := s.ContentInteractor.GetSoldListByUser(req)
 	if err != nil {
@@ -268,7 +287,7 @@ func (s *ContentServiceServer) GetSoldListByUser(ctx context.Context, req *pb.Co
 }
 
 // get purchased list by user id
-func (s *ContentServiceServer) GetPurchasedListByUser(ctx context.Context, req *pb.ContentUserIdRequest) (*pb.ContentList, error) {
+func (s *ContentServiceServer) GetPurchasedListByUser(ctx context.Context, req *pb.ContentSearchRequest) (*pb.ContentList, error) {
 
 	res, err := s.ContentInteractor.GetPurchasedListByUser(req)
 	if err != nil {
@@ -279,7 +298,7 @@ func (s *ContentServiceServer) GetPurchasedListByUser(ctx context.Context, req *
 }
 
 // get liked list by user id
-func (s *ContentServiceServer) GetLikedListByUser(ctx context.Context, req *pb.ContentUserIdRequest) (*pb.ContentList, error) {
+func (s *ContentServiceServer) GetLikedListByUser(ctx context.Context, req *pb.ContentSearchRequest) (*pb.ContentList, error) {
 
 	res, err := s.ContentInteractor.GetLikedListByUser(req)
 	if err != nil {

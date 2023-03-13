@@ -188,11 +188,12 @@ func (r *ContentToolRepositoryImpl) GetListByIdList(idList string) ([]*pb.Conten
 		return contentTools, nil
 	}
 
+	query := fmt.Sprintf("SELECT * FROM content_tools WHERE id IN (%s)", idList)
+
 	err := r.executer.Select(
 		r.Name+"GetListByIdList",
 		&contentTools,
-		`SELECT * FROM content_tools WHERE id IN (?)`,
-		idList,
+		query,
 	)
 
 	if err != nil {
@@ -205,18 +206,19 @@ func (r *ContentToolRepositoryImpl) GetListByIdList(idList string) ([]*pb.Conten
 // get list by content id list
 func (r *ContentToolRepositoryImpl) GetListByContentIdList(contentIdList string) ([]*pb.ContentTool, error) {
 	var (
-		contentTools []*pb.ContentTool = make([]*pb.ContentTool, 0)
+		contentTools []*pb.ContentTool = []*pb.ContentTool{}
 	)
 
 	if contentIdList == "" {
 		return contentTools, nil
 	}
 
+	query := fmt.Sprintf("SELECT * FROM content_tools WHERE content_id IN (%s)", contentIdList)
+
 	err := r.executer.Select(
 		r.Name+"GetListByContentIdList",
 		&contentTools,
-		"SELECT * FROM content_tools WHERE content_id IN (?)",
-		contentIdList,
+		query,
 	)
 
 	if err != nil {

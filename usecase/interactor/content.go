@@ -29,7 +29,10 @@ type ContentInteractor interface {
 	UpdateClick(param *pb.ContentIdRequest) (bool, error)
 
 	// update like
-	UpdateLike(param *pb.ContentIdRequest) (bool, error)
+	CreateLike(param *pb.ContentIdAndUserIdRequest) (bool, error)
+
+	// delete like
+	DeleteLike(param *pb.ContentIdAndUserIdRequest) (bool, error)
 
 	// Delete
 	Delete(param *pb.ContentIdRequest) (bool, error)
@@ -62,13 +65,13 @@ type ContentInteractor interface {
 	GetRecommendedListByContent(param *pb.ContentIdRequest) ([]*pb.Content, error)
 
 	// get sold list by user id
-	GetSoldListByUser(param *pb.ContentUserIdRequest) ([]*pb.Content, error)
+	GetSoldListByUser(param *pb.ContentSearchRequest) ([]*pb.Content, error)
 
 	// get purchased list by user id
-	GetPurchasedListByUser(param *pb.ContentUserIdRequest) ([]*pb.Content, error)
+	GetPurchasedListByUser(param *pb.ContentSearchRequest) ([]*pb.Content, error)
 
 	// get liked list by user id
-	GetLikedListByUser(param *pb.ContentUserIdRequest) ([]*pb.Content, error)
+	GetLikedListByUser(param *pb.ContentSearchRequest) ([]*pb.Content, error)
 
 	// get list by id list
 	GetListByIdList(param *pb.ContentIdListRequest) ([]*pb.Content, error)
@@ -231,9 +234,32 @@ func (i *ContentInteractorImpl) UpdateClick(param *pb.ContentIdRequest) (bool, e
 }
 
 // update like
-func (i *ContentInteractorImpl) UpdateLike(param *pb.ContentIdRequest) (bool, error) {
+func (i *ContentInteractorImpl) CreateLike(param *pb.ContentIdAndUserIdRequest) (bool, error) {
 
-	if err := i.contentRepository.UpdateLike(param.Id); err != nil {
+	if err := i.contentRepository.CreateLike(param.Id); err != nil {
+		return false, err
+	}
+
+	like := &pb.Like{
+		ContentId: param.Id,
+		UserId:    param.UserId,
+	}
+
+	if err := i.likeRepository.Create(like); err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+// update like
+func (i *ContentInteractorImpl) DeleteLike(param *pb.ContentIdAndUserIdRequest) (bool, error) {
+
+	if err := i.contentRepository.DeleteLike(param.Id); err != nil {
+		return false, err
+	}
+
+	if err := i.likeRepository.DeleteByUserAndContent(param.UserId, param.Id); err != nil {
 		return false, err
 	}
 
@@ -406,11 +432,11 @@ func (i *ContentInteractorImpl) GetListByUser(param *pb.ContentUserIdRequest) ([
 		return contents, err
 	}
 
-	details, err := i.contentContentRepository.GetListByUser(param.UserId)
-	if err != nil {
-		log.Println("error is:", err)
-		return contents, err
-	}
+	// details, err := i.contentContentRepository.GetListByUser(param.UserId)
+	// if err != nil {
+	// 	log.Println("error is:", err)
+	// 	return contents, err
+	// }
 
 	tools, err := i.contentToolRepository.GetListByUser(param.UserId)
 	if err != nil {
@@ -431,11 +457,11 @@ func (i *ContentInteractorImpl) GetListByUser(param *pb.ContentUserIdRequest) ([
 	}
 
 	for _, content := range contents {
-		for _, detail := range details {
-			if content.Id == detail.ContentId {
-				content.Details = append(content.Details, detail)
-			}
-		}
+		// for _, detail := range details {
+		// 	if content.Id == detail.ContentId {
+		// 		content.Details = append(content.Details, detail)
+		// 	}
+		// }
 		for _, tool := range tools {
 			if content.Id == tool.ContentId {
 				content.Tools = append(content.Tools, tool)
@@ -468,10 +494,24 @@ func (i *ContentInteractorImpl) GetListBySearch(param *pb.ContentSearchRequest) 
 
 	// categoryStrList := strings.Trim(strings.Join(strings.Fields(fmt.Sprint(input.IdList)), ", "), "[]")
 
-	contents, err = i.contentRepository.GetListByFreeWord(param.FreeWord)
-	if err != nil {
-		log.Println("error is:", err)
-		return contents, err
+	if param.SortBy == pb.ContentSearchRequest_NEWEST {
+		contents, err = i.contentRepository.GetNewestListByKeyword(param.Keyword)
+		if err != nil {
+			log.Println("error is:", err)
+			return contents, err
+		}
+	} else if param.SortBy == pb.ContentSearchRequest_TOP {
+		contents, err = i.contentRepository.GetTopListByKeyword(param.Keyword)
+		if err != nil {
+			log.Println("error is:", err)
+			return contents, err
+		}
+	} else {
+		contents, err = i.contentRepository.GetHottestListByKeyword(param.Keyword)
+		if err != nil {
+			log.Println("error is:", err)
+			return contents, err
+		}
 	}
 
 	for _, content := range contents {
@@ -482,38 +522,88 @@ func (i *ContentInteractorImpl) GetListBySearch(param *pb.ContentSearchRequest) 
 	}
 	paramIdListStr = strings.Trim(strings.Join(strings.Fields(fmt.Sprint(paramIdList)), ", "), "[]")
 
-	details, err := i.contentContentRepository.GetListByIdList(paramIdListStr)
+	// details, err := i.contentContentRepository.GetListByIdList(paramIdListStr)
+	// if err != nil {
+	// 	log.Println("error is:", err)
+	// 	return contents, err
+	// }
+
+	tools, err := i.contentToolRepository.GetListByContentIdList(paramIdListStr)
 	if err != nil {
 		log.Println("error is:", err)
 		return contents, err
 	}
 
-	tools, err := i.contentToolRepository.GetListByIdList(paramIdListStr)
+	categories, err := i.contentCategoryRepository.GetListByContentIdList(paramIdListStr)
 	if err != nil {
 		log.Println("error is:", err)
 		return contents, err
 	}
 
-	categories, err := i.contentCategoryRepository.GetListByIdList(paramIdListStr)
-	if err != nil {
-		log.Println("error is:", err)
-		return contents, err
-	}
-
-	subCategories, err := i.contentSubCategoryRepository.GetListByIdList(paramIdListStr)
+	subCategories, err := i.contentSubCategoryRepository.GetListByContentIdList(paramIdListStr)
 	if err != nil {
 		log.Println("error is:", err)
 		return contents, err
 	}
 
 	for _, content := range contents {
-		content.Details = details
-		content.Tools = tools
-		content.Categories = categories
-		content.SubCategories = subCategories
+		log.Println("tools is:", tools)
+		for _, tool := range tools {
+			log.Println("tool is:", tool)
+			if content.Id == tool.ContentId {
+				content.Tools = append(content.Tools, tool)
+			}
+		}
+		for _, category := range categories {
+			if content.Id == category.ContentId {
+				content.Categories = append(content.Categories, category)
+			}
+		}
+		for _, subCategory := range subCategories {
+			if content.Id == subCategory.ContentId {
+				content.SubCategories = append(content.SubCategories, subCategory)
+			}
+		}
 	}
 
-	return contents, nil
+	var (
+		matchedListByTool     []*pb.Content
+		matchedListByCategory []*pb.Content
+	)
+
+	if len(param.Tool) == 0 {
+		matchedListByTool = contents
+	} else {
+	toolLoop:
+		for _, content := range contents {
+			for _, toolFromParam := range param.Tool {
+				for _, tool := range content.Tools {
+					if int64(toolFromParam) == int64(tool.Tool) {
+						matchedListByTool = append(matchedListByTool, content)
+						continue toolLoop
+					}
+				}
+			}
+		}
+	}
+
+	if len(param.Category) == 0 {
+		matchedListByCategory = matchedListByTool
+	} else {
+	categoryLoop:
+		for _, content := range matchedListByTool {
+			for _, categoryFromParam := range param.Category {
+				for _, category := range content.Categories {
+					if int64(categoryFromParam) == int64(category.Category) {
+						matchedListByCategory = append(matchedListByCategory, content)
+						continue categoryLoop
+					}
+				}
+			}
+		}
+	}
+
+	return matchedListByCategory, nil
 }
 
 // // get by latest id=user_id
@@ -667,7 +757,7 @@ func (i *ContentInteractorImpl) GetRecommendedListByContent(param *pb.ContentIdR
 
 // // get by sold id=user_id
 // rpc GetSoldListByUser(paramIdRequest) returns (paramList) {}
-func (i *ContentInteractorImpl) GetSoldListByUser(param *pb.ContentUserIdRequest) ([]*pb.Content, error) {
+func (i *ContentInteractorImpl) GetSoldListByUser(param *pb.ContentSearchRequest) ([]*pb.Content, error) {
 	var (
 		contents []*pb.Content
 		err      error
@@ -683,7 +773,7 @@ func (i *ContentInteractorImpl) GetSoldListByUser(param *pb.ContentUserIdRequest
 }
 
 // rpc GetPurchasedListByUser(paramIdRequest) returns (paramList) {}
-func (i *ContentInteractorImpl) GetPurchasedListByUser(param *pb.ContentUserIdRequest) ([]*pb.Content, error) {
+func (i *ContentInteractorImpl) GetPurchasedListByUser(param *pb.ContentSearchRequest) ([]*pb.Content, error) {
 	var (
 		contents []*pb.Content
 		err      error
@@ -700,7 +790,7 @@ func (i *ContentInteractorImpl) GetPurchasedListByUser(param *pb.ContentUserIdRe
 
 // // get by liked id=user_id
 // rpc GetLikedListByUser(paramIdRequest) returns (paramList) {}
-func (i *ContentInteractorImpl) GetLikedListByUser(param *pb.ContentUserIdRequest) ([]*pb.Content, error) {
+func (i *ContentInteractorImpl) GetLikedListByUser(param *pb.ContentSearchRequest) ([]*pb.Content, error) {
 	var (
 		contents []*pb.Content
 		err      error

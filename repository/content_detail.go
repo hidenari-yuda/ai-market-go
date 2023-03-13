@@ -193,11 +193,12 @@ func (r *ContentDetailRepositoryImpl) GetListByIdList(idList string) ([]*pb.Cont
 		return contentDetails, nil
 	}
 
+	query := fmt.Sprintf("SELECT * FROM content_details WHERE id IN (%s)", idList)
+
 	err := r.executer.Select(
 		r.Name+"GetListByIdList",
 		&contentDetails,
-		"SELECT * FROM content_details WHERE id IN (?)",
-		idList,
+		query,
 	)
 
 	if err != nil {
@@ -217,11 +218,12 @@ func (r *ContentDetailRepositoryImpl) GetListByContentIdList(contentIdList strin
 		return contentDetails, nil
 	}
 
+	query := fmt.Sprintf("SELECT * FROM content_details WHERE content_id IN (%s)", contentIdList)
+
 	err := r.executer.Select(
 		r.Name+"GetListByContentIdList",
 		&contentDetails,
-		"SELECT * FROM content_details WHERE content_id IN (?)",
-		contentIdList,
+		query,
 	)
 
 	if err != nil {

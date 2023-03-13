@@ -159,11 +159,33 @@ func (r *ContentRepositoryImpl) UpdateView(id int64) error {
 }
 
 // update like
-func (r *ContentRepositoryImpl) UpdateLike(id int64) error {
+func (r *ContentRepositoryImpl) CreateLike(id int64) error {
 	_, err := r.executer.Exec(
-		r.Name+"UpdateLike",
+		r.Name+"CreateLike",
 		`UPDATE contents SET
 			like_count = like_count + 1,
+			updated_at = ?
+		WHERE id = ?`,
+		time.Now().UTC(),
+		id,
+	)
+
+	if err != nil {
+		err = fmt.Errorf("failed to update content like: %w", err)
+		log.Println(err)
+		return err
+	}
+
+	return nil
+}
+
+// delete like
+func (r *ContentRepositoryImpl) DeleteLike(id int64) error {
+	_, err := r.executer.Exec(
+		r.Name+"DeleteLike",
+		`UPDATE contents SET
+
+			like_count = like_count - 1,
 			updated_at = ?
 		WHERE id = ?`,
 		time.Now().UTC(),
@@ -290,14 +312,14 @@ func (r *ContentRepositoryImpl) GetListByUser(userId int64) ([]*pb.Content, erro
 	return contents, nil
 }
 
-// get list by category
-func (r *ContentRepositoryImpl) GetListByFreeWord(freeWord string) ([]*pb.Content, error) {
+// get newest list by keyword
+func (r *ContentRepositoryImpl) GetNewestListByKeyword(keyword string) ([]*pb.Content, error) {
 	var (
 		contents []*pb.Content
 	)
 
 	if err := r.executer.Select(
-		r.Name+"GetListByFreeWord",
+		r.Name+"GetNewestListByKeyword",
 		&contents,
 		`
 		SELECT * 
@@ -308,9 +330,68 @@ func (r *ContentRepositoryImpl) GetListByFreeWord(freeWord string) ([]*pb.Conten
 			is_deleted = false
 			AND
 			is_open = true
+		ORDER BY updated_at DESC
 			`,
-		"%"+freeWord+"%",
-		"%"+freeWord+"%",
+		"%"+keyword+"%",
+		"%"+keyword+"%",
+	); err != nil {
+		return nil, err
+	}
+
+	return contents, nil
+}
+
+// get hottest list by keyword
+func (r *ContentRepositoryImpl) GetHottestListByKeyword(keyword string) ([]*pb.Content, error) {
+	var (
+		contents []*pb.Content
+	)
+
+	if err := r.executer.Select(
+		r.Name+"GetHottestListByKeyword",
+		&contents,
+		`
+			SELECT * 
+			FROM contents 
+			WHERE 
+				title LIKE ? OR description LIKE ?
+				AND
+				is_deleted = false
+				AND
+				is_open = true
+			ORDER BY view_count DESC
+			`,
+		"%"+keyword+"%",
+		"%"+keyword+"%",
+	); err != nil {
+		return nil, err
+	}
+
+	return contents, nil
+}
+
+// get top list by keyword
+func (r *ContentRepositoryImpl) GetTopListByKeyword(keyword string) ([]*pb.Content, error) {
+	var (
+		contents []*pb.Content
+	)
+
+	if err := r.executer.Select(
+		r.Name+"GetTopListByKeyword",
+		&contents,
+		`
+				SELECT * 
+				FROM contents 
+				WHERE 
+					title LIKE ? OR description LIKE ?
+					AND
+					is_deleted = false
+					AND
+					is_open = true
+				ORDER BY like_count DESC
+				`,
+		"%"+keyword+"%",
+		"%"+keyword+"%",
 	); err != nil {
 		return nil, err
 	}
