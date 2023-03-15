@@ -561,6 +561,44 @@ type PointHistoryRepository interface {
 	GetAll() ([]*pb.PointHistory, error)
 }
 
+/******************* notification *******************/
+// notification
+type NotificationRepository interface {
+	// Gest API
+	// Create
+	Create(param *pb.Notification) error
+
+	// Update
+	Update(param *pb.Notification) error
+
+	// update is read when user read notification
+	UpdateIsRead(uuid string) error
+
+	// Delete
+	Delete(id int64) error
+
+	// Get
+	GetById(id int64) (*pb.Notification, error)
+
+	// get by uuid
+	GetByUuid(uuid string) (*pb.Notification, error)
+
+	// get list by receive user id
+	GetListByReceiveUser(receiveUserId int64) ([]*pb.Notification, error)
+
+	// get unread list by receive user id
+	GetUnreadListByReceiveUser(receiveUserId int64) ([]*pb.Notification, error)
+
+	// get list by send user id
+	GetListBySendUser(sendUserId int64) ([]*pb.Notification, error)
+
+	// get list by id list
+	GetListByIdList(idList string) ([]*pb.Notification, error)
+
+	// admin
+}
+
+/******************* chat *******************/
 type ChatGroupRepository interface {
 	// Gest API
 	// Create

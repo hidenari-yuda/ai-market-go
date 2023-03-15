@@ -28,6 +28,7 @@ func RegisterServiceServer(ctx context.Context, s *grpc.Server, db *database.Db,
 	registerFollowingServiceServer(ctx, s, db, firebase)
 	registerChatServiceServer(ctx, s, db, firebase)
 	registerChatGroupServiceServer(ctx, s, db, firebase)
+	registerNotificationServiceServer(ctx, s, db, firebase)
 }
 
 // regsiterUserServiceServer is a function to register user service server
@@ -128,4 +129,10 @@ func registerChatGroupServiceServer(ctx context.Context, s *grpc.Server, db *dat
 func registerChatServiceServer(ctx context.Context, s *grpc.Server, db *database.Db, firebase usecase.Firebase) {
 	// chatRepository := repository.NewChatRepositoryImpl(db)
 	pb.RegisterChatServiceServer(s, handler.NewChatSercviceServer(interactor.NewChatInteractorImpl(firebase)))
+}
+
+// notification
+func registerNotificationServiceServer(ctx context.Context, s *grpc.Server, db *database.Db, firebase usecase.Firebase) {
+	notificationRepository := repository.NewNotificationRepositoryImpl(db)
+	pb.RegisterNotificationServiceServer(s, handler.NewNotificationSercviceServer(interactor.NewNotificationInteractorImpl(firebase, notificationRepository)))
 }
