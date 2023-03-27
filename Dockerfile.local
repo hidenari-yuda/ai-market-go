@@ -1,5 +1,4 @@
 FROM golang:1.20
-LABEL maintainer="github.com/hidenari-yuda"
 WORKDIR /go/src/app
 ENV GOPATH /go
 ENV GO111MODULE on

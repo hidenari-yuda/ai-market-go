@@ -33,9 +33,15 @@ func (r *ContentDetailRepositoryImpl) Create(param *pb.ContentDetail) error {
 			content_id,
 			title,
 			description,
+			prompt,
+			prompt_instruction,
+			url,
 			created_at,
 			updated_at
 			) VALUES (
+				?,
+				?,
+				?, 
 				?,
 				?,
 				?, 
@@ -46,6 +52,9 @@ func (r *ContentDetailRepositoryImpl) Create(param *pb.ContentDetail) error {
 		param.ContentId,
 		param.Title,
 		param.Description,
+		param.Prompt,
+		param.PromptInstruction,
+		param.Url,
 		now,
 		now,
 		false,
@@ -60,17 +69,23 @@ func (r *ContentDetailRepositoryImpl) Create(param *pb.ContentDetail) error {
 
 // update
 func (r *ContentDetailRepositoryImpl) Update(param *pb.ContentDetail) error {
-		now := time.Now().UTC()
+	now := time.Now().UTC()
 
 	_, err := r.executer.Exec(
 		r.Name+"Update",
 		`UPDATE content_details SET
 			title = ?,
 			description = ?,
+			prompt = ?,
+			prompt_instruction = ?,
+			url = ?,
 			updated_at = ?
 		WHERE id = ?`,
 		param.Title,
 		param.Description,
+		param.Prompt,
+		param.PromptInstruction,
+		param.Url,
 		now,
 		param.Id,
 	)

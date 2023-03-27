@@ -18,14 +18,14 @@ CREATE TABLE IF NOT EXISTS notifications (
 
 ALTER TABLE notifications
   ADD CONSTRAINT fk_notifications_send_user_id
-  FOREIGN KEY (user_id)
+  FOREIGN KEY (send_user_id)
   REFERENCES users(id)
   ON DELETE CASCADE
   ON UPDATE CASCADE;
 
 ALTER TABLE notifications
   ADD CONSTRAINT fk_notifications_receive_user_id
-  FOREIGN KEY (user_id)
+  FOREIGN KEY (receive_user_id)
   REFERENCES users(id)
   ON DELETE CASCADE
   ON UPDATE CASCADE;

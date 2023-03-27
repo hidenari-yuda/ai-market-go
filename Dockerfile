@@ -8,8 +8,8 @@ COPY . .
 ADD https://github.com/golang/go/raw/master/lib/time/zoneinfo.zip .
 RUN ls -la . &&  chmod 755 ./zoneinfo.zip && make build
 
-FROM scratch
-USER app
+FROM alpine:3.17
+RUN apk update && apk upgrade && apk add --no-cache bash && apk add --no-cache ca-certificates
 ENV GOROOT /usr/local/go
 COPY --from=builder /go/bin/app /go/bin/app
 COPY --from=builder /etc/group /etc/group

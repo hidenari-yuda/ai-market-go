@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS user_medias (
   updated_at DATETIME NOT NULL,
   is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
   PRIMARY KEY (id),
-  INDEX idx_user_medias_user_id (user_id),
+  INDEX idx_user_medias_user_id (user_id)
 );
 
 -- +migrate Down
