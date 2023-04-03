@@ -11,17 +11,28 @@ import (
 	"github.com/hidenari-yuda/ai-market-go/domain/config"
 	"github.com/hidenari-yuda/ai-market-go/infra/database"
 	"github.com/hidenari-yuda/ai-market-go/infra/di"
-	"github.com/hidenari-yuda/ai-market-go/infra/driver"
+	"github.com/hidenari-yuda/ai-market-go/usecase"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	// "github.com/improbable-eng/grpc-web/go/grpcweb"
 )
 
-func Start() {
-	var (
-		db       = database.NewDb()
-		firebase = driver.NewFirebaseImpl()
-	)
+type Router struct {
+	db       *database.Db
+	firebase usecase.Firebase
+}
+
+func NewRouter(
+	db *database.Db,
+	firebase usecase.Firebase,
+) *Router {
+	return &Router{
+		db:       db,
+		firebase: firebase,
+	}
+}
+
+func (r *Router) Start() {
 
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", config.App.Port))
 	if err != nil {
@@ -31,7 +42,7 @@ func Start() {
 	s := grpc.NewServer()
 
 	ctx := context.Background()
-	di.RegisterServiceServer(ctx, s, db, firebase)
+	di.RegisterServiceServer(ctx, s, r.db, r.firebase)
 
 	// for using grpcurl
 	reflection.Register(s)
@@ -52,7 +63,7 @@ func Start() {
 
 }
 
-// http 
+// http
 // // HTTP経由で接続できるようラップする
 // wrappedServer := grpcweb.WrapServer(
 // 	s,

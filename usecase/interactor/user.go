@@ -52,17 +52,20 @@ type UserInteractorImpl struct {
 	firebase       usecase.Firebase
 	userRepository usecase.UserRepository
 	userMediaRepository usecase.UserMediaRepository
+	notificationSettingRepository usecase.NotificationSettingRepository
 }
 
 func NewUserInteractorImpl(
 	fb usecase.Firebase,
 	uR usecase.UserRepository,
 	umR usecase.UserMediaRepository,
+	nsR usecase.NotificationSettingRepository,
 ) UserInteractor {
 	return &UserInteractorImpl{
 		firebase:       fb,
 		userRepository: uR,
 		userMediaRepository: umR,
+		notificationSettingRepository: nsR,
 	}
 }
 
@@ -95,6 +98,17 @@ func (i *UserInteractorImpl) Create(param *pb.User) (*pb.User, error) {
 
 	// ユーザー登録
 	if err := i.userRepository.Create(param); err != nil {
+		return param, err
+	}
+
+	// ユーザーメディア登録
+
+	// 通知設定登録
+	notificationSetting := &pb.NotificationSetting{
+		UserId: param.Id,
+	}
+
+	if err := i.notificationSettingRepository.Create(notificationSetting); err != nil {
 		return param, err
 	}
 
@@ -165,6 +179,8 @@ func (i *UserInteractorImpl) GetByUuid(param *pb.UserUuidRequest) (*pb.User, err
 		log.Println("error is:", err)
 		return user, err
 	}
+
+	log.Println("user is:", user)
 
 	return user, nil
 }

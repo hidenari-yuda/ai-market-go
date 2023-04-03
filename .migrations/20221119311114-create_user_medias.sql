@@ -13,5 +13,15 @@ CREATE TABLE IF NOT EXISTS user_medias (
   INDEX idx_user_medias_user_id (user_id)
 );
 
+
+ALTER TABLE user_medias
+  ADD CONSTRAINT fk_user_medias_user_id
+  FOREIGN KEY (user_id)
+  REFERENCES users(id)
+  ON DELETE CASCADE
+  ON UPDATE CASCADE;
+
 -- +migrate Down
+ALTER TABLE user_medias DROP FOREIGN KEY fk_user_medias_user_id;
+
 DROP TABLE IF EXISTS user_medias;

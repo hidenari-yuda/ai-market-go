@@ -598,6 +598,33 @@ type NotificationRepository interface {
 	// admin
 }
 
+// notification setting
+type NotificationSettingRepository interface {
+	// Gest API
+	// Create
+	Create(param *pb.NotificationSetting) error
+
+	// Update
+	Update(param *pb.NotificationSetting) error
+
+	// Delete
+	Delete(id int64) error
+
+	// Get
+	GetById(id int64) (*pb.NotificationSetting, error)
+
+	// get by uuid
+	GetByUuid(uuid string) (*pb.NotificationSetting, error)
+
+	// get list by receive user id
+	GetByUser(userId int64) (*pb.NotificationSetting, error)
+
+	// get list by id list
+	GetListByIdList(idList string) ([]*pb.NotificationSetting, error)
+
+	// admin
+}
+
 /******************* chat *******************/
 type ChatGroupRepository interface {
 	// Gest API

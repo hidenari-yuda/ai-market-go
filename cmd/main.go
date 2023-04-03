@@ -9,6 +9,7 @@ import (
 	"github.com/hidenari-yuda/ai-market-go/domain/utils"
 	"github.com/hidenari-yuda/ai-market-go/infra/batch"
 	"github.com/hidenari-yuda/ai-market-go/infra/database"
+	"github.com/hidenari-yuda/ai-market-go/infra/driver"
 	"github.com/hidenari-yuda/ai-market-go/infra/router"
 
 	"github.com/joho/godotenv"
@@ -36,8 +37,6 @@ func main() {
 	}
 	utils.LoggingSettings(config.App.LogFilePath)
 
-	// ctx := context.Background()
-
 	switch config.App.Service {
 	case "api":
 		// 一旦 apiコンテナを立ち上げる時にマイグレーションする
@@ -47,12 +46,15 @@ func main() {
 			fmt.Println(err)
 		}
 
-		// cache := driver.NewRedisCacheImpl(cfg.Redis)
+		// firebase
+		firebase := driver.NewFirebaseImpl()
 		// if cfg.App.Env == "local" {
-		// 	firebase := driver.NewFirebaseImpl()
 		// 	fmt.Println("getTestUserToken:", uuid.New().String())
 		// 	getTestUserToken(firebase, uuid.New().String())
 		// }
+
+		// redis
+		// cache := driver.NewRedisCacheImpl(cfg.Redis)
 
 		// // エラーハンドラー（dev or prdのみSlack通知）
 		// if cfg.App.Env != "local" {
@@ -60,7 +62,7 @@ func main() {
 		// }
 
 		// ルーティング
-		router.Start()
+		router.NewRouter(db, firebase).Start()
 
 	case "batch":
 		batch.NewBatch().Start()
